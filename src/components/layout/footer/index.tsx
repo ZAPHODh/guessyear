@@ -13,7 +13,7 @@ export default function Footer() {
   const pathname = usePathname();
   const scopedT = useScopedI18n("footer");
   const locale = useCurrentLocale()
-  
+
   if (pathname.includes('/daily')) {
     return null;
   }
