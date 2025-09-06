@@ -8,7 +8,7 @@ import {
 } from "@/lib/server/auth/session";
 import { prisma } from "@/lib/server/db";
 
-export const POST = async (req: Request, response: Response) => {
+export const POST = async (req: Request) => {
     const body = await req.json();
 
     try {
