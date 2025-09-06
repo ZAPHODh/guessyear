@@ -25,6 +25,7 @@ export default {
   contact: "Contact",
   privacy: "Privacy Policy",
   terms: "Terms of Service",
+  cookieSettings: "Cookie Settings",
   
   // Footer bottom
   allRightsReserved: "All rights reserved",

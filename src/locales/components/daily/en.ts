@@ -1,0 +1,21 @@
+export default {
+  title: "Daily Image Challenge",
+  guessPrompt: "What year was this photo taken?",
+  submitGuess: "Submit Guess",
+  submitting: "Submitting...",
+  yearPlaceholder: "Enter year (e.g., 1985)",
+  attemptsLeft: "attempts left",
+  congratulations: "Congratulations!",
+  betterLuck: "Better luck tomorrow!",
+  correctYear: "The correct year was:",
+  todaysWins: "Today's Wins",
+  donate: "Support Us - Donate",
+  loading: "Loading...",
+  failedToLoad: "Failed to load daily image",
+  invalidYear: "Please enter a valid year",
+  previousGuesses: "Your Guesses",
+  higher: "Go higher",
+  lower: "Go lower",
+  correct: "Correct!",
+  years: "years off"
+} as const

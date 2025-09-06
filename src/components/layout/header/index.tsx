@@ -1,12 +1,12 @@
 import { getCurrentSession } from "@/lib/server/auth/session";
 import { getScopedI18n } from "@/locales/server";
-import Navbar from "./navbar";
+import HeaderWrapper from "./header-wrapper";
 
 export default async function Header() {
     const { user } = await getCurrentSession();
     const scopedT = await getScopedI18n("header");
     const headerText = {
-        daily: scopedT("projects"),
+        daily: scopedT("daily"),
         lobby: scopedT("freelancers"),
         login: scopedT("login"),
         account: scopedT("account"),
@@ -16,11 +16,5 @@ export default async function Header() {
         profile: scopedT('profile')
     };
 
-    return (
-        <header className="h-20 w-full">
-            <div className="container h-full mx-auto px-4">
-                <Navbar headerText={headerText} user={user} />
-            </div>
-        </header>
-    );
+    return <HeaderWrapper headerText={headerText} user={user} />;
 }

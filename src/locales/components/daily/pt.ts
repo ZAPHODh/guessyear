@@ -1,0 +1,21 @@
+export default {
+  title: "Desafio de Imagem Diária",
+  guessPrompt: "Em que ano esta foto foi tirada?",
+  submitGuess: "Enviar Palpite",
+  submitting: "Enviando...",
+  yearPlaceholder: "Digite o ano (ex: 1985)",
+  attemptsLeft: "tentativas restantes",
+  congratulations: "Parabéns!",
+  betterLuck: "Mais sorte amanhã!",
+  correctYear: "O ano correto foi:",
+  todaysWins: "Vitórias de Hoje",
+  donate: "Nos Apoie - Doar",
+  loading: "Carregando...",
+  failedToLoad: "Falha ao carregar imagem diária",
+  invalidYear: "Por favor, digite um ano válido",
+  previousGuesses: "Seus Palpites",
+  higher: "Mais alto",
+  lower: "Mais baixo",
+  correct: "Correto!",
+  years: "anos de diferença"
+} as const

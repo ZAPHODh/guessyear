@@ -25,6 +25,7 @@ export default {
   contact: "Contato",
   privacy: "Política de Privacidade",
   terms: "Termos de Serviço",
+  cookieSettings: "Configurações de Cookies",
   
   // Footer bottom
   allRightsReserved: "Todos os direitos reservados",

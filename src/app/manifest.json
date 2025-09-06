@@ -1,6 +1,6 @@
 {
-    "name": "FreeHub",
-    "short_name": "freehub",
+    "name": "GuessIt",
+    "short_name": "guessit",
     "icons": [
         {
             "src": "/android-chrome-192x192.png",

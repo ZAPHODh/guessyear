@@ -1,15 +1,22 @@
 'use client'
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import Icons from "@/components/shared/icons";
 import { siteConfig } from "@/config/site";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
+import { CookieSettingsDialog } from "@/components/cookie-consent";
 
 export default function Footer() {
+  const pathname = usePathname();
   const scopedT = useScopedI18n("footer");
   const locale = useCurrentLocale()
+  
+  if (pathname.includes('/daily')) {
+    return null;
+  }
   const footerLinks = {
     game: [
       { name: scopedT("howToPlay"), href: "/how-to-play" },
@@ -114,6 +121,13 @@ export default function Footer() {
                 </li>
               ))}
             </ul>
+            <div className="mt-4">
+              <CookieSettingsDialog>
+                <Button variant="ghost" size="sm" className="text-sm text-muted-foreground hover:text-foreground">
+                  {scopedT("cookieSettings")}
+                </Button>
+              </CookieSettingsDialog>
+            </div>
           </div>
         </div>
 

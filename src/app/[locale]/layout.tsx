@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 
 import { siteConfig, siteUrl } from "@/config/site";
 import { I18nProviderClient } from "@/locales/client";
+import { getScopedI18n } from "@/locales/server";
 
 import "../globals.css";
 import Header from "@/components/layout/header";
@@ -10,6 +11,9 @@ import { cn } from "@/lib/utils";
 import ThemeProvider from "@/components/shared/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import Footer from "@/components/layout/footer";
+import { CookieConsentBanner } from "@/components/cookie-consent";
+import { GoogleTracking } from "@/components/google-tracking";
+import { getCookieConsent } from "./cookie-consent/actions";
 
 type Props = {
   params: Promise<{ locale: string }>;
@@ -20,8 +24,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const p = await params;
   const locale = p.locale;
   const site = siteConfig(locale);
-
+  const scopedT = await getScopedI18n("metadata");
   const siteOgImage = `${siteUrl}/api/og?locale=${locale}`;
+
+  const keywords = Array.from({ length: 11 }, (_, i) => scopedT(`keywords.${i}` as any));
 
   return {
     title: {
@@ -29,19 +35,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       template: `%s - ${site.name}`,
     },
     description: site.description,
-    keywords: [
-      "Freelancer",
-      "Projects",
-      "Freelance",
-      "FreelanceHub",
-      "Freelance Projects",
-      "Freelance Jobs",
-      "Freelance Work",
-      "Freelance Platform",
-      "Freelance Marketplace",
-      "Freelance Community",
-      "Freelance Opportunities",
-    ],
+    keywords,
     authors: [
       {
         name: "ZAPHODh",
@@ -118,6 +112,8 @@ export default async function RootLayout({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
+  const cookieConsent = await getCookieConsent();
+
   return (
     <html lang={locale} suppressHydrationWarning>
       <body
@@ -135,6 +131,8 @@ export default async function RootLayout({
               {loginDialog}
             </main>
             <Footer />
+            <CookieConsentBanner initialConsent={cookieConsent} />
+            <GoogleTracking cookiePreferences={cookieConsent.preferences} />
           </I18nProviderClient>
           <Toaster />
         </ThemeProvider>

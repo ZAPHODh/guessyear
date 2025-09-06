@@ -1,0 +1,58 @@
+import { type Metadata } from "next"
+import { DailyGame } from "./daily-game"
+import { getI18n, getScopedI18n } from "@/locales/server"
+import { siteUrl } from "@/config/site"
+
+export async function generateMetadata(): Promise<Metadata> {
+  const scopedT = await getScopedI18n("metadata");
+  const generalKeywords = Array.from({ length: 11 }, (_, i) => scopedT(`keywords.${i}` as any));
+  const dailyKeywords = [
+    "Daily Challenge",
+    "Today's Photo",
+    "Daily Photo Game",
+    "Photo of the Day",
+    "Daily Quiz",
+    "Photo Challenge Today"
+  ];
+
+  return {
+    title: scopedT("daily.title"),
+    description: scopedT("daily.description"),
+    keywords: [...generalKeywords, ...dailyKeywords],
+    openGraph: {
+      title: scopedT("daily.title"),
+      description: scopedT("daily.description"),
+      type: "website",
+      url: `${siteUrl}/daily`,
+      images: [
+        {
+          url: `${siteUrl}/api/og?page=daily`,
+          width: 1200,
+          height: 630,
+          alt: scopedT("daily.title"),
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: scopedT("daily.title"),
+      description: scopedT("daily.description"),
+      images: [`${siteUrl}/api/og?page=daily`],
+    },
+  };
+}
+
+export default async function DailyPage() {
+  const t = await getI18n()
+
+  return (
+    <div className="container mx-auto px-4 py-8">
+      <div className="max-w-2xl mx-auto">
+        <h1 className="text-3xl font-bold text-center mb-8">
+          {t("daily.title")}
+        </h1>
+        <DailyGame />
+      </div>
+    </div>
+  )
+}

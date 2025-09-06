@@ -1,5 +1,5 @@
 export default {
-    projects: "Projetos",
+    daily: "Diário",
     freelancers: "Freelancers",
     login: "Entrar",
     account: "Conta",
