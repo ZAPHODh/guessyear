@@ -17,6 +17,8 @@ import Link from "next/link"
 import { User } from "@prisma/client"
 import { getInitials } from "@/lib/utils"
 import { logout } from "@/app/[locale]/actions"
+import { useCurrentLocale } from "@/locales/client"
+import { siteConfig } from "@/config/site"
 
 interface NavbarProps {
     user: User | null
@@ -34,26 +36,19 @@ interface NavbarProps {
 
 export default function Navbar({ user, headerText }: NavbarProps) {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-
-
+    const locale = useCurrentLocale()
 
     return (
         <nav className="flex h-full items-center justify-between">
             <div className="flex items-center gap-4">
                 <Link href="/" className="text-2xl font-bold text-foreground">
-                    FreeHub
+                    {siteConfig(locale).name}
                 </Link>
 
 
                 <div className="hidden md:flex items-center gap-6">
                     <Link href="/daily" className="text-foreground hover:text-primary transition-colors">
                         {headerText.daily}
-                    </Link>
-                    <Link href="/lobby" className="text-muted-foreground hover:text-foreground transition-colors">
-                        {headerText.lobby}
-                    </Link>
-                    <Link href="/about" className="text-muted-foreground hover:text-foreground transition-colors">
-                        {headerText.about}
                     </Link>
                 </div>
             </div>
@@ -143,20 +138,6 @@ export default function Navbar({ user, headerText }: NavbarProps) {
                                 onClick={() => setIsMobileMenuOpen(false)}
                             >
                                 {headerText.daily}
-                            </Link>
-                            <Link
-                                href="/lobby"
-                                className="text-muted-foreground hover:text-foreground transition-colors py-2"
-                                onClick={() => setIsMobileMenuOpen(false)}
-                            >
-                                {headerText.lobby}
-                            </Link>
-                            <Link
-                                href="/about"
-                                className="text-muted-foreground hover:text-foreground transition-colors py-2"
-                                onClick={() => setIsMobileMenuOpen(false)}
-                            >
-                                {headerText.about}
                             </Link>
 
                             <div className="flex flex-col gap-3 mt-4 pt-4 border-t border-border">

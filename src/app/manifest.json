@@ -1,6 +1,6 @@
 {
-    "name": "GuessIt",
-    "short_name": "guessit",
+    "name": "GuessYear",
+    "short_name": "guessyear",
     "icons": [
         {
             "src": "/android-chrome-192x192.png",

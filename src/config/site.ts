@@ -2,7 +2,7 @@ export const siteUrl =
     process.env.NEXT_PUBLIC_APP_URL || "https://localhost:3000";
 
 export const siteConfig = (locale: string = "en") => ({
-    name: "GuessIt",
+    name: "GuessYear",
     url: siteUrl + "/" + locale,
     ogImage: `${siteUrl}/${locale}/opengraph-image`,
     description: "Challenge your visual skills! Guess images from around the world and compete globally.",
