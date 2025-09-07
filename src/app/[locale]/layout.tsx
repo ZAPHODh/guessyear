@@ -105,10 +105,12 @@ const fontSans = Inter({
 export default async function RootLayout({
   children,
   loginDialog,
+  howToPlayDialog,
   params,
 }: {
   children: React.ReactNode;
   loginDialog: React.ReactNode;
+  howToPlayDialog: React.ReactNode;
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
@@ -129,6 +131,7 @@ export default async function RootLayout({
             <main>
               {children}
               {loginDialog}
+              {howToPlayDialog}
             </main>
             <Footer />
             <CookieConsentBanner initialConsent={cookieConsent} />

@@ -1,7 +1,7 @@
 import { type Metadata } from "next"
-import { DailyGame } from "./daily-game"
 import { getI18n, getScopedI18n } from "@/locales/server"
 import { siteUrl } from "@/config/site"
+import { DailyGame } from "@/components/layout/daily-game";
 
 export async function generateMetadata(): Promise<Metadata> {
   const scopedT = await getScopedI18n("metadata");
@@ -48,9 +48,6 @@ export default async function DailyPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-2xl mx-auto">
-        <h1 className="text-3xl font-bold text-center mb-8">
-          {t("daily.title")}
-        </h1>
         <DailyGame />
       </div>
     </div>

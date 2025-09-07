@@ -14,7 +14,8 @@
       "Bash(npx prisma generate:*)",
       "Bash(npx prisma:*)",
       "Bash(rm:*)",
-      "Bash(npm view:*)"
+      "Bash(npm view:*)",
+      "Bash(find:*)"
     ]
   },
   "enableAllProjectMcpServers": true,

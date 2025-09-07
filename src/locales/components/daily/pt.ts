@@ -9,7 +9,7 @@ export default {
   betterLuck: "Mais sorte amanhã!",
   correctYear: "O ano correto foi:",
   todaysWins: "Vitórias de Hoje",
-  donate: "Nos Apoie - Doar",
+  donate: "Nos Apoie, faça sua doação!",
   loading: "Carregando...",
   failedToLoad: "Falha ao carregar imagem diária",
   invalidYear: "Por favor, digite um ano válido",
@@ -17,5 +17,6 @@ export default {
   higher: "Mais alto",
   lower: "Mais baixo",
   correct: "Correto!",
-  years: "anos de diferença"
+  years: "anos de diferença",
+  validRange: "Intervalo válido: {min} - {max}"
 } as const

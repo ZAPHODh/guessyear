@@ -9,6 +9,7 @@ import contact from './components/contact/en';
 import help from './components/help/en';
 import daily from './components/daily/en';
 import cookieConsent from './components/cookie-consent/en';
+import howToPlay from './components/how-to-play/en';
 
 export default {
     header,
@@ -22,6 +23,7 @@ export default {
     help,
     daily,
     cookieConsent,
+    howToPlay,
     metadata: {
         keywords: [
             "Guess the Year",

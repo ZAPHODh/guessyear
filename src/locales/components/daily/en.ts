@@ -9,7 +9,7 @@ export default {
   betterLuck: "Better luck tomorrow!",
   correctYear: "The correct year was:",
   todaysWins: "Today's Wins",
-  donate: "Support Us - Donate",
+  donate: "Support us, make a donation!",
   loading: "Loading...",
   failedToLoad: "Failed to load daily image",
   invalidYear: "Please enter a valid year",
@@ -17,5 +17,6 @@ export default {
   higher: "Go higher",
   lower: "Go lower",
   correct: "Correct!",
-  years: "years off"
+  years: "years off",
+  validRange: "Valid range: {min} - {max}"
 } as const
