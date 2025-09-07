@@ -1,20 +1,22 @@
+'use server';
+
 import { getCurrentSession } from "./auth/session"
 import { redirect } from "next/navigation"
 
 export async function requireAdmin() {
-  const session = await getCurrentSession()
-  
-  if (!session.user || session.user.role !== "ADMIN") {
+  const { user } = await getCurrentSession()
+
+  if (!user || user.role !== "ADMIN") {
     redirect("/")
   }
-  
-  return session.user
+
+  return user
 }
 
 export async function isAdmin(): Promise<boolean> {
   try {
-    const session = await getCurrentSession()
-    return session.user?.role === "ADMIN"
+    const { user } = await getCurrentSession()
+    return user?.role === "ADMIN"
   } catch {
     return false
   }

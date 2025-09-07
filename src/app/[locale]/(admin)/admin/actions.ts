@@ -2,7 +2,7 @@
 
 import { z } from "zod"
 import { actionClient } from "@/lib/client/safe-action"
-import { requireAdmin } from "@/lib/server/admin"
+import { requireAdmin } from "@/lib/server/dto"
 import { prisma } from "@/lib/server/db"
 import { revalidatePath } from "next/cache"
 
@@ -112,7 +112,7 @@ export const deleteImage = actionClient
 
 export async function getAllImages() {
   await requireAdmin()
-  
+
   return prisma.dailyImage.findMany({
     orderBy: { date: 'desc' },
     include: {
@@ -127,7 +127,7 @@ export async function getAllImages() {
 
 export async function getImageById(id: string) {
   await requireAdmin()
-  
+
   return prisma.dailyImage.findUnique({
     where: { id },
     include: {
@@ -142,9 +142,9 @@ export async function getImageById(id: string) {
 
 export async function getRandomUnscheduledImage() {
   await requireAdmin()
-  
+
   const futureDate = new Date('2099-01-01')
-  
+
   const unscheduledImages = await prisma.dailyImage.findMany({
     where: {
       date: {
@@ -192,26 +192,26 @@ export const bulkScheduleRandom = actionClient
     for (let i = 0; i < parsedInput.days; i++) {
       const currentDate = new Date(startDate)
       currentDate.setDate(startDate.getDate() + i)
-      
+
       const randomImage = unscheduledImages[Math.floor(Math.random() * unscheduledImages.length)]
-      
+
       updates.push(
         prisma.dailyImage.update({
           where: { id: randomImage.id },
           data: { date: currentDate }
         })
       )
-      
+
       const index = unscheduledImages.indexOf(randomImage)
       unscheduledImages.splice(index, 1)
-      
+
       if (unscheduledImages.length === 0) {
         break
       }
     }
 
     await prisma.$transaction(updates)
-    
+
     revalidatePath("/admin/images")
     return { success: true, scheduled: updates.length }
   })

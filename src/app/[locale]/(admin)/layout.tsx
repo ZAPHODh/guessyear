@@ -2,6 +2,7 @@ import { getCurrentSession } from "@/lib/server/auth/session"
 import { redirect } from "next/navigation"
 import { getAllImages } from "./admin/actions"
 import { ImagesProvider } from "@/components/images-context"
+import { requireAdmin } from "@/lib/server/dto"
 
 export default async function AdminLayout({
   children,
@@ -10,11 +11,7 @@ export default async function AdminLayout({
   children: React.ReactNode
   imageModal: React.ReactNode
 }) {
-  const session = await getCurrentSession()
-
-  if (!session.user || session.user.role !== "ADMIN") {
-    redirect("/")
-  }
+  await requireAdmin()
 
   const images = await getAllImages()
 
