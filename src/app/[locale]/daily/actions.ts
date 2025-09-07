@@ -174,7 +174,6 @@ export const submitGuess = actionClient
       const session = await getCurrentSession()
       user = session.user
     } catch {
-      // User not logged in, that's fine
     }
 
     if (gameCompleted && user) {

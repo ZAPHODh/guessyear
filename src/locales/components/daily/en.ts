@@ -4,7 +4,7 @@ export default {
   guessPrompt: "What year was this photo taken?",
   submitGuess: "Submit Guess",
   submitting: "Submitting...",
-  yearPlaceholder: "Enter year (e.g., 1985)",
+  yearPlaceholder: "Enter year (e.g., 1975)",
   attemptsLeft: "attempts left",
   congratulations: "Congratulations!",
   betterLuck: "Better luck tomorrow!",

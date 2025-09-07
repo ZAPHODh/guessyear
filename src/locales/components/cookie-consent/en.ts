@@ -21,7 +21,6 @@ export default {
     success: "Cookie preferences saved successfully"
   },
 
-  // Cookie categories
   essential: {
     title: "Essential Cookies",
     description: "These cookies are necessary for the website to function and cannot be switched off. They are usually only set in response to actions made by you which amount to a request for services.",
@@ -43,20 +42,17 @@ export default {
     description: "These cookies may be set through our site by our advertising partners. They may be used by those companies to build a profile of your interests and show you relevant adverts on other sites."
   },
 
-  // Compliance information
   compliance: {
     gdpr: "🇪🇺 GDPR compliant - You have the right to control your data",
     ccpa: "🇺🇸 CCPA compliant - California residents can opt-out of data sales",
     lgpd: "🇧🇷 LGPD compliant - Your data is protected under Brazilian law"
   },
 
-  // Settings dialog
   settings: {
     title: "Cookie Preferences",
     description: "Manage your cookie preferences. You can enable or disable different types of cookies below. Note that disabling some types of cookies may impact your experience of the site and the services we are able to offer."
   },
 
-  // Legal information
   legal: {
     dataController: "Data Controller",
     retention: "We retain cookie consent for 12 months",

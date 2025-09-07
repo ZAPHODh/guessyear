@@ -101,7 +101,6 @@ export const GET = async (request: Request) => {
     } catch (e) {
         console.log(JSON.stringify(e));
         if (e instanceof OAuth2RequestError) {
-            // invalid code
             return new Response(e.description, {
                 status: 400,
             });

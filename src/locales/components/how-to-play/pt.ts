@@ -1,13 +1,13 @@
 export default {
   title: "Como Jogar",
-  subtitle: "Aprenda a dominar o jogo diário de adivinhar imagens!",
+  subtitle: "Aprenda a dominar o jogo diário de adivinhar o ano que a fotografia foi tirada!",
   objective: {
     title: "Objetivo",
     description: "Adivinhe o ano em que uma fotografia histórica foi tirada. Você tem 5 tentativas para acertar!"
   },
   howItWorks: {
     title: "Como Funciona",
-    step1: "Observe a fotografia histórica cuidadosamente em busca de pistas sobre a época.",
+    step1: "Observe a fotografia cuidadosamente em busca de pistas sobre a época.",
     step2: "Digite seu palpite para o ano em que a foto foi tirada.",
     step3: "Receba feedback: 'Mais alto' se o ano real for posterior, 'Mais baixo' se for anterior.",
     step4: "Use o feedback para refinar seu próximo palpite. O intervalo válido se ajustará automaticamente!"
@@ -23,7 +23,7 @@ export default {
     }
   },
   tips: {
-    title: "Dicas Pro",
+    title: "Dicas",
     tip1: "Observe estilos de roupas, arquitetura, carros e tecnologia na foto",
     tip2: "Comece com um palpite médio para rapidamente estreitar as possibilidades",
     tip3: "Preste atenção na qualidade da foto - fotos mais antigas tendem a ser preto e branco ou sépia"

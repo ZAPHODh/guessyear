@@ -16,7 +16,6 @@ export default {
     messagePlaceholder: "Por favor, descreva sua pergunta ou problema em detalhes...",
     send: "Enviar Mensagem",
     
-    // Validation messages
     nameRequired: "Nome é obrigatório",
     nameTooLong: "Nome deve ter menos de 100 caracteres",
     emailRequired: "Email é obrigatório",
@@ -27,7 +26,6 @@ export default {
     messageMinLength: "Mensagem deve ter pelo menos 10 caracteres",
     messageTooLong: "Mensagem deve ter menos de 2000 caracteres",
     
-    // Success/Error messages
     successTitle: "Mensagem enviada com sucesso!",
     successDescription: "Retornaremos o mais rápido possível.",
     errorTitle: "Falha ao enviar mensagem",

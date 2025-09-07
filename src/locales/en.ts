@@ -10,6 +10,7 @@ import help from './components/help/en';
 import daily from './components/daily/en';
 import cookieConsent from './components/cookie-consent/en';
 import howToPlay from './components/how-to-play/en';
+import admin from './components/admin/en';
 
 export default {
     header,
@@ -24,6 +25,7 @@ export default {
     daily,
     cookieConsent,
     howToPlay,
+    admin,
     metadata: {
         keywords: [
             "Guess the Year",

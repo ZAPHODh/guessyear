@@ -1,4 +1,3 @@
-// app/api/auth/google/callback/route.ts
 import { cookies } from "next/headers";
 import { google } from "@/lib/server/auth/google";
 import { OAuth2RequestError, ArcticFetchError, decodeIdToken } from "arctic";

@@ -33,7 +33,6 @@ export function BillingForm({
 
         setIsLoading(true);
 
-        // Get a Stripe session URL.
         const response = await fetch("/api/stripe");
 
         if (!response?.ok) {
@@ -44,9 +43,6 @@ export function BillingForm({
             );
         }
 
-        // Redirect to the Stripe session.
-        // This could be a checkout page for initial upgrade.
-        // Or portal to manage existing subscription.
         const data = await response.json();
         if (data.url) {
             window.location.href = data.url;

@@ -4,7 +4,7 @@ export default {
   guessPrompt: "Em que ano esta foto foi tirada?",
   submitGuess: "Enviar Palpite",
   submitting: "Enviando...",
-  yearPlaceholder: "Digite o ano (ex: 1985)",
+  yearPlaceholder: "Digite o ano (ex: 1975)",
   attemptsLeft: "tentativas restantes",
   congratulations: "Parabéns!",
   betterLuck: "Mais sorte amanhã!",

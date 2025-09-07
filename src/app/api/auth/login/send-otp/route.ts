@@ -13,11 +13,11 @@ export const POST = async (req: Request) => {
             create: {
                 email: body.email,
                 emailVerified: false,
+                role: "USER"
             },
         });
 
         const otp = await generateEmailVerificationCode(user.id, body.email);
-        console.log(user.name)
         await sendOTP({
             toMail: body.email,
             code: otp,

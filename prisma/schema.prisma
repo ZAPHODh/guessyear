@@ -33,6 +33,7 @@ model User {
   picture                String?
   githubId               Int?                    @unique
   googleId String? @unique
+  role                   Role                    @default(USER)
   sessions               Session[]
   emailVerificationCodes EmailVerificationCode[]
   dailyGameProgress      DailyGameProgress[]
@@ -45,6 +46,11 @@ model User {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+enum Role {
+  USER
+  ADMIN
 }
 
 model DailyImage {

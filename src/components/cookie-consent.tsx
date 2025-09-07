@@ -174,7 +174,6 @@ export function CookieConsentBanner({ className, initialConsent }: CookieConsent
             ) : (
               <div className="space-y-4">
                 <div className="grid gap-4 md:grid-cols-2">
-                  {/* Essential Cookies */}
                   <div className="flex items-start justify-between p-3 rounded-lg border bg-muted/30">
                     <div className="flex items-start gap-3">
                       <Shield className="h-5 w-5 mt-0.5 text-green-600" />
@@ -193,7 +192,6 @@ export function CookieConsentBanner({ className, initialConsent }: CookieConsent
                     <Switch checked={true} disabled />
                   </div>
 
-                  {/* Performance Cookies */}
                   <div className="flex items-start justify-between p-3 rounded-lg border">
                     <div className="flex items-start gap-3">
                       <Eye className="h-5 w-5 mt-0.5 text-blue-600" />
@@ -210,7 +208,6 @@ export function CookieConsentBanner({ className, initialConsent }: CookieConsent
                     />
                   </div>
 
-                  {/* Functional Cookies */}
                   <div className="flex items-start justify-between p-3 rounded-lg border">
                     <div className="flex items-start gap-3">
                       <Settings className="h-5 w-5 mt-0.5 text-purple-600" />
@@ -227,7 +224,6 @@ export function CookieConsentBanner({ className, initialConsent }: CookieConsent
                     />
                   </div>
 
-                  {/* Marketing Cookies */}
                   <div className="flex items-start justify-between p-3 rounded-lg border">
                     <div className="flex items-start gap-3">
                       <Target className="h-5 w-5 mt-0.5 text-orange-600" />
@@ -351,7 +347,6 @@ export function CookieSettingsDialog({ children }: CookieSettingsDialogProps) {
 
         <div className="space-y-4">
           <div className="grid gap-4">
-            {/* Essential Cookies */}
             <div className="flex items-start justify-between p-3 rounded-lg border bg-muted/30">
               <div className="flex items-start gap-3">
                 <Shield className="h-5 w-5 mt-0.5 text-green-600" />
@@ -370,7 +365,6 @@ export function CookieSettingsDialog({ children }: CookieSettingsDialogProps) {
               <Switch checked={true} disabled />
             </div>
 
-            {/* Performance Cookies */}
             <div className="flex items-start justify-between p-3 rounded-lg border">
               <div className="flex items-start gap-3">
                 <Eye className="h-5 w-5 mt-0.5 text-blue-600" />
@@ -387,7 +381,6 @@ export function CookieSettingsDialog({ children }: CookieSettingsDialogProps) {
               />
             </div>
 
-            {/* Functional Cookies */}
             <div className="flex items-start justify-between p-3 rounded-lg border">
               <div className="flex items-start gap-3">
                 <Settings className="h-5 w-5 mt-0.5 text-purple-600" />
@@ -404,7 +397,6 @@ export function CookieSettingsDialog({ children }: CookieSettingsDialogProps) {
               />
             </div>
 
-            {/* Marketing Cookies */}
             <div className="flex items-start justify-between p-3 rounded-lg border">
               <div className="flex items-start gap-3">
                 <Target className="h-5 w-5 mt-0.5 text-orange-600" />

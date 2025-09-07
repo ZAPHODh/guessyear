@@ -6,7 +6,6 @@ export default {
   learnMore: "Saiba mais",
   privacyPolicy: "Política de Privacidade",
 
-  // Action buttons
   acceptAll: "Aceitar Todos",
   rejectAll: "Rejeitar Todos",
   customize: "Personalizar",
@@ -14,13 +13,11 @@ export default {
   cancel: "Cancelar",
   back: "Voltar",
 
-  // Toast messages
   toast: {
     failed: "Falha ao salvar preferências de cookies",
     success: "Preferências de cookies salvas com sucesso"
   },
 
-  // Cookie categories
   essential: {
     title: "Cookies Essenciais",
     description: "Estes cookies são necessários para o funcionamento do site e não podem ser desativados. Geralmente são definidos apenas em resposta a ações suas que correspondem a uma solicitação de serviços.",
@@ -42,20 +39,17 @@ export default {
     description: "Estes cookies podem ser definidos através do nosso site pelos nossos parceiros publicitários. Podem ser usados por essas empresas para criar um perfil dos seus interesses e mostrar anúncios relevantes em outros sites."
   },
 
-  // Compliance information
   compliance: {
     gdpr: "🇪🇺 Conforme GDPR - Você tem o direito de controlar seus dados",
     ccpa: "🇺🇸 Conforme CCPA - Residentes da Califórnia podem optar por não vender dados",
     lgpd: "🇧🇷 Conforme LGPD - Seus dados são protegidos pela lei brasileira"
   },
 
-  // Settings dialog
   settings: {
     title: "Preferências de Cookies",
     description: "Gerencie suas preferências de cookies. Você pode ativar ou desativar diferentes tipos de cookies abaixo. Note que desativar alguns tipos de cookies pode impactar sua experiência no site e os serviços que podemos oferecer."
   },
 
-  // Legal information
   legal: {
     dataController: "Controlador de Dados",
     retention: "Mantemos o consentimento de cookies por 12 meses",

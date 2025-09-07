@@ -16,7 +16,6 @@ export default {
     messagePlaceholder: "Please describe your issue or question in detail...",
     send: "Send Message",
     
-    // Validation messages
     nameRequired: "Name is required",
     nameTooLong: "Name must be less than 100 characters",
     emailRequired: "Email is required",
@@ -27,7 +26,6 @@ export default {
     messageMinLength: "Message must be at least 10 characters",
     messageTooLong: "Message must be less than 2000 characters",
     
-    // Success/Error messages
     successTitle: "Message sent successfully!",
     successDescription: "We'll get back to you as soon as possible.",
     errorTitle: "Failed to send message",

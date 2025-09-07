@@ -10,6 +10,7 @@ import help from './components/help/pt';
 import daily from './components/daily/pt';
 import cookieConsent from './components/cookie-consent/pt';
 import howToPlay from './components/how-to-play/pt';
+import admin from './components/admin/pt';
 
 export default {
     header,
@@ -24,6 +25,7 @@ export default {
     daily,
     cookieConsent,
     howToPlay,
+    admin,
     metadata: {
         keywords: [
             "Adivinhe o Ano",

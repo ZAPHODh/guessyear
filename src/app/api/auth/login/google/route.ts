@@ -1,4 +1,3 @@
-// app/api/auth/google/route.ts
 import { cookies } from "next/headers";
 import { google } from "@/lib/server/auth/google";
 import { generateState, generateCodeVerifier } from "arctic";
