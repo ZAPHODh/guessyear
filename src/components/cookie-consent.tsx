@@ -54,10 +54,10 @@ export function CookieConsentBanner({ className, initialConsent }: CookieConsent
         const result = await acceptAllCookies();
         if (result?.data?.success) {
           setIsVisible(false);
-          toast.success(result.data.message);
+          toast.success(t('toast.success'));
         }
       } catch (error) {
-        toast.error('Failed to save cookie preferences');
+        toast.error(t('toast.failed'));
         console.error('Error accepting all cookies:', error);
       }
     });
@@ -72,7 +72,7 @@ export function CookieConsentBanner({ className, initialConsent }: CookieConsent
           toast.success(result.data.message);
         }
       } catch (error) {
-        toast.error('Failed to save cookie preferences');
+        toast.error(t('toast.failed'));
         console.error('Error saving cookie preferences:', error);
       }
     });
@@ -87,7 +87,7 @@ export function CookieConsentBanner({ className, initialConsent }: CookieConsent
           toast.success(result.data.message);
         }
       } catch (error) {
-        toast.error('Failed to save cookie preferences');
+        toast.error(t('toast.failed'));
         console.error('Error rejecting cookies:', error);
       }
     });
@@ -322,7 +322,7 @@ export function CookieSettingsDialog({ children }: CookieSettingsDialogProps) {
           toast.success(result.data.message);
         }
       } catch (error) {
-        toast.error('Failed to save cookie preferences');
+        toast.error(t('toast.failed'));
         console.error('Error saving cookie preferences:', error);
       }
     });
