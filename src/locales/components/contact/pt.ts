@@ -14,7 +14,27 @@ export default {
     subjectPlaceholder: "Sobre o que se trata?",
     message: "Mensagem",
     messagePlaceholder: "Por favor, descreva sua pergunta ou problema em detalhes...",
-    send: "Enviar Mensagem"
+    send: "Enviar Mensagem",
+    
+    // Validation messages
+    nameRequired: "Nome é obrigatório",
+    nameTooLong: "Nome deve ter menos de 100 caracteres",
+    emailRequired: "Email é obrigatório",
+    emailInvalid: "Por favor, insira um endereço de email válido",
+    subjectRequired: "Assunto é obrigatório",
+    subjectTooLong: "Assunto deve ter menos de 200 caracteres",
+    messageRequired: "Mensagem é obrigatória",
+    messageMinLength: "Mensagem deve ter pelo menos 10 caracteres",
+    messageTooLong: "Mensagem deve ter menos de 2000 caracteres",
+    
+    // Success/Error messages
+    successTitle: "Mensagem enviada com sucesso!",
+    successDescription: "Retornaremos o mais rápido possível.",
+    errorTitle: "Falha ao enviar mensagem",
+    validationErrorTitle: "Erro de Validação",
+    validationErrorDescription: "Por favor, verifique os dados do formulário",
+    genericError: "Algo deu errado",
+    sendFailure: "Falha ao enviar mensagem"
   },
   
   info: {

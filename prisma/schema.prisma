@@ -36,6 +36,7 @@ model User {
   sessions               Session[]
   emailVerificationCodes EmailVerificationCode[]
   dailyGameProgress      DailyGameProgress[]
+  supportMessages        SupportMessage[]
 
   stripeCustomerId       String?   @unique @map(name: "stripe_customer_id")
   stripeSubscriptionId   String?   @unique @map(name: "stripe_subscription_id")
@@ -74,5 +75,19 @@ model DailyGameProgress {
 
   @@unique([userId, imageId])
   @@unique([userId, date])
+}
+
+model SupportMessage {
+  id        String   @id @default(cuid())
+  userId    String?
+  user      User?    @relation(references: [id], fields: [userId], onDelete: SetNull)
+  name      String
+  email     String
+  subject   String
+  message   String   @db.Text
+  status    String   @default("open") // open, in_progress, resolved
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 

@@ -76,13 +76,13 @@ async function applyCookiePreferences(preferences: CookiePreferences) {
       "__utma", "__utmb", "__utmc", "__utmt", "__utmz",
       "_gcl_au", "_dc_gtm_UA"
     ];
-    
+
     const allCookies = cookieStore.getAll();
     for (const cookie of allCookies) {
       const name = cookie.name;
       if (
-        name.startsWith('_ga') || 
-        name.startsWith('_gid') || 
+        name.startsWith('_ga') ||
+        name.startsWith('_gid') ||
         name.startsWith('_gat') ||
         name.startsWith('_gtag') ||
         name.startsWith('__utm') ||
@@ -94,7 +94,7 @@ async function applyCookiePreferences(preferences: CookiePreferences) {
         });
       }
     }
-    
+
     for (const name of performanceCookies) {
       cookieStore.set(name, "", {
         expires: new Date(0),
@@ -120,13 +120,13 @@ async function applyCookiePreferences(preferences: CookiePreferences) {
       "IDE", "ANID", "DSID", "FLC", "AID", "TAID",
       "_rdt_uuid", "_pinterest_ct_ua"
     ];
-    
+
     const allCookies = cookieStore.getAll();
     for (const cookie of allCookies) {
       const name = cookie.name;
       if (
-        name.startsWith('fb_') || 
-        name.startsWith('_fbp') || 
+        name.startsWith('fb_') ||
+        name.startsWith('_fbp') ||
         name.startsWith('fr') ||
         name.startsWith('tr') ||
         name.startsWith('ads_') ||
@@ -141,7 +141,7 @@ async function applyCookiePreferences(preferences: CookiePreferences) {
         });
       }
     }
-    
+
     for (const name of marketingCookies) {
       cookieStore.set(name, "", {
         expires: new Date(0),

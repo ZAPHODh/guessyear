@@ -13,7 +13,7 @@ import { Toaster } from "@/components/ui/sonner";
 import Footer from "@/components/layout/footer";
 import { CookieConsentBanner } from "@/components/cookie-consent";
 import { GoogleTracking } from "@/components/google-tracking";
-import { getCookieConsent } from "./cookie-consent/actions";
+import { getCookieConsent } from "./(cookie-consent)/actions";
 
 type Props = {
   params: Promise<{ locale: string }>;

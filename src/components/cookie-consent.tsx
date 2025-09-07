@@ -20,7 +20,7 @@ import {
   acceptAllCookies,
   rejectAllCookies,
   getCookieConsent,
-} from '@/app/[locale]/cookie-consent/actions';
+} from '@/app/[locale]/(cookie-consent)/actions';
 import {
   type CookiePreferences,
   defaultPreferences,

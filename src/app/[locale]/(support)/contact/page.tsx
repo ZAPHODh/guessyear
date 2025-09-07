@@ -1,23 +1,24 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { getCurrentLocale, getScopedI18n } from "@/locales/server";
 import { siteConfig } from "@/config/site";
+import { getCurrentSession } from "@/lib/server/auth/session";
+import SupportContactForm from "@/components/support/support-contact-form";
 import Link from "next/link";
 
 export default async function ContactPage() {
   const scopedT = await getScopedI18n("contact");
   const locale = await getCurrentLocale();
   const config = siteConfig(locale);
+  const { user } = await getCurrentSession();
 
   return (
     <div className="container mx-auto px-4 py-12 max-w-6xl">
       <div className="text-center mb-12">
         <Badge variant="secondary" className="mb-4">
-          💬 {scopedT("support")}
+          {scopedT("support")}
         </Badge>
         <h1 className="text-4xl font-bold mb-4">{scopedT("title")}</h1>
         <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
@@ -30,49 +31,17 @@ export default async function ContactPage() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                📧 {scopedT("form.title")}
+                {scopedT("form.title")}
               </CardTitle>
               <CardDescription>
                 {scopedT("form.description")}
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <form className="space-y-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <label htmlFor="name" className="text-sm font-medium">
-                      {scopedT("form.name")} *
-                    </label>
-                    <Input id="name" placeholder={scopedT("form.namePlaceholder")} required />
-                  </div>
-                  <div className="space-y-2">
-                    <label htmlFor="email" className="text-sm font-medium">
-                      {scopedT("form.email")} *
-                    </label>
-                    <Input id="email" type="email" placeholder={scopedT("form.emailPlaceholder")} required />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <label htmlFor="subject" className="text-sm font-medium">
-                    {scopedT("form.subject")} *
-                  </label>
-                  <Input id="subject" placeholder={scopedT("form.subjectPlaceholder")} required />
-                </div>
-                <div className="space-y-2">
-                  <label htmlFor="message" className="text-sm font-medium">
-                    {scopedT("form.message")} *
-                  </label>
-                  <Textarea 
-                    id="message" 
-                    placeholder={scopedT("form.messagePlaceholder")} 
-                    rows={5}
-                    required 
-                  />
-                </div>
-                <Button type="submit" className="w-full">
-                  {scopedT("form.send")} 📤
-                </Button>
-              </form>
+              <SupportContactForm
+                defaultName={user?.name || ""}
+                defaultEmail={user?.email || ""}
+              />
             </CardContent>
           </Card>
         </div>

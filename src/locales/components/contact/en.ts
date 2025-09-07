@@ -11,10 +11,30 @@ export default {
     email: "Email",
     emailPlaceholder: "your@email.com",
     subject: "Subject",
-    subjectPlaceholder: "What is this about?",
+    subjectPlaceholder: "What's this about?",
     message: "Message",
-    messagePlaceholder: "Please describe your question or issue in detail...",
-    send: "Send Message"
+    messagePlaceholder: "Please describe your issue or question in detail...",
+    send: "Send Message",
+    
+    // Validation messages
+    nameRequired: "Name is required",
+    nameTooLong: "Name must be less than 100 characters",
+    emailRequired: "Email is required",
+    emailInvalid: "Please enter a valid email address",
+    subjectRequired: "Subject is required",
+    subjectTooLong: "Subject must be less than 200 characters",
+    messageRequired: "Message is required",
+    messageMinLength: "Message must be at least 10 characters",
+    messageTooLong: "Message must be less than 2000 characters",
+    
+    // Success/Error messages
+    successTitle: "Message sent successfully!",
+    successDescription: "We'll get back to you as soon as possible.",
+    errorTitle: "Failed to send message",
+    validationErrorTitle: "Validation Error",
+    validationErrorDescription: "Please check your form data",
+    genericError: "Something went wrong",
+    sendFailure: "Failed to send message"
   },
   
   info: {
