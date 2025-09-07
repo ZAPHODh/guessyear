@@ -114,12 +114,12 @@ export default async function HelpPage() {
               <AccordionContent>
                 <p>{scopedT("faq.categories.answer")}</p>
                 <div className="flex flex-wrap gap-2 mt-3">
-                  <Badge variant="secondary">🌍 {scopedT("faq.categories.geography")}</Badge>
-                  <Badge variant="secondary">🍕 {scopedT("faq.categories.food")}</Badge>
-                  <Badge variant="secondary">🏛️ {scopedT("faq.categories.landmarks")}</Badge>
-                  <Badge variant="secondary">🐾 {scopedT("faq.categories.animals")}</Badge>
-                  <Badge variant="secondary">🚗 {scopedT("faq.categories.objects")}</Badge>
-                  <Badge variant="secondary">⭐ {scopedT("faq.categories.celebrities")}</Badge>
+                  <Badge variant="secondary">{scopedT("faq.categories.geography")}</Badge>
+                  <Badge variant="secondary">{scopedT("faq.categories.food")}</Badge>
+                  <Badge variant="secondary">{scopedT("faq.categories.landmarks")}</Badge>
+                  <Badge variant="secondary">{scopedT("faq.categories.animals")}</Badge>
+                  <Badge variant="secondary">{scopedT("faq.categories.objects")}</Badge>
+                  <Badge variant="secondary">{scopedT("faq.categories.celebrities")}</Badge>
                 </div>
               </AccordionContent>
             </AccordionItem>
@@ -186,7 +186,7 @@ export default async function HelpPage() {
       <Alert>
         <AlertDescription className="flex items-center justify-between">
           <span>
-            💡 {scopedT("stillNeedHelp")}
+            {scopedT("stillNeedHelp")}
           </span>
           <Button variant="outline" size="sm" asChild>
             <Link href="/contact">

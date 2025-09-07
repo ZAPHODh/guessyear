@@ -10,10 +10,11 @@ import { Badge } from "@/components/ui/badge"
 import { Info } from "lucide-react"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { submitGuess, getTodayImage } from "../../app/[locale]/daily/actions"
-import { useI18n } from "@/locales/client"
+import { useScopedI18n } from "@/locales/client"
 import Image from "next/image"
 import Link from "next/link"
 import DailyLoading from "@/app/[locale]/daily/loading"
+import { useSmartRange } from "@/hooks/use-smart-range"
 
 interface GuessHint {
   year: number
@@ -40,40 +41,28 @@ type GuessForm = {
 export function DailyGame() {
   const [gameState, setGameState] = useState<GameState | null>(null)
   const [loading, setLoading] = useState(true)
-  const t = useI18n()
+  const t = useScopedI18n("daily")
 
-  const { minYear, maxYear } = useMemo(() => {
-    const currentYear = new Date().getFullYear()
-    let minYear = 1800
-    let maxYear = currentYear
-
-    if (gameState?.guesses && gameState.guesses.length > 0) {
-      gameState.guesses.forEach(guess => {
-        if (guess.direction === "higher") {
-          minYear = Math.max(minYear, guess.year + 1)
-        } else if (guess.direction === "lower") {
-          maxYear = Math.min(maxYear, guess.year - 1)
-        }
-      })
-    }
-
-    return { minYear, maxYear }
-  }, [gameState?.guesses])
+  const { minYear, maxYear, confidence } = useSmartRange({
+    correctYear: gameState?.correctYear,
+    guesses: gameState?.guesses || [],
+    attempts: gameState?.attempts || 0
+  })
 
 
   const schema = useMemo(() => {
     return z.object({
       year: z
         .string()
-        .nonempty(t("daily.invalidYear"))
+        .nonempty(t("invalidYear"))
         .refine((val) => !isNaN(Number(val)), {
-          message: t("daily.invalidYear"),
+          message: t("invalidYear"),
         })
         .refine((val) => {
           const num = Number(val)
           return num >= minYear && num <= maxYear
         }, {
-          message: t("daily.validRange", { min: minYear, max: maxYear }),
+          message: t("validRange", { min: minYear, max: maxYear }),
         })
     })
   }, [minYear, maxYear, t])
@@ -129,7 +118,7 @@ export function DailyGame() {
   }
 
   if (!gameState) {
-    return <div className="text-center">{t("daily.failedToLoad")}</div>
+    return <div className="text-center">{t("failedToLoad")}</div>
   }
 
   const remainingAttempts = 5 - gameState.attempts
@@ -144,11 +133,11 @@ export function DailyGame() {
             className="text-muted-foreground hover:text-foreground"
           >
             <Info className="h-4 w-4 mr-1" />
-            How to play
+            {t("howToPlay")}
           </Button>
         </Link>
         {!gameState.completed && <Badge variant={gameState.completed ? "destructive" : "secondary"}>
-          {remainingAttempts} {t("daily.attemptsLeft")}
+          {remainingAttempts} {t("attemptsLeft")}
         </Badge>}
       </div>
 
@@ -170,7 +159,7 @@ export function DailyGame() {
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <div className="space-y-4">
                 <FormLabel className="block text-lg font-medium text-center">
-                  {t("daily.guessPrompt")}
+                  {t("guessPrompt")}
                 </FormLabel>
                 <div className="space-y-4">
                   <FormField
@@ -184,14 +173,27 @@ export function DailyGame() {
                             min={minYear}
                             max={maxYear}
                             {...field}
-                            placeholder={t("daily.yearPlaceholder")}
+                            placeholder={t("yearPlaceholder")}
                             className="text-center text-xl py-3"
                             disabled={form.formState.isSubmitting}
                           />
                         </FormControl>
                         <FormMessage />
-                        <div className="text-center text-sm text-muted-foreground mt-2">
-                          {t("daily.validRange", { min: minYear, max: maxYear })}
+                        <div className="text-center text-sm text-muted-foreground mt-2 space-y-1">
+                          <div>{t("validRange", { min: minYear, max: maxYear })}</div>
+                          {confidence > 0 && (
+                            <div className="text-xs flex items-center justify-center gap-2">
+                              <div className="flex items-center gap-1">
+                                <div className="w-16 h-1 bg-muted rounded-full overflow-hidden">
+                                  <div
+                                    className="h-full bg-primary transition-all duration-500"
+                                    style={{ width: `${confidence}%` }}
+                                  />
+                                </div>
+                                <span>{confidence}% {t("rangeNarrowed")}</span>
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </FormItem>
                     )}
@@ -203,7 +205,7 @@ export function DailyGame() {
                 className="w-full py-3 text-lg font-semibold"
                 disabled={form.formState.isSubmitting || !form.watch("year")?.trim()}
               >
-                {form.formState.isSubmitting ? t("daily.submitting") : t("daily.submitGuess")}
+                {form.formState.isSubmitting ? t("submitting") : t("submitGuess")}
               </Button>
             </form>
 
@@ -221,14 +223,14 @@ export function DailyGame() {
                       {hint.direction !== "correct" && (
                         <span className="text-sm flex items-center gap-1">
                           <span className="text-lg">{hint.direction === "higher" ? "↑" : "↓"}</span>
-                          {t(`daily.${hint.direction}`)}
+                          {t(`${hint.direction}`)}
                         </span>
                       )}
                     </div>
                     <div className="text-sm">
                       {hint.direction === "correct" && (
                         <span className="font-medium">
-                          ✓ {t("daily.correct")}
+                          ✓ {t("correct")}
                         </span>
                       )}
                     </div>
@@ -241,10 +243,10 @@ export function DailyGame() {
           <div className="text-center space-y-8">
             <div className="space-y-4">
               <div className="text-3xl font-bold">
-                {gameState.won ? t("daily.congratulations") : t("daily.betterLuck")}
+                {gameState.won ? t("congratulations") : t("betterLuck")}
               </div>
               <div className="text-xl">
-                {t("daily.correctYear")}
+                {t("correctYear")}
                 <span className="font-bold text-3xl ml-2">
                   {gameState.correctYear}
                 </span>
@@ -255,7 +257,7 @@ export function DailyGame() {
               <div className="py-6 px-6 border rounded-xl">
                 <div className="text-center space-y-2">
                   <p className="text-sm uppercase tracking-wide">
-                    {t("daily.todaysWins")}
+                    {t("todaysWins")}
                   </p>
                   <p className="text-5xl font-bold">
                     {gameState.dailyStats.todayWins}
@@ -277,14 +279,14 @@ export function DailyGame() {
                       {hint.direction !== "correct" && (
                         <span className="text-sm flex items-center gap-1">
                           <span className="text-lg">{hint.direction === "higher" ? "↑" : "↓"}</span>
-                          {t(`daily.${hint.direction}`)}
+                          {t(`${hint.direction}`)}
                         </span>
                       )}
                     </div>
                     <div className="text-sm">
                       {hint.direction === "correct" && (
                         <span className="font-medium">
-                          ✓ {t("daily.correct")}
+                          ✓ {t("correct")}
                         </span>
                       )}
                     </div>
@@ -296,7 +298,7 @@ export function DailyGame() {
               onClick={() => window.open("/donate", "_blank")}
               variant="outline"
             >
-              {t("daily.donate")}
+              {t("donate")}
             </Button>
           </div>
         )}

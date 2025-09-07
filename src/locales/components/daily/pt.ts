@@ -1,5 +1,6 @@
 export default {
   title: "Desafio de Imagem Diária",
+  howToPlay: "Como jogar",
   guessPrompt: "Em que ano esta foto foi tirada?",
   submitGuess: "Enviar Palpite",
   submitting: "Enviando...",
@@ -18,5 +19,6 @@ export default {
   lower: "Mais baixo",
   correct: "Correto!",
   years: "anos de diferença",
-  validRange: "Intervalo válido: {min} - {max}"
+  validRange: "Intervalo válido: {min} - {max}",
+  rangeNarrowed: "estreitado"
 } as const

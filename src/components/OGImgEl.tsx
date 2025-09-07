@@ -35,7 +35,7 @@ export const RenderIMGEl = ({
 
             <div style={{ textAlign: 'center' }}>
                 <div style={{ fontSize: '48px', marginBottom: '20px' }}>
-                    {isDailyPage ? '📸' : '🎯'}
+                    {isDailyPage ? 'Daily' : 'Game'}
                 </div>
                 <div style={{ fontSize: '36px', marginBottom: '16px' }}>
                     {isDailyPage ? 'Daily Photo Challenge' : 'Guess the Year'}

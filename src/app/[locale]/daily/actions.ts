@@ -107,7 +107,7 @@ export async function getTodayImage() {
     attempts: cookieState.attempts,
     completed: cookieState.completed,
     won: cookieState.won,
-    correctYear: cookieState.completed ? dailyImage.year : undefined,
+    correctYear: dailyImage.year,
     dailyStats,
     guesses: cookieState.guesses || []
   }
@@ -218,7 +218,7 @@ export const submitGuess = actionClient
       attempts: cookieState.attempts,
       completed: cookieState.completed,
       won: cookieState.won,
-      correctYear: cookieState.completed ? dailyImage.year : undefined,
+      correctYear: dailyImage.year,
       dailyStats,
       guesses: cookieState.guesses || [],
       shouldTrack: true

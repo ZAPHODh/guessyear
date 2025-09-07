@@ -103,24 +103,24 @@ export default async function ContactPage() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                🚀 {scopedT("quickHelp.title")}
+                {scopedT("quickHelp.title")}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 gap-3">
                 <Button variant="outline" className="justify-start" asChild>
                   <Link href="/help">
-                    ❓ {scopedT("quickHelp.faq")}
+                    {scopedT("quickHelp.faq")}
                   </Link>
                 </Button>
                 <Button variant="outline" className="justify-start" asChild>
                   <Link href="/how-to-play">
-                    🎯 {scopedT("quickHelp.howToPlay")}
+                    {scopedT("quickHelp.howToPlay")}
                   </Link>
                 </Button>
                 <Button variant="outline" className="justify-start" asChild>
                   <Link href="/lobby">
-                    💬 {scopedT("quickHelp.community")}
+                    {scopedT("quickHelp.community")}
                   </Link>
                 </Button>
               </div>

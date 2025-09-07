@@ -1,5 +1,6 @@
 export default {
   title: "Daily Image Challenge",
+  howToPlay: "How to play",
   guessPrompt: "What year was this photo taken?",
   submitGuess: "Submit Guess",
   submitting: "Submitting...",
@@ -18,5 +19,6 @@ export default {
   lower: "Go lower",
   correct: "Correct!",
   years: "years off",
-  validRange: "Valid range: {min} - {max}"
+  validRange: "Valid range: {min} - {max}",
+  rangeNarrowed: "narrowed"
 } as const
