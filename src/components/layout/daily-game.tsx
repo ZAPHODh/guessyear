@@ -9,11 +9,10 @@ import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Info } from "lucide-react"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { submitGuess, getTodayImage } from "../../app/[locale]/daily/actions"
+import { submitGuess } from "../../app/[locale]/daily/actions"
 import { useScopedI18n } from "@/locales/client"
 import Image from "next/image"
 import Link from "next/link"
-import DailyLoading from "@/app/[locale]/daily/loading"
 import { useSmartRange } from "@/hooks/use-smart-range"
 
 interface GuessHint {
@@ -22,7 +21,7 @@ interface GuessHint {
   direction: "higher" | "lower" | "correct"
 }
 
-interface GameState {
+export interface GameState {
   imageUrl: string
   attempts: number
   completed: boolean
@@ -38,15 +37,18 @@ type GuessForm = {
   year: string
 }
 
-export function DailyGame() {
-  const [gameState, setGameState] = useState<GameState | null>(null)
-  const [loading, setLoading] = useState(true)
+interface DailyGameProps {
+  initialGameState: GameState
+}
+
+export function DailyGame({ initialGameState }: DailyGameProps) {
+  const [gameState, setGameState] = useState<GameState>(initialGameState)
   const t = useScopedI18n("daily")
 
   const { minYear, maxYear, confidence } = useSmartRange({
-    correctYear: gameState?.correctYear,
-    guesses: gameState?.guesses || [],
-    attempts: gameState?.attempts || 0
+    correctYear: gameState.correctYear,
+    guesses: gameState.guesses || [],
+    attempts: gameState.attempts || 0
   })
 
 
@@ -77,28 +79,11 @@ export function DailyGame() {
 
 
   useEffect(() => {
-    loadGameState()
-  }, [])
-
-  useEffect(() => {
-    if (gameState) {
-      form.setValue("year", "", { shouldValidate: false })
-    }
-  }, [gameState?.guesses, form])
-
-  const loadGameState = async () => {
-    try {
-      const result = await getTodayImage()
-      setGameState(result)
-    } catch (error) {
-      console.error("Failed to load game state:", error)
-    } finally {
-      setLoading(false)
-    }
-  }
+    form.setValue("year", "", { shouldValidate: false })
+  }, [gameState.guesses, form])
 
   const onSubmit = async (data: GuessForm) => {
-    if (!gameState || gameState.completed) return
+    if (gameState.completed) return
 
     try {
       const year = Number(data.year)
@@ -113,13 +98,6 @@ export function DailyGame() {
   }
 
 
-  if (loading) {
-    return <DailyLoading />
-  }
-
-  if (!gameState) {
-    return <div className="text-center">{t("failedToLoad")}</div>
-  }
 
   const remainingAttempts = 5 - gameState.attempts
 

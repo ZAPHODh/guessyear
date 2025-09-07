@@ -40,7 +40,7 @@ async function getOrCreateTodayImage() {
     dailyImage = await prisma.dailyImage.create({
       data: {
         cloudinaryUrl: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2000&q=80",
-        year: 1985,
+        year: 1895,
         description: "Classic mountain landscape",
         date: today
       }
@@ -65,7 +65,7 @@ async function getCookieGameState(): Promise<CookieGameState | null> {
 async function setCookieGameState(state: CookieGameState) {
   const cookieStore = await cookies()
   cookieStore.set(COOKIE_NAME, JSON.stringify(state), {
-    expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
+    expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax"
@@ -88,7 +88,6 @@ export async function getTodayImage() {
       imageId: dailyImage.id,
       guesses: []
     }
-    await setCookieGameState(cookieState)
   }
 
   let dailyStats = undefined

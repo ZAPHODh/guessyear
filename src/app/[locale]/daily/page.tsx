@@ -1,7 +1,10 @@
+'use server';
+
 import { type Metadata } from "next"
-import { getI18n, getScopedI18n } from "@/locales/server"
+import { getScopedI18n } from "@/locales/server"
 import { siteUrl } from "@/config/site"
-import { DailyGame } from "@/components/layout/daily-game";
+import { DailyGame } from "@/components/layout/daily-game"
+import { getTodayImage } from "./actions"
 
 export async function generateMetadata(): Promise<Metadata> {
   const scopedT = await getScopedI18n("metadata");
@@ -43,12 +46,12 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function DailyPage() {
-  const t = await getI18n()
+  const initialGameState = await getTodayImage()
 
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-2xl mx-auto">
-        <DailyGame />
+        <DailyGame initialGameState={initialGameState} />
       </div>
     </div>
   )
