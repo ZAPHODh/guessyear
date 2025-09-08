@@ -17,7 +17,7 @@ export const sendWelcomeEmail = async ({
     const temp = ThanksTemp({ userName }) as ReactNode
 
     await resend.emails.send({
-        from: `Guess <no-reply@resend.dev>`,
+        from: `Loqano <no-reply@loqano.com>`,
         to: toMail,
         subject: scopedT('subject'),
         headers: {
@@ -32,7 +32,7 @@ export const sendOTP = async ({ toMail, code, userName }: SendOTPProps) => {
     const scopedT = await getScopedI18n('emails.verification')
     const temp = VerificationTemp({ userName, code }) as ReactNode
     await resend.emails.send({
-        from: `Guess <no-reply@resend.dev>`,
+        from: `Loqano <no-reply@loqano.com>`,
         to: toMail,
         subject: scopedT('subject'),
         headers: {
@@ -58,7 +58,7 @@ export const sendSupportConfirmation = async ({
     const temp = SupportConfirmationTemp({ userName, subject }) as ReactNode;
 
     await resend.emails.send({
-        from: `Guess Support <no-reply@resend.dev>`,
+        from: `Loqano Support <no-reply@loqano.com>`,
         to: toMail,
         subject: `We received your support request: ${subject}`,
         headers: {
