@@ -17,13 +17,15 @@ interface SmartRangeResult {
   maxYear: number
   confidence: number // 0-100, how narrow the range is
 }
-
+function getFirstMin(correctYear: number): number {
+  const maxOffset = 200
+  const offset = Math.floor(Math.random() * (maxOffset + 1))
+  return correctYear - offset
+}
 export function useSmartRange({ correctYear, guesses, attempts }: UseSmartRangeParams): SmartRangeResult {
   return useMemo(() => {
-    console.log('useSmartRange recalculating:', { correctYear, guessesLength: guesses.length, attempts, guesses })
-
     const currentYear = new Date().getFullYear()
-    let currentMin = 1800
+    let currentMin = getFirstMin(correctYear || 1800)
     let currentMax = currentYear
 
     guesses.forEach((guess) => {

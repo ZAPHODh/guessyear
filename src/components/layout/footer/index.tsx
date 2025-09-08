@@ -14,7 +14,7 @@ export default function Footer() {
   const scopedT = useScopedI18n("footer");
   const locale = useCurrentLocale()
 
-  if (pathname.includes('/daily')) {
+  if (pathname.includes('/daily') || pathname.includes('/admin')) {
     return null;
   }
   const footerLinks = {

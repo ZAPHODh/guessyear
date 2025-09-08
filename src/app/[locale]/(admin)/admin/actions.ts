@@ -23,7 +23,7 @@ export const uploadImage = actionClient
         cloudinaryUrl: parsedInput.cloudinaryUrl,
         year: parsedInput.year,
         description: parsedInput.description,
-        date: new Date(), // Temporary date, will be updated when scheduled
+        date: new Date(Date.now()),
       }
     })
 

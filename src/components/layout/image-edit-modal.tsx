@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { ImageEditForm } from "@/components/forms/image-edit-form"
+import { ImageEditForm } from "@/components/image-edit-form"
 
 interface DailyImage {
   id: string

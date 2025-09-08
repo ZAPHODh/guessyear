@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation"
-import { ImageEditForm } from "@/components/forms/image-edit-form"
+import { ImageEditForm } from "@/components/image-edit-form"
 import { getImageById } from "../../../actions"
 import { getScopedI18n } from "@/locales/server"
 

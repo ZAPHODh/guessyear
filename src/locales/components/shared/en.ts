@@ -2,7 +2,11 @@ export default {
     goBack: 'Go Back',
     locales: {
         portuguese: 'Portuguese',
-        english: 'English'
+        english: 'English',
+        french: 'French',
+        spanish: 'Spanish',
+        german: 'German',
+        italian: 'Italian'
     },
     changeLocale: 'Change Locale',
     logout: 'Log out',

@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { ImageUploadForm } from "@/components/forms/image-upload-form"
+import { ImageUploadForm } from "@/components/image-upload-form"
 
 export default function ImageUploadModal() {
   const router = useRouter()

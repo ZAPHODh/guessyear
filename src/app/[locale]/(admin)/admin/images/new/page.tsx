@@ -1,4 +1,4 @@
-import { ImageUploadForm } from "@/components/forms/image-upload-form"
+import { ImageUploadForm } from "@/components/image-upload-form"
 import { getScopedI18n } from "@/locales/server"
 
 export default async function NewImagePage() {
@@ -11,7 +11,7 @@ export default async function NewImagePage() {
           <h1 className="text-3xl font-bold">{t("title")}</h1>
           <p className="text-muted-foreground">{t("subtitle")}</p>
         </div>
-        
+
         <ImageUploadForm />
       </div>
     </div>

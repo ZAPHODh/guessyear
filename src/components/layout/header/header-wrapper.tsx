@@ -21,7 +21,7 @@ interface HeaderWrapperProps {
 export default function HeaderWrapper({ headerText, user }: HeaderWrapperProps) {
     const pathname = usePathname();
 
-    if (pathname.includes('/daily')) {
+    if (pathname.includes('/daily') || pathname.includes('/admin')) {
         return null;
     }
 

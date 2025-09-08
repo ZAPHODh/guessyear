@@ -125,20 +125,22 @@ export default async function RootLayout({
           fontSans.variable,
         )}
       >
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <I18nProviderClient locale={locale}>
-            <Header />
-            <main>
-              {children}
-              {loginDialog}
-              {howToPlayDialog}
-            </main>
-            <Footer />
-            <CookieConsentBanner initialConsent={cookieConsent} />
-            <GoogleTracking cookiePreferences={cookieConsent.preferences} />
-          </I18nProviderClient>
-          <Toaster />
-        </ThemeProvider>
+        <div className="[--header-height:calc(var(--spacing)*14)]">
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+            <I18nProviderClient locale={locale}>
+              <Header />
+              <main>
+                {children}
+                {loginDialog}
+                {howToPlayDialog}
+              </main>
+              <Footer />
+              <CookieConsentBanner initialConsent={cookieConsent} />
+              <GoogleTracking cookiePreferences={cookieConsent.preferences} />
+            </I18nProviderClient>
+            <Toaster />
+          </ThemeProvider>
+        </div>
       </body>
     </html>
   );

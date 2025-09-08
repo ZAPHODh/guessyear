@@ -13,7 +13,7 @@ export const POST = async (req: Request) => {
             create: {
                 email: body.email,
                 emailVerified: false,
-                role: "USER"
+                role: "USER",
             },
         });
 

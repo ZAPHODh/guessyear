@@ -1,8 +1,11 @@
-import { getCurrentSession } from "@/lib/server/auth/session"
-import { redirect } from "next/navigation"
 import { getAllImages } from "./admin/actions"
 import { ImagesProvider } from "@/components/images-context"
 import { requireAdmin } from "@/lib/server/dto"
+import { AdminSidebar } from "@/components/layout/admin-sidebar"
+import {
+  SidebarInset,
+  SidebarProvider
+} from "@/components/ui/sidebar"
 
 export default async function AdminLayout({
   children,
@@ -17,8 +20,17 @@ export default async function AdminLayout({
 
   return (
     <ImagesProvider initialImages={images}>
-      {children}
-      {imageModal}
+      <SidebarProvider>
+        <div className="flex flex-1">
+          <AdminSidebar />
+          <SidebarInset>
+            <div className="flex flex-1 flex-col p-6">
+              {children}
+            </div>
+          </SidebarInset>
+        </div>
+        {imageModal}
+      </SidebarProvider>
     </ImagesProvider>
   )
 }
