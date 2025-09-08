@@ -2,7 +2,7 @@ export default {
   title: "Daily Image Challenge",
   howToPlay: "How to play",
   guessPrompt: "What year was this photo taken?",
-  submitGuess: "Submit Guess",
+  submitGuess: "Submit guess",
   submitting: "Submitting...",
   yearPlaceholder: "Enter year (e.g., 1975)",
   attemptsLeft: "attempts left",

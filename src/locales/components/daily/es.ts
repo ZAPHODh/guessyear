@@ -2,7 +2,7 @@ export default {
   title: "Desafío de Imagen Diario",
   howToPlay: "Cómo jugar",
   guessPrompt: "¿En qué año se tomó esta foto?",
-  submitGuess: "Enviar Respuesta",
+  submitGuess: "Enviar respuesta",
   submitting: "Enviando...",
   yearPlaceholder: "Ingresa el año (ej., 1975)",
   attemptsLeft: "intentos restantes",
