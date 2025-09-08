@@ -28,21 +28,20 @@ export default {
     admin,
     metadata: {
         keywords: [
-            "Adivina el Año",
+            "Loqano",
             "Juego de Fechar Fotos", 
             "Juego de Año de Imagen",
             "Fotos Vintage",
             "Imágenes Históricas",
             "Quiz de Fotos",
-            "Juego de Adivinar Año",
             "Desafío de Fotos",
             "Datación de Imágenes",
             "Juego de Fotos Históricas",
             "Quiz de Año de Fotos",
         ],
         daily: {
-            title: "Desafío Diario de Fotos - Adivina el Año",
-            description: "¡Juega el desafío diario de fotos de hoy! Mira una imagen vintage y adivina en qué año fue tomada. Nuevo desafío todos los días con fotos históricas de todo el mundo."
+            title: "Desafío Diario de Fotos - Loqano",
+            description: "¡Juega el desafío diario de fotos de hoy en Loqano! Mira una imagen vintage y adivina en qué año fue tomada. Nuevo desafío todos los días con fotos históricas de todo el mundo."
         }
     }
 } as const

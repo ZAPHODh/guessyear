@@ -28,21 +28,20 @@ export default {
     admin,
     metadata: {
         keywords: [
-            "Jahr erraten",
+            "Loqano",
             "Foto-Dating-Spiel", 
             "Bild-Jahr-Spiel",
             "Vintage-Fotos",
             "Historische Bilder",
             "Foto-Quiz",
-            "Jahr-Ratespiel",
             "Foto-Herausforderung",
             "Bild-Dating",
             "Historisches Foto-Spiel",
             "Bild-Jahr-Quiz",
         ],
         daily: {
-            title: "Tägliche Foto-Herausforderung - Erraten Sie das Jahr",
-            description: "Spielen Sie die heutige tägliche Foto-Herausforderung! Betrachten Sie ein Vintage-Bild und erraten Sie, in welchem Jahr es aufgenommen wurde. Jeden Tag neue Herausforderung mit historischen Fotos aus aller Welt."
+            title: "Tägliche Foto-Herausforderung - Loqano",
+            description: "Spielen Sie die heutige tägliche Foto-Herausforderung auf Loqano! Betrachten Sie ein Vintage-Bild und erraten Sie, in welchem Jahr es aufgenommen wurde. Jeden Tag neue Herausforderung mit historischen Fotos aus aller Welt."
         }
     }
 } as const

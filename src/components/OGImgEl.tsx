@@ -38,11 +38,11 @@ export const RenderIMGEl = ({
                     {isDailyPage ? 'Daily' : 'Game'}
                 </div>
                 <div style={{ fontSize: '36px', marginBottom: '16px' }}>
-                    {isDailyPage ? 'Daily Photo Challenge' : 'Guess the Year'}
+                    {isDailyPage ? 'Daily Photo Challenge' : 'Photo Dating Game'}
                 </div>
                 <div style={{ fontSize: '24px', opacity: 0.8 }}>
                     {isDailyPage 
-                        ? 'Guess the year this photo was taken!' 
+                        ? 'Date the year this photo was taken!' 
                         : 'Challenge your visual skills with vintage photos'
                     }
                 </div>

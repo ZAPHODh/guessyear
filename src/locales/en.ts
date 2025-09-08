@@ -28,21 +28,21 @@ export default {
     admin,
     metadata: {
         keywords: [
-            "Guess the Year",
+            "Loqano",
             "Photo Dating Game", 
             "Image Year Game",
             "Vintage Photos",
             "Historical Images",
             "Photo Quiz",
-            "Year Guessing Game",
+            "Year Dating Game",
             "Photo Challenge",
             "Image Dating",
             "Historical Photo Game",
             "Picture Year Quiz",
         ],
         daily: {
-            title: "Daily Photo Challenge - Guess the Year",
-            description: "Play today's daily photo challenge! Look at a vintage image and guess what year it was taken. New challenge every day with historical photos from around the world."
+            title: "Daily Photo Challenge - Loqano",
+            description: "Play today's daily photo challenge on Loqano! Look at a vintage image and guess what year it was taken. New challenge every day with historical photos from around the world."
         }
     }
 } as const

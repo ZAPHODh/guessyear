@@ -1,7 +1,7 @@
 export default {
   support: "Suporte",
   title: "Entre em Contato",
-  subtitle: "Tem alguma dúvida ou precisa de ajuda? Estamos aqui para ajudá-lo com qualquer coisa relacionada ao GuessIt.",
+  subtitle: "Tem alguma dúvida ou precisa de ajuda? Estamos aqui para ajudá-lo com qualquer coisa relacionada ao Loqano.",
   
   form: {
     title: "Envie uma Mensagem",

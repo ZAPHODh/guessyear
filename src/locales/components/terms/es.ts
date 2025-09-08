@@ -6,7 +6,7 @@ export default {
   
   acceptance: {
     title: "Aceptación de Términos",
-    content: "Al acceder y usar GuessIt, aceptas y acuerdas estar sujeto a los términos y provisiones de este acuerdo. Si no estás de acuerdo en cumplir con lo anterior, por favor no uses este servicio."
+    content: "Al acceder y usar Loqano, aceptas y acuerdas estar sujeto a los términos y provisiones de este acuerdo. Si no estás de acuerdo en cumplir con lo anterior, por favor no uses este servicio."
   },
   
   gameRules: {
@@ -36,13 +36,13 @@ export default {
   
   content: {
     title: "Contenido y Propiedad Intelectual",
-    ownership: "Todo el contenido del juego, imágenes, diseños y propiedad intelectual permanecen como propiedad de GuessIt y sus licenciantes.",
+    ownership: "Todo el contenido del juego, imágenes, diseños y propiedad intelectual permanecen como propiedad de Loqano y sus licenciantes.",
     userContent: "Al enviar contenido a nuestra plataforma, nos concedes una licencia no exclusiva, mundial y libre de regalías para usar, modificar y distribuir dicho contenido."
   },
   
   liability: {
     title: "Limitación de Responsabilidad",
-    content: "GuessIt no será responsable por ningún daño indirecto, incidental, especial, consecuencial o punitivo que resulte de tu uso del servicio."
+    content: "Loqano no será responsable por ningún daño indirecto, incidental, especial, consecuencial o punitivo que resulte de tu uso del servicio."
   },
   
   contact: {

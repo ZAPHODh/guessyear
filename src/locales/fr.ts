@@ -26,21 +26,20 @@ export default {
     howToPlay,
     metadata: {
         keywords: [
-            "Devinez l'Année",
+            "Loqano",
             "Jeu de Datation de Photos", 
             "Jeu d'Année d'Image",
             "Photos Vintage",
             "Images Historiques",
             "Quiz de Photos",
-            "Jeu de Devinette d'Année",
             "Défi Photo",
             "Datation d'Images",
             "Jeu de Photos Historiques",
             "Quiz d'Année de Photo",
         ],
         daily: {
-            title: "Défi Photo Quotidien - Devinez l'Année",
-            description: "Jouez au défi photo quotidien d'aujourd'hui ! Regardez une image vintage et devinez en quelle année elle a été prise. Nouveau défi chaque jour avec des photos historiques du monde entier."
+            title: "Défi Photo Quotidien - Loqano",
+            description: "Jouez au défi photo quotidien d'aujourd'hui sur Loqano ! Regardez une image vintage et devinez en quelle année elle a été prise. Nouveau défi chaque jour avec des photos historiques du monde entier."
         }
     }
 } as const

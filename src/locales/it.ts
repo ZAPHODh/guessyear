@@ -28,21 +28,20 @@ export default {
     admin,
     metadata: {
         keywords: [
-            "Indovina l'Anno",
+            "Loqano",
             "Gioco di Datazione Foto", 
             "Gioco Anno Immagine",
             "Foto d'Epoca",
             "Immagini Storiche",
             "Quiz Fotografico",
-            "Gioco Indovina Anno",
             "Sfida Fotografica",
             "Datazione Immagini",
             "Gioco Foto Storiche",
             "Quiz Anno Immagine",
         ],
         daily: {
-            title: "Sfida Foto Giornaliera - Indovina l'Anno",
-            description: "Gioca alla sfida fotografica giornaliera di oggi! Guarda un'immagine d'epoca e indovina in quale anno è stata scattata. Nuova sfida ogni giorno con foto storiche da tutto il mondo."
+            title: "Sfida Foto Giornaliera - Loqano",
+            description: "Gioca alla sfida fotografica giornaliera di oggi su Loqano! Guarda un'immagine d'epoca e indovina in quale anno è stata scattata. Nuova sfida ogni giorno con foto storiche da tutto il mondo."
         }
     }
 } as const
