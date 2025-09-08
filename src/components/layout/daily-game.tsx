@@ -276,7 +276,7 @@ export function DailyGame({ initialGameState }: DailyGameProps) {
               </div>
             )}
             <Button
-              onClick={() => window.open("/donate", "_blank")}
+              onClick={() => window.open("https://buymeacoffee.com/zaphodh", "_blank")}
               variant="outline"
             >
               {t("donate")}
