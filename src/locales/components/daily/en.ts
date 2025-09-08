@@ -20,5 +20,11 @@ export default {
   correct: "Correct!",
   years: "years off",
   validRange: "Valid range: {min} - {max}",
-  rangeNarrowed: "narrowed"
+  rangeNarrowed: "narrowed",
+  attempt: "Attempt {number}",
+  chart: {
+    title: "Win Rate by Attempt",
+    basedOn: "Based on {count} completed games today",
+    lossPercentage: "Loss Rate"
+  }
 } as const

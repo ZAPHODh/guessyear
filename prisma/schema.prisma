@@ -69,11 +69,13 @@ model DailyGameProgress {
   id          String     @id @default(cuid())
   userId      String?
   user        User?      @relation(references: [id], fields: [userId], onDelete: Cascade)
+  sessionId   String?    // For tracking anonymous users
   imageId     String
   image       DailyImage @relation(references: [id], fields: [imageId], onDelete: Cascade)
   attempts    Int        @default(0)
   completed   Boolean    @default(false)
   won         Boolean    @default(false)
+  winAttempt  Int?       // Which attempt they won on (1-5)
   date        DateTime   @db.Date
   
   createdAt   DateTime   @default(now())
@@ -81,6 +83,7 @@ model DailyGameProgress {
 
   @@unique([userId, imageId])
   @@unique([userId, date])
+  @@unique([sessionId, date])
 }
 
 model SupportMessage {

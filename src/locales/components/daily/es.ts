@@ -20,5 +20,11 @@ export default {
   correct: "¡Correcto!",
   years: "años de diferencia",
   validRange: "Rango válido: {min} - {max}",
-  rangeNarrowed: "reducido"
+  rangeNarrowed: "reducido",
+  attempt: "Intento {number}",
+  chart: {
+    title: "Tasa de Victoria por Intento",
+    basedOn: "Basado en {count} juegos completados hoy",
+    lossPercentage: "Tasa de Derrota"
+  }
 } as const

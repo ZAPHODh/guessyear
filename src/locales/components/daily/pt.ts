@@ -20,5 +20,11 @@ export default {
   correct: "Correto!",
   years: "anos de diferença",
   validRange: "Intervalo válido: {min} - {max}",
-  rangeNarrowed: "estreitado"
+  rangeNarrowed: "estreitado",
+  attempt: "Tentativa {number}",
+  chart: {
+    title: "Taxa de Vitória por Tentativa",
+    basedOn: "Baseado em {count} jogos completados hoje",
+    lossPercentage: "Taxa de Derrota"
+  }
 } as const

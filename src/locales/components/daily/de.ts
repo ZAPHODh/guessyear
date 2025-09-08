@@ -20,5 +20,11 @@ export default {
   correct: "Richtig!",
   years: "Jahre daneben",
   validRange: "Gültiger Bereich: {min} - {max}",
-  rangeNarrowed: "eingegrenzt"
+  rangeNarrowed: "eingegrenzt",
+  attempt: "Versuch {number}",
+  chart: {
+    title: "Gewinnrate nach Versuch",
+    basedOn: "Basierend auf {count} abgeschlossenen Spielen heute",
+    lossPercentage: "Verlustrate"
+  }
 } as const

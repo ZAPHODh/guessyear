@@ -14,6 +14,7 @@ import { useScopedI18n } from "@/locales/client"
 import Image from "next/image"
 import Link from "next/link"
 import { useSmartRange } from "@/hooks/use-smart-range"
+import { DailyStatsChart } from "@/components/charts/daily-stats-chart"
 
 interface GuessHint {
   year: number
@@ -28,7 +29,12 @@ export interface GameState {
   won: boolean
   correctYear?: number
   dailyStats?: {
-    todayWins: number
+    chartData: {
+      attempt: number
+      winPercentage: number
+      isUserAttempt: boolean
+    }[]
+    totalGames: number
   }
   guesses: GuessHint[]
 }
@@ -233,14 +239,11 @@ export function DailyGame({ initialGameState }: DailyGameProps) {
 
             {gameState.dailyStats && (
               <div className="py-6 px-6 border rounded-xl">
-                <div className="text-center space-y-2">
-                  <p className="text-sm uppercase tracking-wide">
-                    {t("todaysWins")}
-                  </p>
-                  <p className="text-5xl font-bold">
-                    {gameState.dailyStats.todayWins}
-                  </p>
-                </div>
+                <DailyStatsChart
+                  data={gameState.dailyStats.chartData}
+                  totalGames={gameState.dailyStats.totalGames}
+                  userAttempt={gameState.attempts}
+                />
               </div>
             )}
             {gameState.guesses && gameState.guesses.length > 0 && (

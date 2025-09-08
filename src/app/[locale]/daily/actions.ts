@@ -7,6 +7,7 @@ import { actionClient } from "@/lib/client/safe-action"
 import { getCurrentSession } from "@/lib/server/auth/session"
 
 const COOKIE_NAME = "daily_game_progress"
+const SESSION_COOKIE_NAME = "daily_game_session"
 const MAX_ATTEMPTS = 5
 
 interface GuessHint {
@@ -72,6 +73,67 @@ async function setCookieGameState(state: CookieGameState) {
   })
 }
 
+async function getOrCreateSessionId(): Promise<string> {
+  const cookieStore = await cookies()
+  let sessionId = cookieStore.get(SESSION_COOKIE_NAME)?.value
+
+  if (!sessionId) {
+    sessionId = crypto.randomUUID()
+    cookieStore.set(SESSION_COOKIE_NAME, sessionId, {
+      expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax"
+    })
+  }
+
+  return sessionId
+}
+
+async function getTodayGames(today: Date, userAttempts?: number, userWon?: boolean) {
+  const totalWins = await prisma.dailyGameProgress.count({
+    where: {
+      date: today,
+      completed: true,
+      won: true
+    }
+  })
+  const totalGames = await prisma.dailyGameProgress.count({
+    where: {
+      date: today,
+      completed: true
+    }
+  })
+
+  const allWinningGames = await prisma.dailyGameProgress.findMany({
+    where: {
+      date: today,
+      completed: true,
+      won: true,
+      winAttempt: {
+        not: null
+      }
+    },
+    select: {
+      winAttempt: true
+    }
+  })
+
+  const chartData = Array.from({ length: 5 }, (_, i) => {
+    const attempt = i + 1
+    const winsAtThisAttempt = allWinningGames.filter(game => game.winAttempt === attempt)
+    const winCount = winsAtThisAttempt.length
+
+    return {
+      attempt,
+      winPercentage: totalWins > 0 ? Math.round((winCount / totalWins) * 100) : 0,
+      isUserAttempt: Boolean(userWon && userAttempts === attempt)
+    }
+  })
+
+  return { chartData, totalGames }
+}
+
 export async function getTodayImage() {
   const dailyImage = await getOrCreateTodayImage()
   const today = await getTodayDate()
@@ -90,15 +152,10 @@ export async function getTodayImage() {
     }
   }
 
+  // Get chart stats if game is completed
   let dailyStats = undefined
   if (cookieState.completed) {
-    const todayWins = await prisma.dailyGameProgress.count({
-      where: {
-        date: today,
-        won: true
-      }
-    })
-    dailyStats = { todayWins }
+    dailyStats = await getTodayGames(today, cookieState.attempts, cookieState.won)
   }
 
   return {
@@ -176,39 +233,67 @@ export const submitGuess = actionClient
     } catch {
     }
 
-    if (gameCompleted && user) {
-      await prisma.dailyGameProgress.upsert({
-        where: {
-          userId_date: {
+    // Always save progress when game is completed, even for anonymous users
+    if (gameCompleted) {
+      const sessionId = await getOrCreateSessionId()
+
+      if (user) {
+        // Logged in user
+        await prisma.dailyGameProgress.upsert({
+          where: {
+            userId_date: {
+              userId: user.id,
+              date: today
+            }
+          },
+          create: {
             userId: user.id,
+            imageId: dailyImage.id,
+            attempts: cookieState.attempts,
+            completed: true,
+            won: cookieState.won,
+            winAttempt: cookieState.won ? cookieState.attempts : null,
             date: today
+          },
+          update: {
+            attempts: cookieState.attempts,
+            completed: true,
+            won: cookieState.won,
+            winAttempt: cookieState.won ? cookieState.attempts : null
           }
-        },
-        create: {
-          userId: user.id,
-          imageId: dailyImage.id,
-          attempts: cookieState.attempts,
-          completed: true,
-          won: isCorrect,
-          date: today
-        },
-        update: {
-          attempts: cookieState.attempts,
-          completed: true,
-          won: isCorrect
-        }
-      })
+        })
+      } else {
+        // Anonymous user
+        await prisma.dailyGameProgress.upsert({
+          where: {
+            sessionId_date: {
+              sessionId: sessionId,
+              date: today
+            }
+          },
+          create: {
+            sessionId: sessionId,
+            imageId: dailyImage.id,
+            attempts: cookieState.attempts,
+            completed: true,
+            won: cookieState.won,
+            winAttempt: cookieState.won ? cookieState.attempts : null,
+            date: today
+          },
+          update: {
+            attempts: cookieState.attempts,
+            completed: true,
+            won: cookieState.won,
+            winAttempt: cookieState.won ? cookieState.attempts : null
+          }
+        })
+      }
     }
 
     let dailyStats = undefined
     if (gameCompleted) {
-      const todayWins = await prisma.dailyGameProgress.count({
-        where: {
-          date: today,
-          won: true
-        }
-      })
-      dailyStats = { todayWins }
+      // Get win stats AFTER saving the current game progress
+      dailyStats = await getTodayGames(today, cookieState.attempts, cookieState.won)
     }
 
     return {

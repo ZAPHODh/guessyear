@@ -20,5 +20,11 @@ export default {
   correct: "Correct !",
   years: "années de différence",
   validRange: "Plage valide : {min} - {max}",
-  rangeNarrowed: "réduite"
+  rangeNarrowed: "réduite",
+  attempt: "Tentative {number}",
+  chart: {
+    title: "Taux de Victoire par Tentative",
+    basedOn: "Basé sur {count} jeux terminés aujourd'hui",
+    lossPercentage: "Taux de Défaite"
+  }
 } as const

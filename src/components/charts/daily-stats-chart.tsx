@@ -1,0 +1,111 @@
+"use client"
+
+import { Bar, BarChart, CartesianGrid, Rectangle, XAxis } from "recharts"
+import { useScopedI18n } from "@/locales/client"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import {
+  ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart"
+
+interface ChartData {
+  attempt: number
+  winPercentage: number
+  isUserAttempt: boolean
+}
+
+interface DailyStatsChartProps {
+  data: ChartData[]
+  totalGames: number
+  userAttempt?: number
+}
+
+
+
+export function DailyStatsChart({ data, totalGames, userAttempt }: DailyStatsChartProps) {
+  const t = useScopedI18n("daily")
+
+  // Create dynamic chart config based on user's attempt
+  const chartConfig = {
+    winPercentage: {
+      label: "Win %",
+    },
+    attempt1: {
+      label: "Attempt 1",
+      color: userAttempt === 1 ? "var(--chart-1)" : "",
+    },
+    attempt2: {
+      label: "Attempt 2",
+      color: userAttempt === 2 ? "var(--chart-1)" : "",
+    },
+    attempt3: {
+      label: "Attempt 3",
+      color: userAttempt === 3 ? "var(--chart-1)" : "",
+    },
+    attempt4: {
+      label: "Attempt 4",
+      color: userAttempt === 4 ? "var(--chart-1)" : "",
+    },
+    attempt5: {
+      label: "Attempt 5",
+      color: userAttempt === 5 ? "var(--chart-1)" : "",
+    },
+  } satisfies ChartConfig
+
+  const userAttemptIndex = userAttempt ? userAttempt - 1 : data.findIndex(item => item.isUserAttempt)
+
+  const chartData = data.map((item) => ({
+    attempt: `attempt${item.attempt}`,
+    winPercentage: item.winPercentage,
+    isUserAttempt: item.isUserAttempt,
+    fill: `var(--color-attempt${item.attempt})`
+  }))
+
+
+  return (
+    <ChartContainer config={chartConfig}>
+      <BarChart accessibilityLayer data={chartData}>
+        <CartesianGrid vertical={false} />
+        <XAxis
+          dataKey="attempt"
+          tickLine={false}
+          tickMargin={10}
+          axisLine={false}
+          tickFormatter={(value) => {
+            const attemptNum = value.replace('attempt', '')
+            return t('attempt', { number: attemptNum })
+          }}
+        />
+        <ChartTooltip
+          cursor={false}
+          content={<ChartTooltipContent hideLabel />}
+        />
+        <Bar
+          dataKey="winPercentage"
+          strokeWidth={2}
+          radius={8}
+          activeIndex={userAttemptIndex >= 0 ? userAttemptIndex : undefined}
+          activeBar={({ ...props }) => {
+            return (
+              <Rectangle
+                {...props}
+                fillOpacity={0.8}
+                stroke={props.payload.fill}
+                strokeDasharray={4}
+                strokeDashoffset={4}
+              />
+            )
+          }}
+        />
+      </BarChart>
+    </ChartContainer>
+  )
+}
