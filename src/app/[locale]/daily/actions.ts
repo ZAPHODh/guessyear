@@ -106,7 +106,6 @@ async function getTodayGames(today: Date, userAttempts?: number, userWon?: boole
     }
   })
 
-  console.log('Database counts:', { totalWins, totalGames })
 
   const allWinningGames = await prisma.dailyGameProgress.findMany({
     where: {
@@ -124,7 +123,6 @@ async function getTodayGames(today: Date, userAttempts?: number, userWon?: boole
     }
   })
 
-  console.log('All winning games:', allWinningGames)
 
   const chartData = Array.from({ length: 5 }, (_, i) => {
     const attempt = i + 1
@@ -133,12 +131,11 @@ async function getTodayGames(today: Date, userAttempts?: number, userWon?: boole
 
     return {
       attempt,
-      winPercentage: totalWins > 0 ? Math.round((winCount / totalWins) * 100) : 0,
+      winPercentage: totalGames > 0 ? Math.round((winCount / totalGames) * 100) : 0,
       isUserAttempt: Boolean(userWon && userAttempts === attempt)
     }
   })
 
-  console.log('Generated chart data:', chartData)
   return { chartData, totalGames }
 }
 
