@@ -91,6 +91,7 @@ async function getOrCreateSessionId(): Promise<string> {
 }
 
 async function getTodayGames(today: Date, userAttempts?: number, userWon?: boolean) {
+
   const totalWins = await prisma.dailyGameProgress.count({
     where: {
       date: today,
@@ -105,6 +106,8 @@ async function getTodayGames(today: Date, userAttempts?: number, userWon?: boole
     }
   })
 
+  console.log('Database counts:', { totalWins, totalGames })
+
   const allWinningGames = await prisma.dailyGameProgress.findMany({
     where: {
       date: today,
@@ -115,9 +118,13 @@ async function getTodayGames(today: Date, userAttempts?: number, userWon?: boole
       }
     },
     select: {
-      winAttempt: true
+      winAttempt: true,
+      userId: true,
+      sessionId: true
     }
   })
+
+  console.log('All winning games:', allWinningGames)
 
   const chartData = Array.from({ length: 5 }, (_, i) => {
     const attempt = i + 1
@@ -131,6 +138,7 @@ async function getTodayGames(today: Date, userAttempts?: number, userWon?: boole
     }
   })
 
+  console.log('Generated chart data:', chartData)
   return { chartData, totalGames }
 }
 
