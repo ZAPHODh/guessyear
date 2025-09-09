@@ -15,6 +15,7 @@ import { CookieConsentBanner } from "@/components/cookie-consent";
 import { GoogleTracking } from "@/components/google-tracking";
 import { getCookieConsent } from "./(cookie-consent)/actions";
 import Script from "next/script";
+import Adsense from "@/components/adsense";
 
 type Props = {
   params: Promise<{ locale: string }>;
@@ -120,11 +121,9 @@ export default async function RootLayout({
   return (
     <html lang={locale} suppressHydrationWarning>
       <head>
-        <Script
-          async
-          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_CLIENT}`}
-          crossOrigin="anonymous"
-        />
+
+        <Adsense />
+
       </head>
       <body
         suppressHydrationWarning
