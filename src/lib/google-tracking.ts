@@ -5,7 +5,7 @@ import { googleAnalyticsConfig, googleAdsConfig, isTrackingEnabled } from "@/con
 declare global {
   interface Window {
     gtag: (...args: any[]) => void;
-    dataLayer: any[];
+    dataLayer?: any[];
   }
 }
 
@@ -14,7 +14,7 @@ export const initializeGoogleAnalytics = () => {
 
   window.dataLayer = window.dataLayer || [];
   window.gtag = function gtag() {
-    window.dataLayer.push(arguments);
+    window.dataLayer?.push(arguments);
   };
 
   window.gtag('js', new Date());
