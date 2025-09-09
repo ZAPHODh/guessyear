@@ -40,23 +40,23 @@ export function DailyStatsChart({ data, totalGames, userAttempt }: DailyStatsCha
     },
     attempt1: {
       label: "Attempt 1",
-      color: userAttempt === 1 ? "var(--chart-2)" : "dark:white",
+      color: userAttempt === 1 ? "var(--chart-2)" : "var(--chart-3)",
     },
     attempt2: {
       label: "Attempt 2",
-      color: userAttempt === 2 ? "var(--chart-2)" : "dark:white",
+      color: userAttempt === 2 ? "var(--chart-2)" : "var(--chart-3)",
     },
     attempt3: {
       label: "Attempt 3",
-      color: userAttempt === 3 ? "var(--chart-2)" : "dark:white",
+      color: userAttempt === 3 ? "var(--chart-2)" : "var(--chart-3)",
     },
     attempt4: {
       label: "Attempt 4",
-      color: userAttempt === 4 ? "var(--chart-2)" : "dark:white",
+      color: userAttempt === 4 ? "var(--chart-2)" : "var(--chart-3)",
     },
     attempt5: {
       label: "Attempt 5",
-      color: userAttempt === 5 ? "var(--chart-2)" : "dark:white",
+      color: userAttempt === 5 ? "var(--chart-2)" : "var(--chart-3)",
     },
   } satisfies ChartConfig
 
