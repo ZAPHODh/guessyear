@@ -15,6 +15,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { useSmartRange } from "@/hooks/use-smart-range"
 import { DailyStatsChart } from "@/components/charts/daily-stats-chart"
+import { GoogleAd } from "@/components/ads/google-ad"
 
 interface GuessHint {
   year: number
@@ -246,6 +247,14 @@ export function DailyGame({ initialGameState }: DailyGameProps) {
                 />
               </div>
             )}
+
+            <div className="py-4">
+              <GoogleAd
+                adSlot={process.env.NEXT_PUBLIC_AD_SLOT || ''}
+                adFormat="rectangle"
+                className="flex justify-center"
+              />
+            </div>
             {gameState.guesses && gameState.guesses.length > 0 && (
               <div className="space-y-2">
                 {gameState.guesses.slice().reverse().map((hint, index) => (
