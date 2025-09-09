@@ -14,7 +14,7 @@ import Footer from "@/components/layout/footer";
 import { CookieConsentBanner } from "@/components/cookie-consent";
 import { GoogleTracking } from "@/components/google-tracking";
 import { getCookieConsent } from "./(cookie-consent)/actions";
-import Script from "next/script";
+import { GoogleTagManager } from "@next/third-parties/google";
 import Adsense from "@/components/adsense";
 
 type Props = {
@@ -121,9 +121,7 @@ export default async function RootLayout({
   return (
     <html lang={locale} suppressHydrationWarning>
       <head>
-
         <Adsense />
-
       </head>
       <body
         suppressHydrationWarning
@@ -145,8 +143,10 @@ export default async function RootLayout({
               <CookieConsentBanner initialConsent={cookieConsent} />
               <GoogleTracking cookiePreferences={cookieConsent.preferences} />
             </I18nProviderClient>
-            <Toaster />
+
+            <GoogleTagManager gtmId={process.env.NEXT_PUBLIC_GTM_ID!} />
           </ThemeProvider>
+          <Toaster />
         </div>
       </body>
     </html>
