@@ -33,7 +33,6 @@ interface DailyStatsChartProps {
 export function DailyStatsChart({ data, totalGames, userAttempt }: DailyStatsChartProps) {
   const t = useScopedI18n("daily")
 
-  // Create dynamic chart config based on user's attempt
   const chartConfig = {
     winPercentage: {
       label: "Win %",

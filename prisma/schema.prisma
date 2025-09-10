@@ -58,6 +58,7 @@ model DailyImage {
   cloudinaryUrl String
   year        Int
   description String?
+  tip         String?
   date        DateTime @unique @db.Date
   gameProgress DailyGameProgress[]
   
