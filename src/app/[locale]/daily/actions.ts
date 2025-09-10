@@ -178,7 +178,8 @@ export async function getTodayImage() {
     won: cookieState.won,
     correctYear: dailyImage.year,
     dailyStats,
-    guesses: cookieState.guesses || []
+    guesses: cookieState.guesses || [],
+    tip: cookieState.attempts >= 3 ? (dailyImage.tip || undefined) : undefined
   }
 }
 
@@ -317,6 +318,7 @@ export const submitGuess = actionClient
       correctYear: dailyImage.year,
       dailyStats,
       guesses: cookieState.guesses || [],
-      shouldTrack: true
+      shouldTrack: true,
+      tip: cookieState.attempts >= 3 ? (dailyImage.tip || undefined) : undefined
     }
   })

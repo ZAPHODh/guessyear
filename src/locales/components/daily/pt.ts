@@ -22,6 +22,7 @@ export default {
   validRange: "Intervalo válido: {min} - {max}",
   rangeNarrowed: "estreitado",
   attempt: "Tentativa {number}",
+  needHint: "Precisa de uma dica?",
   chart: {
     title: "Taxa de Vitória por Tentativa",
     basedOn: "Baseado em {count} jogos completados hoje",

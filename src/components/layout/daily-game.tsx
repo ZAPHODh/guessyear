@@ -7,6 +7,7 @@ import * as z from "zod"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Info } from "lucide-react"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { submitGuess } from "../../app/[locale]/daily/actions"
@@ -38,6 +39,7 @@ export interface GameState {
     totalGames: number
   }
   guesses: GuessHint[]
+  tip?: string
 }
 
 type GuessForm = {
@@ -223,6 +225,21 @@ export function DailyGame({ initialGameState }: DailyGameProps) {
                 ))}
               </div>
             )}
+
+            {gameState.attempts >= 3 && gameState.tip && (
+              <Accordion type="single" collapsible className="w-full">
+                <AccordionItem value="tip">
+                  <AccordionTrigger className="text-left">
+                    💡 {t("needHint")}
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <div className="p-3 bg-muted/50 rounded-lg">
+                      {gameState.tip}
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+            )}
           </Form>
         ) : (
           <div className="text-center space-y-8">
@@ -250,7 +267,7 @@ export function DailyGame({ initialGameState }: DailyGameProps) {
 
             <div className="py-4">
               <GoogleAd
-                adSlot={process.env.NEXT_PUBLIC_AD_SLOT || ''}
+                adSlot={'2328363985'}
                 adFormat="rectangle"
                 className="flex justify-center"
               />

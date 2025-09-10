@@ -22,6 +22,7 @@ export default {
   validRange: "Valid range: {min} - {max}",
   rangeNarrowed: "narrowed",
   attempt: "Attempt {number}",
+  needHint: "Need a hint?",
   chart: {
     title: "Win Rate by Attempt",
     basedOn: "Based on {count} completed games today",
