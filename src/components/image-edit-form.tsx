@@ -18,17 +18,21 @@ import {
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { LoaderCircle, Save, Trash2 } from "lucide-react"
-import { scheduleImage, deleteImage } from "@/app/[locale]/(admin)/admin/actions"
+import { scheduleImage, deleteImage, updateImage } from "@/app/[locale]/(admin)/admin/actions"
 import { toast } from "sonner"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 import { useScopedI18n } from "@/locales/client"
 import Image from "next/image"
+import { MultiLanguageTextarea } from "@/components/ui/multi-language-textarea"
+import type { LocalizedTips } from "@/types/tip"
+import { createEmptyLocalizedTips } from "@/types/tip"
 
 const createImageEditSchema = (t: any) => z.object({
   date: z.string().refine((date) => !isNaN(Date.parse(date)), {
     message: t("date.error")
   }),
   description: z.string().optional(),
+  tips: z.any().optional(),
 })
 
 interface DailyImage {
@@ -36,6 +40,7 @@ interface DailyImage {
   cloudinaryUrl: string
   year: number
   description: string | null
+  tip: any // JsonValue from Prisma, will be cast to LocalizedTips
   date: Date
   _count: {
     gameProgress: number
@@ -62,16 +67,24 @@ export function ImageEditForm({ image, onSuccess, onDelete }: ImageEditFormProps
     defaultValues: {
       date: new Date(image.date).toISOString().split('T')[0],
       description: image.description || "",
+      tips: (image.tip as LocalizedTips) || createEmptyLocalizedTips(),
     },
   })
 
   async function onSubmit(values: ImageEditFormValues) {
     setIsSubmitting(true)
     try {
-      await scheduleImage({
-        imageId: image.id,
-        date: values.date
-      })
+      await Promise.all([
+        scheduleImage({
+          imageId: image.id,
+          date: values.date
+        }),
+        updateImage({
+          imageId: image.id,
+          description: values.description,
+          tips: values.tips
+        })
+      ])
       toast.success(t("updateSuccess"))
       onSuccess?.()
     } catch (error) {
@@ -161,6 +174,28 @@ export function ImageEditForm({ image, onSuccess, onDelete }: ImageEditFormProps
                 </FormControl>
                 <FormDescription>
                   {t("description.description")}
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="tips"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t("tip.label")}</FormLabel>
+                <FormControl>
+                  <MultiLanguageTextarea
+                    value={field.value || createEmptyLocalizedTips()}
+                    onChange={field.onChange}
+                    placeholder={t("tip.placeholder")}
+                    disabled={isSubmitting}
+                  />
+                </FormControl>
+                <FormDescription>
+                  {t("tip.description")}
                 </FormDescription>
                 <FormMessage />
               </FormItem>

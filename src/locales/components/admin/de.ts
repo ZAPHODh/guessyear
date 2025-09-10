@@ -121,6 +121,17 @@ export default {
       gamesPlayed: "Gespielte Spiele: {count}"
     }
   },
+  multiLanguage: {
+    languages: {
+      english: "English",
+      portuguese: "Português", 
+      french: "Français",
+      spanish: "Español",
+      german: "Deutsch",
+      italian: "Italiano"
+    },
+    languagesCount: "Sprachen"
+  },
   actions: {
     edit: "Bearbeiten",
     delete: "Löschen",

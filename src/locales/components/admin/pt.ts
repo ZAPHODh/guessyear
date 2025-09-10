@@ -89,6 +89,11 @@ export default {
         placeholder: "Breve descrição da imagem...",
         description: "Uma breve descrição do conteúdo da imagem"
       },
+      tip: {
+        label: "Dica (Opcional)",
+        placeholder: "Dica útil para adivinhar o ano...",
+        description: "Uma dica para ajudar os jogadores a acertar o ano"
+      },
       button: "Enviar Imagem",
       success: "Imagem enviada com sucesso",
       error: "Falha ao enviar imagem"
@@ -106,6 +111,11 @@ export default {
         placeholder: "Breve descrição da imagem...",
         description: "Uma breve descrição do conteúdo da imagem"
       },
+      tip: {
+        label: "Dica (Opcional)",
+        placeholder: "Dica útil para adivinhar o ano...",
+        description: "Uma dica para ajudar os jogadores a acertar o ano"
+      },
       saveButton: "Salvar Alterações",
       deleteButton: "Deletar Imagem",
       deleteTitle: "Deletar Imagem",
@@ -120,6 +130,17 @@ export default {
       year: "Ano: {year}",
       gamesPlayed: "Jogos jogados: {count}"
     }
+  },
+  multiLanguage: {
+    languages: {
+      english: "English",
+      portuguese: "Português", 
+      french: "Français",
+      spanish: "Español",
+      german: "Deutsch",
+      italian: "Italiano"
+    },
+    languagesCount: "idiomas"
   },
   actions: {
     edit: "Editar",

@@ -5,6 +5,7 @@ import { cookies } from "next/headers"
 import { prisma } from "@/lib/server/db"
 import { actionClient } from "@/lib/client/safe-action"
 import { getCurrentSession } from "@/lib/server/auth/session"
+import { getLocalizedTip, type SupportedLocale, type LocalizedTips } from "@/types/tip"
 
 const COOKIE_NAME = "daily_game_progress"
 const SESSION_COOKIE_NAME = "daily_game_session"
@@ -148,7 +149,7 @@ async function getTodayGames(today: Date, userAttempts?: number, userWon?: boole
   return { chartData, totalGames }
 }
 
-export async function getTodayImage() {
+export async function getTodayImage(locale: SupportedLocale = 'en') {
   const dailyImage = await getOrCreateTodayImage()
   const today = await getTodayDate()
   const todayStr = today.toISOString().split('T')[0]
@@ -171,6 +172,9 @@ export async function getTodayImage() {
     dailyStats = await getTodayGames(today, cookieState.attempts, cookieState.won)
   }
 
+  const localizedTip = cookieState.attempts >= 3 ? 
+    getLocalizedTip(dailyImage.tip as LocalizedTips, locale) : undefined
+
   return {
     imageUrl: dailyImage.cloudinaryUrl,
     attempts: cookieState.attempts,
@@ -179,7 +183,7 @@ export async function getTodayImage() {
     correctYear: dailyImage.year,
     dailyStats,
     guesses: cookieState.guesses || [],
-    tip: cookieState.attempts >= 3 ? (dailyImage.tip || undefined) : undefined
+    tip: localizedTip
   }
 }
 
@@ -187,10 +191,14 @@ const submitGuessSchema = z.object({
   year: z.number().int().min(1800).max(new Date().getFullYear())
 })
 
+const submitGuessWithLocaleSchema = submitGuessSchema.extend({
+  locale: z.string().optional().default('en')
+})
+
 export const submitGuess = actionClient
   .metadata({ actionName: "submitGuess" })
-  .schema(submitGuessSchema)
-  .action(async ({ parsedInput: { year } }) => {
+  .schema(submitGuessWithLocaleSchema)
+  .action(async ({ parsedInput: { year, locale } }) => {
     const dailyImage = await getOrCreateTodayImage()
     const today = await getTodayDate()
     const todayStr = today.toISOString().split('T')[0]
@@ -310,6 +318,9 @@ export const submitGuess = actionClient
       dailyStats = await getTodayGames(today, cookieState.attempts, cookieState.won)
     }
 
+    const localizedTip = cookieState.attempts >= 3 ? 
+      getLocalizedTip(dailyImage.tip as LocalizedTips, locale as SupportedLocale) : undefined
+
     return {
       imageUrl: dailyImage.cloudinaryUrl,
       attempts: cookieState.attempts,
@@ -319,6 +330,6 @@ export const submitGuess = actionClient
       dailyStats,
       guesses: cookieState.guesses || [],
       shouldTrack: true,
-      tip: cookieState.attempts >= 3 ? (dailyImage.tip || undefined) : undefined
+      tip: localizedTip
     }
   })

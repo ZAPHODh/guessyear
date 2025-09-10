@@ -89,6 +89,11 @@ export default {
         placeholder: "Brief description of the image...",
         description: "A brief description of the image content"
       },
+      tip: {
+        label: "Tip (Optional)",
+        placeholder: "Helpful tip for guessing the year...",
+        description: "A hint to help players guess the correct year"
+      },
       button: "Upload Image",
       success: "Image uploaded successfully",
       error: "Failed to upload image"
@@ -106,6 +111,11 @@ export default {
         placeholder: "Brief description of the image...",
         description: "A brief description of the image content"
       },
+      tip: {
+        label: "Tip (Optional)",
+        placeholder: "Helpful tip for guessing the year...",
+        description: "A hint to help players guess the correct year"
+      },
       saveButton: "Save Changes",
       deleteButton: "Delete Image",
       deleteTitle: "Delete Image",
@@ -120,6 +130,17 @@ export default {
       year: "Year: {year}",
       gamesPlayed: "Games played: {count}"
     }
+  },
+  multiLanguage: {
+    languages: {
+      english: "English",
+      portuguese: "Português", 
+      french: "Français",
+      spanish: "Español",
+      german: "Deutsch",
+      italian: "Italiano"
+    },
+    languagesCount: "languages"
   },
   actions: {
     edit: "Edit",

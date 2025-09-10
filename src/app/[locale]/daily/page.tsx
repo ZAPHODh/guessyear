@@ -5,6 +5,7 @@ import { getScopedI18n } from "@/locales/server"
 import { siteUrl } from "@/config/site"
 import { DailyGame } from "@/components/layout/daily-game"
 import { getTodayImage } from "./actions"
+import type { SupportedLocale } from "@/types/tip"
 
 export async function generateMetadata(): Promise<Metadata> {
   const scopedT = await getScopedI18n("metadata");
@@ -45,8 +46,13 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default async function DailyPage() {
-  const initialGameState = await getTodayImage()
+interface DailyPageProps {
+  params: Promise<{ locale: string }>
+}
+
+export default async function DailyPage({ params }: DailyPageProps) {
+  const { locale } = await params
+  const initialGameState = await getTodayImage(locale as SupportedLocale)
 
   return (
     <div className="container mx-auto px-4 py-8">

@@ -21,11 +21,15 @@ import { LoaderCircle, Upload } from "lucide-react"
 import { uploadImage } from "@/app/[locale]/(admin)/admin/actions"
 import { toast } from "sonner"
 import { useScopedI18n } from "@/locales/client"
+import { MultiLanguageTextarea } from "@/components/ui/multi-language-textarea"
+import type { LocalizedTips } from "@/types/tip"
+import { createEmptyLocalizedTips } from "@/types/tip"
 
 const createImageUploadSchema = (t: any) => z.object({
   cloudinaryUrl: z.string().url({ message: t("cloudinaryUrl.error") }),
   year: z.number().int().min(1800, t("year.minError")).max(new Date().getFullYear(), t("year.maxError")),
   description: z.string().optional(),
+  tips: z.any().optional(),
 })
 
 interface ImageUploadFormProps {
@@ -34,6 +38,7 @@ interface ImageUploadFormProps {
     cloudinaryUrl: string
     year: number
     description: string
+    tips: LocalizedTips
   }>
 }
 
@@ -51,6 +56,7 @@ export function ImageUploadForm({ onSuccess, defaultValues }: ImageUploadFormPro
       cloudinaryUrl: defaultValues?.cloudinaryUrl || "",
       year: defaultValues?.year || new Date().getFullYear(),
       description: defaultValues?.description || "",
+      tips: defaultValues?.tips || createEmptyLocalizedTips(),
     },
   })
 
@@ -133,6 +139,28 @@ export function ImageUploadForm({ onSuccess, defaultValues }: ImageUploadFormPro
               </FormControl>
               <FormDescription>
                 {t("description.description")}
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="tips"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{t("tip.label")}</FormLabel>
+              <FormControl>
+                <MultiLanguageTextarea
+                  value={field.value || createEmptyLocalizedTips()}
+                  onChange={field.onChange}
+                  placeholder={t("tip.placeholder")}
+                  disabled={isSubmitting}
+                />
+              </FormControl>
+              <FormDescription>
+                {t("tip.description")}
               </FormDescription>
               <FormMessage />
             </FormItem>

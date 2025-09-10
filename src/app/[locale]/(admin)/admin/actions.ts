@@ -5,11 +5,17 @@ import { actionClient } from "@/lib/client/safe-action"
 import { requireAdmin } from "@/lib/server/dto"
 import { prisma } from "@/lib/server/db"
 import { revalidatePath } from "next/cache"
+import type { LocalizedTips } from "@/types/tip"
+import { Prisma } from "@prisma/client"
 
 const uploadImageSchema = z.object({
   cloudinaryUrl: z.string().url(),
   year: z.number().int().min(1800).max(new Date().getFullYear()),
   description: z.string().optional(),
+  tips: z.object({
+    en: z.string().optional(),
+    pt: z.string().optional(),
+  }).optional(),
 })
 
 export const uploadImage = actionClient
@@ -23,6 +29,7 @@ export const uploadImage = actionClient
         cloudinaryUrl: parsedInput.cloudinaryUrl,
         year: parsedInput.year,
         description: parsedInput.description,
+        tip: parsedInput.tips ? (parsedInput.tips as Prisma.InputJsonValue) : Prisma.JsonNull,
         date: new Date(Date.now()),
       }
     })
@@ -73,6 +80,33 @@ export const scheduleImage = actionClient
     await prisma.dailyImage.update({
       where: { id: parsedInput.imageId },
       data: { date: targetDate }
+    })
+
+    revalidatePath("/admin/images")
+    return { success: true }
+  })
+
+const updateImageSchema = z.object({
+  imageId: z.string(),
+  description: z.string().optional(),
+  tips: z.object({
+    en: z.string().optional(),
+    pt: z.string().optional(),
+  }).optional(),
+})
+
+export const updateImage = actionClient
+  .metadata({ actionName: "updateImage" })
+  .schema(updateImageSchema)
+  .action(async ({ parsedInput }) => {
+    await requireAdmin()
+
+    await prisma.dailyImage.update({
+      where: { id: parsedInput.imageId },
+      data: { 
+        description: parsedInput.description,
+        tip: parsedInput.tips ? (parsedInput.tips as Prisma.InputJsonValue) : Prisma.JsonNull,
+      }
     })
 
     revalidatePath("/admin/images")

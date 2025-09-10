@@ -12,6 +12,7 @@ import { Info } from "lucide-react"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { submitGuess } from "../../app/[locale]/daily/actions"
 import { useScopedI18n } from "@/locales/client"
+import { useCurrentLocale } from "@/locales/client"
 import Image from "next/image"
 import Link from "next/link"
 import { useSmartRange } from "@/hooks/use-smart-range"
@@ -53,6 +54,7 @@ interface DailyGameProps {
 export function DailyGame({ initialGameState }: DailyGameProps) {
   const [gameState, setGameState] = useState<GameState>(initialGameState)
   const t = useScopedI18n("daily")
+  const locale = useCurrentLocale()
 
   const { minYear, maxYear, confidence } = useSmartRange({
     correctYear: gameState.correctYear,
@@ -96,7 +98,7 @@ export function DailyGame({ initialGameState }: DailyGameProps) {
 
     try {
       const year = Number(data.year)
-      const result = await submitGuess({ year })
+      const result = await submitGuess({ year, locale })
       if (result?.data) {
         setGameState(result.data)
       }
