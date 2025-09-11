@@ -18,7 +18,7 @@ interface SmartRangeResult {
   confidence: number // 0-100, how narrow the range is
 }
 function getFirstMin(correctYear: number): number {
-  const maxOffset = 200
+  const maxOffset = 100
   const offset = Math.floor(Math.random() * (maxOffset + 1))
   return correctYear - offset
 }
@@ -76,14 +76,14 @@ export function useSmartRange({ correctYear, guesses, attempts }: UseSmartRangeP
       return {
         minYear,
         maxYear,
-        confidence: Math.min(confidence, 95)
+        confidence: Math.min(confidence)
       }
     }
 
     return {
       minYear: currentMin,
       maxYear: currentMax,
-      confidence: Math.min(confidence, 95) // max 95%
+      confidence: Math.min(confidence) // max 95%
     }
   }, [correctYear, guesses, attempts])
 }
