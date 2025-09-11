@@ -39,16 +39,27 @@ async function getOrCreateTodayImage() {
   })
 
   if (!dailyImage) {
-
+    // Look for an unscheduled image (far future date)
+    const futureDate = new Date('2099-01-01')
     const randomImage = await prisma.dailyImage.findFirst({
+      where: {
+        date: {
+          gte: futureDate
+        }
+      },
       orderBy: {
         id: 'asc'
       },
-      skip: Math.floor(Math.random() * await prisma.dailyImage.count())
+      skip: Math.floor(Math.random() * await prisma.dailyImage.count({
+        where: {
+          date: {
+            gte: futureDate
+          }
+        }
+      }))
     })
 
     if (randomImage) {
-
       dailyImage = await prisma.dailyImage.update({
         where: { id: randomImage.id },
         data: { date: today }

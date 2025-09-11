@@ -11,11 +11,19 @@ export default {
     todayImage: {
       title: "Today's Image",
       subtitle: "Current image for {date}",
-      noImage: "No image set for today",
+      noImage: "No image scheduled for today",
       setRandom: "Set Random Image",
       chooseSpecific: "Choose Specific Image",
       year: "Year: {year}",
       gamesPlayed: "Games played: {count}"
+    },
+    queue: {
+      title: "Image Queue",
+      subtitle: "Upcoming scheduled images",
+      noQueue: "No images in queue",
+      today: "Today",
+      tomorrow: "Tomorrow", 
+      comingDays: "Coming days"
     },
     quickActions: {
       title: "Quick Actions",
@@ -41,17 +49,28 @@ export default {
       subtitle: "Images scheduled for specific dates",
       noImages: "No scheduled images",
       today: "Today",
+      tomorrow: "Tomorrow",
       past: "Past",
       year: "Year: {year}",
       games: "Games: {count}",
-      setToday: "Set as Today"
+      queueNext: "Queue Next",
+      queueTomorrow: "Queue Tomorrow"
     },
     unscheduled: {
       title: "Unscheduled Images ({count})",
       subtitle: "Images not yet scheduled for any date",
       noImages: "No unscheduled images",
       year: "Year: {year}",
-      setToday: "Set as Today"
+      queueNext: "Queue Next",
+      queueTomorrow: "Queue Tomorrow"
+    },
+    all: {
+      title: "All Images ({count})",
+      subtitle: "Complete overview of all images in the system",
+      noImages: "No images found",
+      unscheduled: "Not Scheduled",
+      future: "Scheduled",
+      notScheduled: "Unscheduled"
     },
     bulk: {
       title: "Bulk Schedule Random Images",
@@ -63,6 +82,7 @@ export default {
     },
     tabs: {
       upload: "Upload",
+      all: "All Images",
       scheduled: "Scheduled", 
       unscheduled: "Unscheduled",
       bulk: "Bulk Actions"

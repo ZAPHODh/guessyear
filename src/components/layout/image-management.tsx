@@ -10,13 +10,15 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Calendar, Upload, Trash2, Clock, Edit } from "lucide-react"
 import Image from "next/image"
 import {
-  setTodayImage,
+  queueNext,
+  queueTomorrow,
   deleteImage,
   bulkScheduleRandom
 } from "@/app/[locale]/(admin)/admin/actions"
 import { useImages } from "@/components/images-context"
 import { useScopedI18n } from "@/locales/client"
 import Link from "next/link"
+import { startOfDay, addDays, isSameDay, isBefore, isAfter } from "date-fns"
 
 interface DailyImage {
   id: string
@@ -43,11 +45,26 @@ export function ImageManagement() {
     days: 30
   })
 
-  const handleSetToday = async (imageId: string) => {
+  const handleQueueNext = async (imageId: string) => {
     try {
-      await setTodayImage({ imageId })
+      const result = await queueNext({ imageId })
+      // Show feedback to user about when it was scheduled
+      if (result.data?.isToday) {
+        alert("Image scheduled for today!")
+      } else {
+        alert(`Image scheduled for ${result.data?.scheduledFor}`)
+      }
     } catch (error) {
-      console.error("Failed to set today's image:", error)
+      console.error("Failed to queue image:", error)
+    }
+  }
+  
+  const handleQueueTomorrow = async (imageId: string) => {
+    try {
+      const result = await queueTomorrow({ imageId })
+      alert(`Image scheduled for ${result.data?.scheduledFor}`)
+    } catch (error) {
+      console.error("Failed to queue image for tomorrow:", error)
     }
   }
 
@@ -72,14 +89,16 @@ export function ImageManagement() {
     }
   }
 
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
+  // Use date-fns for safe date handling - no mutations!
+  const today = startOfDay(new Date())
+  const tomorrow = startOfDay(addDays(new Date(), 1))
 
   return (
     <div className="space-y-6">
       <Tabs defaultValue="upload" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="upload">{t("tabs.upload")}</TabsTrigger>
+          <TabsTrigger value="all">{t("tabs.all")}</TabsTrigger>
           <TabsTrigger value="scheduled">{t("tabs.scheduled")}</TabsTrigger>
           <TabsTrigger value="unscheduled">{t("tabs.unscheduled")}</TabsTrigger>
           <TabsTrigger value="bulk">{t("tabs.bulk")}</TabsTrigger>
@@ -104,20 +123,25 @@ export function ImageManagement() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="scheduled" className="space-y-4">
+        <TabsContent value="all" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>{t("scheduled.title", { count: scheduledImages.length })}</CardTitle>
+              <CardTitle>{t("all.title", { count: images.length })}</CardTitle>
               <CardDescription>
-                {t("scheduled.subtitle")}
+                {t("all.subtitle")}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid gap-4">
-                {scheduledImages.map((image) => {
-                  const imgDate = new Date(image.date)
-                  const isToday = imgDate.getTime() === today.getTime()
-                  const isPast = imgDate < today
+                {images.map((image) => {
+                  const imgDate = startOfDay(new Date(image.date))
+                  const displayDate = new Date(image.date) // Keep original for display
+                  
+                  const isScheduled = isBefore(imgDate, new Date('2099-01-01'))
+                  const isToday = isSameDay(imgDate, today)
+                  const isTomorrow = isSameDay(imgDate, tomorrow)
+                  const isPast = isBefore(imgDate, today) && isScheduled
+                  const isFuture = isAfter(imgDate, today) && isScheduled
 
                   return (
                     <div key={image.id} className="flex items-center space-x-4 p-4 border rounded-lg">
@@ -132,9 +156,105 @@ export function ImageManagement() {
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
                           <span className="font-medium">
-                            {imgDate.toLocaleDateString()}
+                            {isScheduled ? displayDate.toLocaleDateString() : t("all.unscheduled")}
                           </span>
                           {isToday && <Badge>{t("scheduled.today")}</Badge>}
+                          {isTomorrow && <Badge variant="default">{t("scheduled.tomorrow")}</Badge>}
+                          {isPast && <Badge variant="secondary">{t("scheduled.past")}</Badge>}
+                          {isFuture && <Badge variant="outline">{t("all.future")}</Badge>}
+                          {!isScheduled && <Badge variant="destructive">{t("all.notScheduled")}</Badge>}
+                        </div>
+                        <div className="text-sm text-muted-foreground">
+                          {t("scheduled.year", { year: image.year })} • {t("scheduled.games", { count: image._count.gameProgress })}
+                        </div>
+                        {image.description && (
+                          <div className="text-sm text-muted-foreground">
+                            {image.description}
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex gap-2">
+                        {!isToday && !isTomorrow && (
+                          <div className="flex gap-1">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleQueueNext(image.id)}
+                            >
+                              {t("scheduled.queueNext")}
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleQueueTomorrow(image.id)}
+                            >
+                              {t("scheduled.queueTomorrow")}
+                            </Button>
+                          </div>
+                        )}
+                        <Link href={`/admin/images/${image.id}/edit`}>
+                          <Button size="sm" variant="outline">
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                        </Link>
+                        {image._count.gameProgress === 0 && (
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            onClick={() => handleDelete(image.id)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  )
+                })}
+                {images.length === 0 && (
+                  <p className="text-muted-foreground text-center py-8">
+                    {t("all.noImages")}
+                  </p>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="scheduled" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>{t("scheduled.title", { count: scheduledImages.length })}</CardTitle>
+              <CardDescription>
+                {t("scheduled.subtitle")}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-4">
+                {scheduledImages.map((image) => {
+                  const imgDate = startOfDay(new Date(image.date))
+                  const displayDate = new Date(image.date) // Keep original for display
+                  
+                  const isToday = isSameDay(imgDate, today)
+                  const isTomorrow = isSameDay(imgDate, tomorrow)
+                  const isPast = isBefore(imgDate, today)
+
+                  return (
+                    <div key={image.id} className="flex items-center space-x-4 p-4 border rounded-lg">
+                      <div className="relative w-24 h-16 rounded overflow-hidden">
+                        <Image
+                          src={image.cloudinaryUrl}
+                          alt={image.description || "Daily image"}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium">
+                            {displayDate.toLocaleDateString()}
+                          </span>
+                          {isToday && <Badge>{t("scheduled.today")}</Badge>}
+                          {isTomorrow && <Badge variant="default">{t("scheduled.tomorrow")}</Badge>}
                           {isPast && <Badge variant="secondary">{t("scheduled.past")}</Badge>}
                         </div>
                         <div className="text-sm text-muted-foreground">
@@ -147,14 +267,23 @@ export function ImageManagement() {
                         )}
                       </div>
                       <div className="flex gap-2">
-                        {!isToday && (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handleSetToday(image.id)}
-                          >
-                            {t("scheduled.setToday")}
-                          </Button>
+                        {!isToday && !isTomorrow && (
+                          <div className="flex gap-1">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleQueueNext(image.id)}
+                            >
+                              {t("scheduled.queueNext")}
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleQueueTomorrow(image.id)}
+                            >
+                              {t("scheduled.queueTomorrow")}
+                            </Button>
+                          </div>
                         )}
                         <Link href={`/admin/images/${image.id}/edit`}>
                           <Button size="sm" variant="outline">
@@ -215,9 +344,16 @@ export function ImageManagement() {
                     <div className="flex gap-2">
                       <Button
                         size="sm"
-                        onClick={() => handleSetToday(image.id)}
+                        onClick={() => handleQueueNext(image.id)}
                       >
-                        {t("unscheduled.setToday")}
+                        {t("unscheduled.queueNext")}
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleQueueTomorrow(image.id)}
+                      >
+                        {t("unscheduled.queueTomorrow")}
                       </Button>
                       <Link href={`/admin/images/${image.id}/edit`}>
                         <Button size="sm" variant="outline">

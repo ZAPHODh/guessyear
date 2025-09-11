@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Calendar, Image as ImageIcon, Upload, Clock, Users } from "lucide-react"
 import Link from "next/link"
-import { setTodayImage, getRandomUnscheduledImage } from "@/app/[locale]/(admin)/admin/actions"
+import { queueNext, getRandomUnscheduledImage } from "@/app/[locale]/(admin)/admin/actions"
 import { useImages } from "@/components/images-context"
 import { useScopedI18n } from "@/locales/client"
 import Image from "next/image"
@@ -31,22 +31,19 @@ export function AdminDashboard() {
   } = useImages()
   const t = useScopedI18n("admin.dashboard")
 
-  const handleSetTodayImage = async (imageId: string) => {
-    try {
-      await setTodayImage({ imageId })
-    } catch (error) {
-      console.error("Failed to set today's image:", error)
-    }
-  }
-
-  const handleRandomTodayImage = async () => {
+  const handleRandomImage = async () => {
     try {
       const randomImage = await getRandomUnscheduledImage()
       if (randomImage) {
-        await setTodayImage({ imageId: randomImage.id })
+        const result = await queueNext({ imageId: randomImage.id })
+        if (result.data?.isToday) {
+          alert("Random image set for today!")
+        } else {
+          alert(`Random image scheduled for ${result.data?.scheduledFor}`)
+        }
       }
     } catch (error) {
-      console.error("Failed to set random image:", error)
+      console.error("Failed to queue random image:", error)
     }
   }
 
@@ -135,7 +132,7 @@ export function AdminDashboard() {
             )}
 
             <div className="flex gap-2 mt-4">
-              <Button onClick={handleRandomTodayImage} variant="outline">
+              <Button onClick={handleRandomImage} variant="outline">
                 {t("todayImage.setRandom")}
               </Button>
               <Link href="/admin/images">

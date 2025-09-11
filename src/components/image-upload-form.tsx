@@ -24,6 +24,7 @@ import { useScopedI18n } from "@/locales/client"
 import { MultiLanguageTextarea } from "@/components/ui/multi-language-textarea"
 import type { LocalizedTips } from "@/types/tip"
 import { createEmptyLocalizedTips } from "@/types/tip"
+import { useImages } from "@/components/images-context"
 
 const createImageUploadSchema = (t: any) => z.object({
   cloudinaryUrl: z.string().url({ message: t("cloudinaryUrl.error") }),
@@ -46,6 +47,7 @@ export function ImageUploadForm({ onSuccess, defaultValues }: ImageUploadFormPro
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const t = useScopedI18n("admin.forms.upload")
+  const { refreshImages } = useImages()
   
   const imageUploadSchema = createImageUploadSchema(t)
   type ImageUploadFormValues = z.infer<typeof imageUploadSchema>
@@ -66,6 +68,10 @@ export function ImageUploadForm({ onSuccess, defaultValues }: ImageUploadFormPro
       await uploadImage(values)
       toast.success(t("success"))
       form.reset()
+      
+      // Refresh the images context to show the new image
+      await refreshImages()
+      
       onSuccess?.()
     } catch (error) {
       toast.error(t("error"))

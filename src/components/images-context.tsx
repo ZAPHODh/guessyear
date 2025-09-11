@@ -16,6 +16,7 @@ interface DailyImage {
 interface ImagesContextType {
   images: DailyImage[]
   setImages: (images: DailyImage[]) => void
+  refreshImages: () => Promise<void>
   todayImage: DailyImage | undefined
   scheduledImages: DailyImage[]
   unscheduledImages: DailyImage[]
@@ -26,10 +27,20 @@ const ImagesContext = createContext<ImagesContextType | undefined>(undefined)
 interface ImagesProviderProps {
   children: ReactNode
   initialImages: DailyImage[]
+  refreshImages: () => Promise<DailyImage[]>
 }
 
-export function ImagesProvider({ children, initialImages }: ImagesProviderProps) {
+export function ImagesProvider({ children, initialImages, refreshImages: fetchImages }: ImagesProviderProps) {
   const [images, setImages] = useState<DailyImage[]>(initialImages)
+
+  const refreshImages = async () => {
+    try {
+      const newImages = await fetchImages()
+      setImages(newImages)
+    } catch (error) {
+      console.error('Failed to refresh images:', error)
+    }
+  }
 
   const today = new Date()
   today.setHours(0, 0, 0, 0)
@@ -53,6 +64,7 @@ export function ImagesProvider({ children, initialImages }: ImagesProviderProps)
   const value: ImagesContextType = {
     images,
     setImages,
+    refreshImages,
     todayImage,
     scheduledImages,
     unscheduledImages,

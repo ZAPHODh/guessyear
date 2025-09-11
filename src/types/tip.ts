@@ -27,6 +27,10 @@ export function getLocalizedTip(tips: LocalizedTips | null, locale: SupportedLoc
 export function createEmptyLocalizedTips(): LocalizedTips {
   return {
     en: '',
-    pt: ''
+    pt: '',
+    fr: '',
+    es: '',
+    de: '',
+    it: ''
   }
 }

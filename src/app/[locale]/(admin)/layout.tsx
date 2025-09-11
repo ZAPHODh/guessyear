@@ -20,7 +20,10 @@ export default async function AdminLayout({
   const images = await getAllImages()
 
   return (
-    <ImagesProvider initialImages={images}>
+    <ImagesProvider 
+      initialImages={images}
+      refreshImages={getAllImages}
+    >
       <SidebarProvider>
         <div className="flex flex-1">
           <AdminSidebar />

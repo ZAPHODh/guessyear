@@ -197,7 +197,20 @@ export function DailyGame({ initialGameState }: DailyGameProps) {
                 {form.formState.isSubmitting ? t("submitting") : t("submitGuess")}
               </Button>
             </form>
-
+            {gameState.attempts >= 3 && gameState.tip && (
+              <Accordion type="single" collapsible className="w-full">
+                <AccordionItem value="tip">
+                  <AccordionTrigger className="text-left">
+                    {t("needHint")}
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <div className="p-3 bg-muted/50 rounded-lg">
+                      {gameState.tip}
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+            )}
             {gameState.guesses && gameState.guesses.length > 0 && (
               <div className="space-y-2">
                 {gameState.guesses.slice().reverse().map((hint, index) => (
@@ -228,20 +241,7 @@ export function DailyGame({ initialGameState }: DailyGameProps) {
               </div>
             )}
 
-            {gameState.attempts >= 3 && gameState.tip && (
-              <Accordion type="single" collapsible className="w-full">
-                <AccordionItem value="tip">
-                  <AccordionTrigger className="text-left">
-                    💡 {t("needHint")}
-                  </AccordionTrigger>
-                  <AccordionContent>
-                    <div className="p-3 bg-muted/50 rounded-lg">
-                      {gameState.tip}
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion>
-            )}
+
           </Form>
         ) : (
           <div className="text-center space-y-8">
@@ -267,13 +267,6 @@ export function DailyGame({ initialGameState }: DailyGameProps) {
               </div>
             )}
 
-            <div className="py-4">
-              <GoogleAd
-                adSlot={'2328363985'}
-                adFormat="rectangle"
-                className="flex justify-center"
-              />
-            </div>
             {gameState.guesses && gameState.guesses.length > 0 && (
               <div className="space-y-2">
                 {gameState.guesses.slice().reverse().map((hint, index) => (
@@ -309,6 +302,13 @@ export function DailyGame({ initialGameState }: DailyGameProps) {
             >
               {t("donate")}
             </Button>
+            <div className="py-4">
+              <GoogleAd
+                adSlot={'2528645043'}
+                adFormat="rectangle"
+                className="flex justify-center"
+              />
+            </div>
           </div>
         )}
       </div>

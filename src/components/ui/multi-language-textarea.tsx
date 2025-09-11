@@ -10,6 +10,10 @@ import type { LocalizedTips, SupportedLocale } from "@/types/tip"
 const getLanguages = (t: any) => [
   { code: 'en' as SupportedLocale, name: t('languages.english'), flag: '🇺🇸' },
   { code: 'pt' as SupportedLocale, name: t('languages.portuguese'), flag: '🇧🇷' },
+  { code: 'fr' as SupportedLocale, name: t('languages.french'), flag: '🇫🇷' },
+  { code: 'es' as SupportedLocale, name: t('languages.spanish'), flag: '🇪🇸' },
+  { code: 'de' as SupportedLocale, name: t('languages.german'), flag: '🇩🇪' },
+  { code: 'it' as SupportedLocale, name: t('languages.italian'), flag: '🇮🇹' },
 ]
 
 interface MultiLanguageTextareaProps {

@@ -11,11 +11,19 @@ export default {
     todayImage: {
       title: "Imagem de Hoje",
       subtitle: "Imagem atual para {date}",
-      noImage: "Nenhuma imagem definida para hoje",
+      noImage: "Nenhuma imagem agendada para hoje",
       setRandom: "Definir Imagem Aleatória",
       chooseSpecific: "Escolher Imagem Específica",
       year: "Ano: {year}",
       gamesPlayed: "Jogos jogados: {count}"
+    },
+    queue: {
+      title: "Fila de Imagens",
+      subtitle: "Próximas imagens agendadas",
+      noQueue: "Nenhuma imagem na fila",
+      today: "Hoje",
+      tomorrow: "Amanhã",
+      comingDays: "Próximos dias"
     },
     quickActions: {
       title: "Ações Rápidas",
@@ -41,17 +49,28 @@ export default {
       subtitle: "Imagens agendadas para datas específicas",
       noImages: "Nenhuma imagem agendada",
       today: "Hoje",
+      tomorrow: "Amanhã",
       past: "Passado",
       year: "Ano: {year}",
       games: "Jogos: {count}",
-      setToday: "Definir como Hoje"
+      queueNext: "Próximo na Fila",
+      queueTomorrow: "Agendar p/ Amanhã"
     },
     unscheduled: {
       title: "Imagens Não Agendadas ({count})",
       subtitle: "Imagens ainda não agendadas para nenhuma data",
       noImages: "Nenhuma imagem não agendada",
       year: "Ano: {year}",
-      setToday: "Definir como Hoje"
+      queueNext: "Próximo na Fila",
+      queueTomorrow: "Agendar p/ Amanhã"
+    },
+    all: {
+      title: "Todas as Imagens ({count})",
+      subtitle: "Visão completa de todas as imagens do sistema",
+      noImages: "Nenhuma imagem encontrada",
+      unscheduled: "Não Agendada",
+      future: "Agendada",
+      notScheduled: "Não Agendada"
     },
     bulk: {
       title: "Agendar Imagens Aleatórias em Massa",
@@ -63,6 +82,7 @@ export default {
     },
     tabs: {
       upload: "Enviar",
+      all: "Todas as Imagens",
       scheduled: "Agendadas", 
       unscheduled: "Não Agendadas",
       bulk: "Ações em Massa"
