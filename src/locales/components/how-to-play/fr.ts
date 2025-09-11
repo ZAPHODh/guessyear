@@ -27,5 +27,6 @@ export default {
     tip1: "Cherchez les styles vestimentaires, l'architecture, les voitures et la technologie dans la photo",
     tip2: "Commencez par une estimation dans la moyenne pour réduire rapidement les possibilités",
     tip3: "Attention à la qualité photo - les anciennes photos ont tendance à être en noir & blanc ou sépia"
-  }
+  },
+  readyToPlay: "Prêt à jouer !"
 } as const

@@ -27,5 +27,6 @@ export default {
     tip1: "Look for clothing styles, architecture, cars, and technology in the photo",
     tip2: "Start with a middle-range guess to quickly narrow down the possibilities",
     tip3: "Pay attention to photo quality - older photos tend to be black & white or sepia"
-  }
+  },
+  readyToPlay: "Ready to play!"
 } as const

@@ -27,5 +27,6 @@ export default {
     tip1: "Observe estilos de roupas, arquitetura, carros e tecnologia na foto",
     tip2: "Comece com um palpite médio para rapidamente estreitar as possibilidades",
     tip3: "Preste atenção na qualidade da foto - fotos mais antigas tendem a ser preto e branco ou sépia"
-  }
+  },
+  readyToPlay: "Pronto para jogar!"
 } as const

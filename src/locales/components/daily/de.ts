@@ -22,9 +22,15 @@ export default {
   validRange: "Gültiger Bereich: {min} - {max}",
   rangeNarrowed: "eingegrenzt",
   attempt: "Versuch {number}",
+  needHint: "Brauchen Sie einen Hinweis?",
   chart: {
     title: "Gewinnrate nach Versuch",
     basedOn: "Basierend auf {count} abgeschlossenen Spielen heute",
     lossPercentage: "Verlustrate"
+  },
+  tips: {
+    generalHint: "Suchen Sie nach Hinweisen wie Kleidungsstile, Architektur, Fahrzeuge und Technologie im Bild.",
+    contextualHint: "Beachten Sie die Fotoqualität und Farbe - ältere Fotos sind oft schwarz-weiß oder sepia.",
+    strategicHint: "Nutzen Sie Ihre vorherigen Vermutungen, um den Zeitraum effektiver einzugrenzen."
   }
 } as const

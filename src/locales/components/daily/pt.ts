@@ -27,5 +27,10 @@ export default {
     title: "Taxa de Vitória por Tentativa",
     basedOn: "Baseado em {count} jogos completados hoje",
     lossPercentage: "Taxa de Derrota"
+  },
+  tips: {
+    generalHint: "Procure por pistas como estilos de roupas, arquitetura, veículos e tecnologia na imagem.",
+    contextualHint: "Considere a qualidade e cor da foto - fotos mais antigas são frequentemente preto e branco ou sépia.",
+    strategicHint: "Use seus palpites anteriores para estreitar o período de tempo mais efetivamente."
   }
 } as const

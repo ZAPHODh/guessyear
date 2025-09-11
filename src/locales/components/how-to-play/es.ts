@@ -27,5 +27,6 @@ export default {
     tip1: "Busca estilos de ropa, arquitectura, automóviles y tecnología en la foto",
     tip2: "Comienza con una suposición de rango medio para reducir rápidamente las posibilidades",
     tip3: "Presta atención a la calidad de la foto: las fotos más antiguas tienden a ser en blanco y negro o sepia"
-  }
+  },
+  readyToPlay: "¡Listo para jugar!"
 } as const

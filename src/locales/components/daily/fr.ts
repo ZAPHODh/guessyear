@@ -22,9 +22,15 @@ export default {
   validRange: "Plage valide : {min} - {max}",
   rangeNarrowed: "réduite",
   attempt: "Tentative {number}",
+  needHint: "Besoin d'un indice ?",
   chart: {
     title: "Taux de Victoire par Tentative",
     basedOn: "Basé sur {count} jeux terminés aujourd'hui",
     lossPercentage: "Taux de Défaite"
+  },
+  tips: {
+    generalHint: "Cherchez des indices comme les styles vestimentaires, l'architecture, les véhicules et la technologie dans l'image.",
+    contextualHint: "Considérez la qualité et la couleur de la photo - les photos plus anciennes sont souvent en noir et blanc ou sépia.",
+    strategicHint: "Utilisez vos suppositions précédentes pour réduire la période de temps plus efficacement."
   }
 } as const

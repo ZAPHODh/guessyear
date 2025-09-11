@@ -22,9 +22,15 @@ export default {
   validRange: "Rango válido: {min} - {max}",
   rangeNarrowed: "reducido",
   attempt: "Intento {number}",
+  needHint: "¿Necesitas una pista?",
   chart: {
     title: "Tasa de Victoria por Intento",
     basedOn: "Basado en {count} juegos completados hoy",
     lossPercentage: "Tasa de Derrota"
+  },
+  tips: {
+    generalHint: "Busca pistas como estilos de ropa, arquitectura, vehículos y tecnología en la imagen.",
+    contextualHint: "Considera la calidad y color de la foto - las fotos más antiguas suelen ser en blanco y negro o sepia.",
+    strategicHint: "Usa tus suposiciones anteriores para reducir el período de tiempo de manera más efectiva."
   }
 } as const

@@ -27,5 +27,10 @@ export default {
     title: "Win Rate by Attempt",
     basedOn: "Based on {count} completed games today",
     lossPercentage: "Loss Rate"
+  },
+  tips: {
+    generalHint: "Look for clues like clothing styles, architecture, vehicles, and technology in the image.",
+    contextualHint: "Consider the photo quality and color - older photos are often black & white or sepia.",
+    strategicHint: "Use your previous guesses to narrow down the time period more effectively."
   }
 } as const

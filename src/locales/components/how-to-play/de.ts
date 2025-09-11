@@ -27,5 +27,6 @@ export default {
     tip1: "Achten Sie auf Kleidungsstile, Architektur, Autos und Technologie im Foto",
     tip2: "Beginnen Sie mit einer mittleren Vermutung, um die Möglichkeiten schnell einzugrenzen",
     tip3: "Beachten Sie die Fotoqualität - ältere Fotos sind tendenziell schwarz-weiß oder sepia"
-  }
+  },
+  readyToPlay: "Bereit zum Spielen!"
 } as const

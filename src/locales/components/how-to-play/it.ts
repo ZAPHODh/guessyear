@@ -27,5 +27,6 @@ export default {
     tip1: "Cerca stili di abbigliamento, architettura, auto e tecnologia nella foto",
     tip2: "Inizia con un'ipotesi di fascia media per restringere rapidamente le possibilità",
     tip3: "Fai attenzione alla qualità della foto - le foto più vecchie tendono ad essere in bianco e nero o seppia"
-  }
+  },
+  readyToPlay: "Pronto a giocare!"
 } as const

@@ -22,9 +22,15 @@ export default {
   validRange: "Intervallo valido: {min} - {max}",
   rangeNarrowed: "ristretto",
   attempt: "Tentativo {number}",
+  needHint: "Hai bisogno di un suggerimento?",
   chart: {
     title: "Tasso di Vittoria per Tentativo",
     basedOn: "Basato su {count} partite completate oggi",
     lossPercentage: "Tasso di Sconfitta"
+  },
+  tips: {
+    generalHint: "Cerca indizi come stili di abbigliamento, architettura, veicoli e tecnologia nell'immagine.",
+    contextualHint: "Considera la qualità e il colore della foto - le foto più vecchie sono spesso in bianco e nero o seppia.",
+    strategicHint: "Usa i tuoi tentativi precedenti per restringere il periodo di tempo più efficacemente."
   }
 } as const
