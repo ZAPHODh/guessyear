@@ -301,13 +301,13 @@ export function DailyGame({ initialGameState }: DailyGameProps) {
             >
               {t("donate")}
             </Button> */}
-            <div className="py-4">
+            {/* <div className="py-4">
               <GoogleAd
                 adSlot={'2528645043'}
                 adFormat="rectangle"
                 className="flex justify-center"
               />
-            </div>
+            </div> */}
           </div>
         )}
       </div>
