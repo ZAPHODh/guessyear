@@ -250,7 +250,6 @@ export function DailyGame({ initialGameState }: DailyGameProps) {
                 {gameState.won ? t("congratulations") : t("betterLuck")}
               </div>
               <div className="text-xl">
-                {t("correctYear")}
                 <span className="font-bold text-3xl ml-2">
                   {gameState.correctYear}
                 </span>
@@ -296,12 +295,12 @@ export function DailyGame({ initialGameState }: DailyGameProps) {
                 ))}
               </div>
             )}
-            <Button
+            {/* <Button
               onClick={() => window.open("https://buymeacoffee.com/zaphodh", "_blank")}
               variant="outline"
             >
               {t("donate")}
-            </Button>
+            </Button> */}
             <div className="py-4">
               <GoogleAd
                 adSlot={'2528645043'}

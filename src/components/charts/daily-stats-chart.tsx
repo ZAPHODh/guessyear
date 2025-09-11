@@ -3,13 +3,6 @@
 import { Bar, BarChart, CartesianGrid, Rectangle, XAxis } from "recharts"
 import { useScopedI18n } from "@/locales/client"
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import {
   ChartConfig,
   ChartContainer,
   ChartTooltip,
@@ -76,11 +69,13 @@ export function DailyStatsChart({ data, totalGames, userAttempt }: DailyStatsCha
         <XAxis
           dataKey="attempt"
           tickLine={false}
-          tickMargin={10}
+          tickMargin={5}
           axisLine={false}
+          tick={{ fontSize: 12, className: 'text-xs sm:text-sm' }}
           tickFormatter={(value) => {
             const attemptNum = value.replace('attempt', '')
-            return t('attempt', { number: attemptNum })
+            // On mobile, show just the number. On desktop, show full text
+            return window.innerWidth < 640 ? attemptNum : t('attempt', { number: attemptNum })
           }}
         />
         <ChartTooltip
