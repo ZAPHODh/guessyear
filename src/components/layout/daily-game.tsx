@@ -212,7 +212,6 @@ export function DailyGame({ initialGameState }: DailyGameProps) {
                         </div>
                       )}
                       <div className="p-3 bg-blue-50 dark:bg-blue-950/30 rounded-lg border border-blue-200 dark:border-blue-800">
-                        <div className="text-sm font-medium text-blue-900 dark:text-blue-100 mb-2">💡 Additional Tips:</div>
                         <div className="space-y-2 text-sm text-blue-800 dark:text-blue-200">
                           <div>• {t("tips.generalHint")}</div>
                           <div>• {t("tips.contextualHint")}</div>
