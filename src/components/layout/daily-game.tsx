@@ -273,6 +273,7 @@ export function DailyGame({ initialGameState }: DailyGameProps) {
                 data={gameState.dailyStats.chartData}
                 totalGames={gameState.dailyStats.totalGames}
                 userAttempt={gameState.attempts}
+                gameWon={gameState.won}
               />
             )}
 

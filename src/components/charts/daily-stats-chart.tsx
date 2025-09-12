@@ -29,11 +29,12 @@ interface DailyStatsChartProps {
   data: ChartData[]
   totalGames: number
   userAttempt?: number
+  gameWon?: boolean
 }
 
 
 
-export function DailyStatsChart({ data, totalGames, userAttempt }: DailyStatsChartProps) {
+export function DailyStatsChart({ data, totalGames, userAttempt, gameWon }: DailyStatsChartProps) {
   const t = useScopedI18n("daily")
   const isMobile = useIsMobile()
   const [activeChart, setActiveChart] = React.useState<"winPercentage" | "gameCount">("winPercentage")
@@ -158,7 +159,7 @@ export function DailyStatsChart({ data, totalGames, userAttempt }: DailyStatsCha
               fill={`var(--color-${activeChart})`}
               strokeWidth={2}
               radius={8}
-              activeIndex={userAttemptIndex >= 0 ? userAttemptIndex : undefined}
+              activeIndex={gameWon && userAttemptIndex >= 0 ? userAttemptIndex : undefined}
               activeBar={({ ...props }) => {
                 return (
                   <Rectangle
