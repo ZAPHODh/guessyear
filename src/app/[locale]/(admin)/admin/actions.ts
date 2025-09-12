@@ -7,7 +7,6 @@ import { prisma } from "@/lib/server/db"
 import { revalidatePath } from "next/cache"
 import type { LocalizedTips } from "@/types/tip"
 import { Prisma } from "@prisma/client"
-import { addDays, startOfDay, format } from "date-fns"
 
 const uploadImageSchema = z.object({
   cloudinaryUrl: z.string().url(),
@@ -46,81 +45,42 @@ export const uploadImage = actionClient
     return { success: true, imageId: image.id }
   })
 
-// Helper function to get next available date starting from today
-async function getNextAvailableDate(startFromToday: boolean = true): Promise<Date> {
-  const baseDate = startFromToday ? startOfDay(new Date()) : startOfDay(addDays(new Date(), 1))
-  let checkDate = baseDate
-  
-  // Find the next date that doesn't have an image scheduled
-  for (let i = 0; i < 365; i++) { // Safety limit
-    const existing = await prisma.dailyImage.findFirst({
-      where: { date: checkDate }
-    })
-    
-    if (!existing) {
-      return checkDate
-    }
-    
-    checkDate = addDays(checkDate, 1)
-  }
-  
-  // Fallback - this should never happen in normal use
-  return addDays(baseDate, 365)
-}
-
-// QUEUE NEXT - Schedule image for the next available slot
-const queueNextSchema = z.object({
+const setTodayImageSchema = z.object({
   imageId: z.string(),
 })
 
-export const queueNext = actionClient
-  .metadata({ actionName: "queueNext" })
-  .schema(queueNextSchema)
+export const setTodayImage = actionClient
+  .metadata({ actionName: "setTodayImage" })
+  .schema(setTodayImageSchema)
   .action(async ({ parsedInput }) => {
     await requireAdmin()
 
-    const nextDate = await getNextAvailableDate(true) // Start from today
-    
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+
+    const existingImage = await prisma.dailyImage.findFirst({
+      where: { date: today }
+    })
+
+    if (existingImage && existingImage.id !== parsedInput.imageId) {
+      const unscheduledDate = new Date('2099-01-01')
+      unscheduledDate.setDate(unscheduledDate.getDate() + Math.floor(Math.random() * 365))
+
+      await prisma.dailyImage.update({
+        where: { id: existingImage.id },
+        data: { date: unscheduledDate }
+      })
+    }
+
     await prisma.dailyImage.update({
       where: { id: parsedInput.imageId },
-      data: { date: nextDate }
+      data: { date: today }
     })
 
     revalidatePath("/admin")
     revalidatePath("/admin/images")
     revalidatePath("/daily")
-    return { 
-      success: true, 
-      scheduledFor: format(nextDate, 'yyyy-MM-dd'),
-      isToday: format(nextDate, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd')
-    }
-  })
-
-// QUEUE TOMORROW - Schedule image specifically for tomorrow (or next day if tomorrow is taken)
-const queueTomorrowSchema = z.object({
-  imageId: z.string(),
-})
-
-export const queueTomorrow = actionClient
-  .metadata({ actionName: "queueTomorrow" })
-  .schema(queueTomorrowSchema)
-  .action(async ({ parsedInput }) => {
-    await requireAdmin()
-
-    const nextDate = await getNextAvailableDate(false) // Start from tomorrow
-    
-    await prisma.dailyImage.update({
-      where: { id: parsedInput.imageId },
-      data: { date: nextDate }
-    })
-
-    revalidatePath("/admin")
-    revalidatePath("/admin/images")
-    revalidatePath("/daily")
-    return { 
-      success: true, 
-      scheduledFor: format(nextDate, 'yyyy-MM-dd')
-    }
+    return { success: true }
   })
 
 const scheduleImageSchema = z.object({
@@ -139,13 +99,11 @@ export const scheduleImage = actionClient
     const targetDate = new Date(parsedInput.date)
     targetDate.setHours(0, 0, 0, 0)
 
-    // Check if there's already an image scheduled for this date
     const existingImage = await prisma.dailyImage.findFirst({
       where: { date: targetDate }
     })
 
     if (existingImage && existingImage.id !== parsedInput.imageId) {
-      // Move the existing image to unscheduled (far future date)
       const unscheduledDate = new Date('2099-01-01')
       unscheduledDate.setDate(unscheduledDate.getDate() + Math.floor(Math.random() * 365))
 
@@ -230,50 +188,7 @@ export async function getAllImages() {
   await requireAdmin()
 
   return prisma.dailyImage.findMany({
-    orderBy: { date: 'asc' }, // Changed to ascending for better queue view
-    include: {
-      _count: {
-        select: {
-          gameProgress: true
-        }
-      }
-    }
-  })
-}
-
-// Get the upcoming scheduled images (queue view)
-export async function getUpcomingQueue() {
-  await requireAdmin()
-  
-  const today = startOfDay(new Date())
-  
-  return prisma.dailyImage.findMany({
-    where: {
-      date: {
-        gte: today,
-        lt: new Date('2099-01-01')
-      }
-    },
-    orderBy: { date: 'asc' },
-    take: 14, // Show next 2 weeks
-    include: {
-      _count: {
-        select: {
-          gameProgress: true
-        }
-      }
-    }
-  })
-}
-
-// Get today's scheduled image
-export async function getTodaysScheduledImage() {
-  await requireAdmin()
-  
-  const today = startOfDay(new Date())
-  
-  return prisma.dailyImage.findFirst({
-    where: { date: today },
+    orderBy: { date: 'desc' },
     include: {
       _count: {
         select: {
