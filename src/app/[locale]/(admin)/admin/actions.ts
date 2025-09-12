@@ -287,8 +287,8 @@ export const queueNext = actionClient
       revalidatePath("/daily")
     }
 
-    return { 
-      success: true, 
+    return {
+      success: true,
       isToday,
       scheduledFor: scheduledDate.toDateString()
     }
@@ -333,7 +333,7 @@ export const queueTomorrow = actionClient
     revalidatePath("/admin")
     revalidatePath("/admin/images")
 
-    return { 
+    return {
       success: true,
       scheduledFor: tomorrow.toDateString()
     }
