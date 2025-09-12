@@ -235,6 +235,110 @@ export async function getRandomUnscheduledImage() {
   return unscheduledImages[randomIndex]
 }
 
+const queueNextSchema = z.object({
+  imageId: z.string(),
+})
+
+export const queueNext = actionClient
+  .metadata({ actionName: "queueNext" })
+  .schema(queueNextSchema)
+  .action(async ({ parsedInput }) => {
+    await requireAdmin()
+
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+
+    // Check if there's already an image scheduled for today
+    const todayImage = await prisma.dailyImage.findFirst({
+      where: { date: today }
+    })
+
+    let scheduledDate = today
+    let isToday = true
+
+    // If today already has an image, find the next available date
+    if (todayImage && todayImage.id !== parsedInput.imageId) {
+      scheduledDate = new Date(today)
+      scheduledDate.setDate(today.getDate() + 1)
+      isToday = false
+
+      // Find the next available date
+      let existingImage = await prisma.dailyImage.findFirst({
+        where: { date: scheduledDate }
+      })
+
+      while (existingImage && existingImage.id !== parsedInput.imageId) {
+        scheduledDate.setDate(scheduledDate.getDate() + 1)
+        existingImage = await prisma.dailyImage.findFirst({
+          where: { date: scheduledDate }
+        })
+      }
+    }
+
+    // Update the selected image to the scheduled date
+    await prisma.dailyImage.update({
+      where: { id: parsedInput.imageId },
+      data: { date: scheduledDate }
+    })
+
+    revalidatePath("/admin")
+    revalidatePath("/admin/images")
+    if (isToday) {
+      revalidatePath("/daily")
+    }
+
+    return { 
+      success: true, 
+      isToday,
+      scheduledFor: scheduledDate.toDateString()
+    }
+  })
+
+const queueTomorrowSchema = z.object({
+  imageId: z.string(),
+})
+
+export const queueTomorrow = actionClient
+  .metadata({ actionName: "queueTomorrow" })
+  .schema(queueTomorrowSchema)
+  .action(async ({ parsedInput }) => {
+    await requireAdmin()
+
+    const tomorrow = new Date()
+    tomorrow.setHours(0, 0, 0, 0)
+    tomorrow.setDate(tomorrow.getDate() + 1)
+
+    // Check if there's already an image scheduled for tomorrow
+    const tomorrowImage = await prisma.dailyImage.findFirst({
+      where: { date: tomorrow }
+    })
+
+    // If tomorrow already has an image, move it to unscheduled
+    if (tomorrowImage && tomorrowImage.id !== parsedInput.imageId) {
+      const unscheduledDate = new Date('2099-01-01')
+      unscheduledDate.setDate(unscheduledDate.getDate() + Math.floor(Math.random() * 365))
+
+      await prisma.dailyImage.update({
+        where: { id: tomorrowImage.id },
+        data: { date: unscheduledDate }
+      })
+    }
+
+    // Schedule the selected image for tomorrow
+    await prisma.dailyImage.update({
+      where: { id: parsedInput.imageId },
+      data: { date: tomorrow }
+    })
+
+    revalidatePath("/admin")
+    revalidatePath("/admin/images")
+
+    return { 
+      success: true,
+      scheduledFor: tomorrow.toDateString()
+    }
+  })
+
 const bulkScheduleRandomSchema = z.object({
   startDate: z.string(),
   days: z.number().min(1).max(365),

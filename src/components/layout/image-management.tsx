@@ -58,7 +58,7 @@ export function ImageManagement() {
       console.error("Failed to queue image:", error)
     }
   }
-  
+
   const handleQueueTomorrow = async (imageId: string) => {
     try {
       const result = await queueTomorrow({ imageId })
@@ -136,7 +136,7 @@ export function ImageManagement() {
                 {images.map((image) => {
                   const imgDate = startOfDay(new Date(image.date))
                   const displayDate = new Date(image.date) // Keep original for display
-                  
+
                   const isScheduled = isBefore(imgDate, new Date('2099-01-01'))
                   const isToday = isSameDay(imgDate, today)
                   const isTomorrow = isSameDay(imgDate, tomorrow)
@@ -233,7 +233,7 @@ export function ImageManagement() {
                 {scheduledImages.map((image) => {
                   const imgDate = startOfDay(new Date(image.date))
                   const displayDate = new Date(image.date) // Keep original for display
-                  
+
                   const isToday = isSameDay(imgDate, today)
                   const isTomorrow = isSameDay(imgDate, tomorrow)
                   const isPast = isBefore(imgDate, today)
