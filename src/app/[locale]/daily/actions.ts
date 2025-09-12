@@ -221,11 +221,7 @@ export async function getTodayImage(locale: SupportedLocale = 'en') {
 
   let cookieState = await getCookieGameState()
 
-  if (shouldResetCookieState(cookieState, todayStr, dailyImage.id)) {
-    cookieState = createInitialCookieState(todayStr, dailyImage.id)
-  }
-
-  if (!cookieState) {
+  if (shouldResetCookieState(cookieState, todayStr, dailyImage.id) || !cookieState) {
     cookieState = createInitialCookieState(todayStr, dailyImage.id)
   }
 
@@ -377,11 +373,7 @@ export const submitGuess = actionClient
 
     let cookieState = await getCookieGameState()
 
-    if (shouldResetCookieState(cookieState, todayStr, dailyImage.id)) {
-      cookieState = createInitialCookieState(todayStr, dailyImage.id)
-    }
-
-    if (!cookieState) {
+    if (shouldResetCookieState(cookieState, todayStr, dailyImage.id) || !cookieState) {
       cookieState = createInitialCookieState(todayStr, dailyImage.id)
     }
 
