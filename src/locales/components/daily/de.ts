@@ -23,6 +23,10 @@ export default {
   rangeNarrowed: "eingegrenzt",
   attempt: "Versuch {number}",
   needHint: "Brauchen Sie einen Hinweis?",
+  statsTitle: "Tägliche Statistiken - {games} Spiele",
+  statsDescription: "Interaktives Diagramm mit Gewinnraten und Spielzählungen pro Versuch",
+  winPercentageLabel: "Gewinnprozentsatz",
+  gameCountLabel: "Spielanzahl",
   chart: {
     title: "Gewinnrate nach Versuch",
     basedOn: "Basierend auf {count} abgeschlossenen Spielen heute",

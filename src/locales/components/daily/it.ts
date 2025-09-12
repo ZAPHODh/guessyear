@@ -23,6 +23,10 @@ export default {
   rangeNarrowed: "ristretto",
   attempt: "Tentativo {number}",
   needHint: "Hai bisogno di un suggerimento?",
+  statsTitle: "Statistiche Giornaliere - {games} Partite",
+  statsDescription: "Grafico interattivo che mostra tassi di vittoria e conteggi di partite per tentativo",
+  winPercentageLabel: "Percentuale di Vittoria",
+  gameCountLabel: "Conteggio Partite",
   chart: {
     title: "Tasso di Vittoria per Tentativo",
     basedOn: "Basato su {count} partite completate oggi",

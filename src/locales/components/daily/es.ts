@@ -23,6 +23,10 @@ export default {
   rangeNarrowed: "reducido",
   attempt: "Intento {number}",
   needHint: "¿Necesitas una pista?",
+  statsTitle: "Estadísticas Diarias - {games} Juegos",
+  statsDescription: "Gráfico interactivo mostrando tasas de victoria y conteos de juegos por intento",
+  winPercentageLabel: "Porcentaje de Victoria",
+  gameCountLabel: "Conteo de Juegos",
   chart: {
     title: "Tasa de Victoria por Intento",
     basedOn: "Basado en {count} juegos completados hoy",

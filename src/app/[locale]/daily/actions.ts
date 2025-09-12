@@ -172,6 +172,8 @@ async function getWinningGames(date: Date) {
 }
 
 function createChartData(winningGames: any[], totalGames: number, userAttempts?: number, userWon?: boolean) {
+  const totalWinningGames = winningGames.length
+
   return Array.from({ length: MAX_ATTEMPTS }, (_, i) => {
     const attempt = i + 1
     const winsAtThisAttempt = winningGames.filter(game => game.winAttempt === attempt)
@@ -179,7 +181,8 @@ function createChartData(winningGames: any[], totalGames: number, userAttempts?:
 
     return {
       attempt,
-      winPercentage: totalGames > 0 ? Math.round((winCount / totalGames) * 100) : 0,
+      winPercentage: totalWinningGames > 0 ? Math.round((winCount / totalWinningGames) * 100) : 0,
+      gameCount: winCount,
       isUserAttempt: Boolean(userWon && userAttempts === attempt)
     }
   })

@@ -23,6 +23,10 @@ export default {
   rangeNarrowed: "narrowed",
   attempt: "Attempt {number}",
   needHint: "Need a hint?",
+  statsTitle: "Daily Statistics - {games} Games",
+  statsDescription: "Interactive chart showing win rates and game counts by attempt",
+  winPercentageLabel: "Win Percentage",
+  gameCountLabel: "Games Won",
   chart: {
     title: "Win Rate by Attempt",
     basedOn: "Based on {count} completed games today",

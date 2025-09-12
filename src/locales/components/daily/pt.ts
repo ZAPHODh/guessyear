@@ -23,6 +23,10 @@ export default {
   rangeNarrowed: "estreitado",
   attempt: "Tentativa {number}",
   needHint: "Precisa de uma dica?",
+  statsTitle: "Estatísticas Diárias - {games} Jogos",
+  statsDescription: "Gráfico interativo mostrando taxas de vitória e contagens de jogos por tentativa",
+  winPercentageLabel: "Taxa de Vitória",
+  gameCountLabel: "Jogos Ganhos",
   chart: {
     title: "Taxa de Vitória por Tentativa",
     basedOn: "Baseado em {count} jogos completados hoje",

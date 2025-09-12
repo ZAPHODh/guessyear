@@ -23,6 +23,10 @@ export default {
   rangeNarrowed: "réduite",
   attempt: "Tentative {number}",
   needHint: "Besoin d'un indice ?",
+  statsTitle: "Statistiques Quotidiennes - {games} Jeux",
+  statsDescription: "Graphique interactif montrant les taux de victoire et les comptes de jeux par tentative",
+  winPercentageLabel: "Pourcentage de Victoire",
+  gameCountLabel: "Compte de Jeux",
   chart: {
     title: "Taux de Victoire par Tentative",
     basedOn: "Basé sur {count} jeux terminés aujourd'hui",

@@ -35,6 +35,7 @@ export interface GameState {
     chartData: {
       attempt: number
       winPercentage: number
+      gameCount: number
       isUserAttempt: boolean
     }[]
     totalGames: number
@@ -269,13 +270,11 @@ export function DailyGame({ initialGameState }: DailyGameProps) {
             </div>
 
             {gameState.dailyStats && (
-              <div className="py-6 px-6 border rounded-xl">
-                <DailyStatsChart
-                  data={gameState.dailyStats.chartData}
-                  totalGames={gameState.dailyStats.totalGames}
-                  userAttempt={gameState.attempts}
-                />
-              </div>
+              <DailyStatsChart
+                data={gameState.dailyStats.chartData}
+                totalGames={gameState.dailyStats.totalGames}
+                userAttempt={gameState.attempts}
+              />
             )}
 
             {gameState.guesses && gameState.guesses.length > 0 && (
