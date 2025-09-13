@@ -3,7 +3,7 @@ export default {
   subtitle: "Aprenda a dominar o jogo diário de adivinhar o ano que a fotografia foi tirada!",
   objective: {
     title: "Objetivo",
-    description: "Adivinhe o ano em que uma fotografia histórica foi tirada. Você tem 5 tentativas para acertar!"
+    description: "Adivinhe o ano em que uma fotografia foi tirada. Você tem 5 tentativas para acertar!"
   },
   howItWorks: {
     title: "Como Funciona",

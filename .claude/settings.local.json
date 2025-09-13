@@ -20,7 +20,8 @@
       "mcp__shadcn__get_item_examples_from_registries",
       "mcp__ide__getDiagnostics",
       "Bash(node:*)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "mcp__shadcn__view_items_in_registries"
     ]
   },
   "enableAllProjectMcpServers": true,

@@ -24,7 +24,7 @@ export default {
   attempt: "Tentativa {number}",
   needHint: "Precisa de uma dica?",
   statsTitle: "Estatísticas Diárias - {games} Jogos",
-  statsDescription: "Gráfico interativo mostrando taxas de vitória e contagens de jogos por tentativa",
+  statsDescription: "Gráfico mostrando taxas de vitória e contagens de jogos por tentativa",
   winPercentageLabel: "Taxa de Vitória",
   gameCountLabel: "Jogos Ganhos",
   chart: {
@@ -36,5 +36,39 @@ export default {
     generalHint: "Procure por pistas como estilos de roupas, arquitetura, veículos e tecnologia na imagem.",
     contextualHint: "Considere a qualidade e cor da foto - fotos mais antigas são frequentemente preto e branco ou sépia.",
     strategicHint: "Use seus palpites anteriores para estreitar o período de tempo mais efetivamente."
+  },
+  share: {
+    button: "Compartilhar Resultado",
+    title: "Compartilhe seu resultado",
+    downloading: "Criando imagem...",
+    generating: "Gerando...",
+    success: "Imagem pronta para compartilhar!",
+    copy: "Copiar",
+    copied: "Copiado!",
+    copySuccess: "Texto copiado para sua área de transferência 🎉",
+    download: "Baixar",
+    more: "Mais",
+    cancel: "Cancelar",
+    platforms: {
+      twitter: "Twitter",
+      whatsapp: "WhatsApp",
+      facebook: "Facebook"
+    },
+    shareText: {
+      title: "Resultado do Desafio Diário",
+      won: "Eu ganhei o Desafio de Foto Diário em {attempts} tentativa{plural}! 🎉",
+      lost: "Eu tentei o Desafio de Foto Diário - a resposta era {correctYear}! 📸"
+    },
+    errors: {
+      shareApiFailed: "API de compartilhamento falhou, imagem foi baixada",
+      generateImageFailed: "Falha ao gerar imagem de compartilhamento:"
+    },
+    image: {
+      wonText: "Consegui adivinhar!",
+      lostText: "Quase consegui!",
+      attemptsText: "Em {attempts} tentativa{plural}",
+      yearText: "Ano:",
+      playText: "Jogue também!"
+    }
   }
 } as const

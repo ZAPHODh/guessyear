@@ -36,5 +36,39 @@ export default {
     generalHint: "Look for clues like clothing styles, architecture, vehicles, and technology in the image.",
     contextualHint: "Consider the photo quality and color - older photos are often black & white or sepia.",
     strategicHint: "Use your previous guesses to narrow down the time period more effectively."
+  },
+  share: {
+    button: "Share Result",
+    title: "Share your result",
+    downloading: "Creating image...",
+    generating: "Generating...",
+    success: "Image ready to share!",
+    copy: "Copy",
+    copied: "Copied!",
+    copySuccess: "Text copied to your clipboard 🎉",
+    download: "Download",
+    more: "More",
+    cancel: "Cancel",
+    platforms: {
+      twitter: "Twitter",
+      whatsapp: "WhatsApp",
+      facebook: "Facebook"
+    },
+    shareText: {
+      title: "Daily Image Challenge Result",
+      won: "I won the Daily Photo Challenge in {attempts} attempt{plural}! 🎉",
+      lost: "I tried the Daily Photo Challenge - the answer was {correctYear}! 📸"
+    },
+    errors: {
+      shareApiFailed: "Web Share API failed, image was downloaded instead",
+      generateImageFailed: "Failed to generate share image:"
+    },
+    image: {
+      wonText: "I guessed it!",
+      lostText: "Almost got it!",
+      attemptsText: "In {attempts} attempt{plural}",
+      yearText: "Year:",
+      playText: "Play too!"
+    }
   }
 } as const

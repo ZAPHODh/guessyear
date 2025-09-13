@@ -36,5 +36,39 @@ export default {
     generalHint: "Busca pistas como estilos de ropa, arquitectura, vehículos y tecnología en la imagen.",
     contextualHint: "Considera la calidad y color de la foto - las fotos más antiguas suelen ser en blanco y negro o sepia.",
     strategicHint: "Usa tus suposiciones anteriores para reducir el período de tiempo de manera más efectiva."
+  },
+  share: {
+    button: "Compartir Resultado",
+    title: "Comparte tu resultado",
+    downloading: "Creando imagen...",
+    generating: "Generando...",
+    success: "¡Imagen lista para compartir!",
+    copy: "Copiar",
+    copied: "¡Copiado!",
+    copySuccess: "Texto copiado a tu portapapeles 🎉",
+    download: "Descargar",
+    more: "Más",
+    cancel: "Cancelar",
+    platforms: {
+      twitter: "Twitter",
+      whatsapp: "WhatsApp",
+      facebook: "Facebook"
+    },
+    shareText: {
+      title: "Resultado del Desafío Diario",
+      won: "¡Gané el Desafío de Foto Diario en {attempts} intento{plural}! 🎉",
+      lost: "¡Intenté el Desafío de Foto Diario - la respuesta era {correctYear}! 📸"
+    },
+    errors: {
+      shareApiFailed: "API de compartir falló, imagen descargada en su lugar",
+      generateImageFailed: "Error al generar imagen para compartir:"
+    },
+    image: {
+      wonText: "¡Lo adiviné!",
+      lostText: "¡Casi lo logro!",
+      attemptsText: "En {attempts} intento{plural}",
+      yearText: "Año:",
+      playText: "¡Juega también!"
+    }
   }
 } as const

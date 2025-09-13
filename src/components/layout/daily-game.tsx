@@ -18,6 +18,7 @@ import Link from "next/link"
 import { useSmartRange } from "@/hooks/use-smart-range"
 import { DailyStatsChart } from "@/components/charts/daily-stats-chart"
 import { GoogleAd } from "@/components/ads/google-ad"
+import { ShareButton } from "@/components/ui/share-button"
 
 interface GuessHint {
   year: number
@@ -266,6 +267,13 @@ export function DailyGame({ initialGameState }: DailyGameProps) {
                   {gameState.correctYear}
                 </span>
               </div>
+              {gameState.won && <ShareButton
+                attempts={gameState.attempts}
+                won={gameState.won}
+                correctYear={gameState.correctYear!}
+                className="mt-4"
+              />
+              }
             </div>
 
             {gameState.dailyStats && (

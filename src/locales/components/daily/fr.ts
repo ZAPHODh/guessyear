@@ -36,5 +36,39 @@ export default {
     generalHint: "Cherchez des indices comme les styles vestimentaires, l'architecture, les véhicules et la technologie dans l'image.",
     contextualHint: "Considérez la qualité et la couleur de la photo - les photos plus anciennes sont souvent en noir et blanc ou sépia.",
     strategicHint: "Utilisez vos suppositions précédentes pour réduire la période de temps plus efficacement."
+  },
+  share: {
+    button: "Partager le Résultat",
+    title: "Partagez votre résultat",
+    downloading: "Création de l'image...",
+    generating: "Génération...",
+    success: "Image prête à partager !",
+    copy: "Copier",
+    copied: "Copié !",
+    copySuccess: "Texte copié dans votre presse-papiers 🎉",
+    download: "Télécharger",
+    more: "Plus",
+    cancel: "Annuler",
+    platforms: {
+      twitter: "Twitter",
+      whatsapp: "WhatsApp",
+      facebook: "Facebook"
+    },
+    shareText: {
+      title: "Résultat du Défi Quotidien",
+      won: "J'ai gagné le Défi Photo Quotidien en {attempts} tentative{plural}! 🎉",
+      lost: "J'ai essayé le Défi Photo Quotidien - la réponse était {correctYear}! 📸"
+    },
+    errors: {
+      shareApiFailed: "API de partage échouée, image téléchargée à la place",
+      generateImageFailed: "Échec de génération de l'image de partage:"
+    },
+    image: {
+      wonText: "J'ai deviné!",
+      lostText: "Presque réussi!",
+      attemptsText: "En {attempts} tentative{plural}",
+      yearText: "Année:",
+      playText: "Jouez aussi!"
+    }
   }
 } as const
