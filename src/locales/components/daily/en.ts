@@ -57,7 +57,8 @@ export default {
     shareText: {
       title: "Daily Image Challenge Result",
       won: "I won the Daily Photo Challenge in {attempts} attempt{plural}! 🎉",
-      lost: "I tried the Daily Photo Challenge - the answer was {correctYear}! 📸"
+      lost: "I tried the Daily Photo Challenge - the answer was {correctYear}! 📸",
+      playAt: "Play at:"
     },
     errors: {
       shareApiFailed: "Web Share API failed, image was downloaded instead",

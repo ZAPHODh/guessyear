@@ -57,7 +57,8 @@ export default {
     shareText: {
       title: "Resultado do Desafio Diário",
       won: "Eu ganhei o Desafio de Foto Diário em {attempts} tentativa{plural}! 🎉",
-      lost: "Eu tentei o Desafio de Foto Diário - a resposta era {correctYear}! 📸"
+      lost: "Eu tentei o Desafio de Foto Diário - a resposta era {correctYear}! 📸",
+      playAt: "Jogue em:"
     },
     errors: {
       shareApiFailed: "API de compartilhamento falhou, imagem foi baixada",

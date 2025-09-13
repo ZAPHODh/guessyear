@@ -40,6 +40,8 @@ export function ShareButton({ attempts, won, correctYear, className }: ShareButt
 
   const gameUrl = typeof window !== 'undefined' ? window.location.origin : ''
 
+  const getShareMessage = () => `${shareText}\n\n${t("shareText.playAt")} ${gameUrl}`
+
   const generateShareImage = async () => {
     if (shareUrl) return shareUrl
 
@@ -69,24 +71,23 @@ export function ShareButton({ attempts, won, correctYear, className }: ShareButt
     return ""
   }
 
-  const handleTwitterShare = async () => {
-    const url = await generateShareImage()
-    const twitterText = `${shareText}\n\nPlay at: ${gameUrl}`
-    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(twitterText)}`, '_blank')
+  const handleTwitterShare = () => {
+    const message = getShareMessage()
+    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(message)}`, '_blank')
   }
 
-  const handleWhatsAppShare = async () => {
-    const whatsappText = `${shareText}\n\nPlay at: ${gameUrl}`
-    window.open(`https://wa.me/?text=${encodeURIComponent(whatsappText)}`, '_blank')
+  const handleWhatsAppShare = () => {
+    const message = getShareMessage()
+    window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank')
   }
 
-  const handleFacebookShare = async () => {
+  const handleFacebookShare = () => {
     window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(gameUrl)}&quote=${encodeURIComponent(shareText)}`, '_blank')
   }
 
   const handleCopyLink = () => {
-    const textToCopy = `${shareText}\n\n${gameUrl}`
-    copyToClipboard(textToCopy)
+    const message = getShareMessage()
+    copyToClipboard(message)
   }
 
   const handleDownloadImage = async () => {
