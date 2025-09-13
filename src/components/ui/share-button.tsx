@@ -17,6 +17,7 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer"
 import Icons from "../shared/icons"
+import { siteConfig } from "@/config/site"
 
 interface ShareButtonProps {
   attempts: number
@@ -38,7 +39,7 @@ export function ShareButton({ attempts, won, correctYear, className }: ShareButt
     ? t("shareText.won", { attempts, plural: attempts === 1 ? '' : 's' })
     : t("shareText.lost", { correctYear })
 
-  const gameUrl = typeof window !== 'undefined' ? window.location.origin : ''
+  const gameUrl = `${siteConfig(locale).url}/daily`
 
   const getShareMessage = () => `${shareText}\n\n${t("shareText.playAt")} ${gameUrl}`
 
