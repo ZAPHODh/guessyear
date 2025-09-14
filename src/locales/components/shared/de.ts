@@ -1,3 +1,5 @@
+import { set } from "zod";
+
 export default {
     goBack: 'Zurück gehen',
     locales: {
@@ -14,5 +16,6 @@ export default {
     logout: 'Abmelden',
     toggleTheme: 'Design wechseln',
     light: 'Hell',
-    dark: 'Dunkel'
+    dark: 'Dunkel',
+    settings: 'Einstellungen'
 } as const

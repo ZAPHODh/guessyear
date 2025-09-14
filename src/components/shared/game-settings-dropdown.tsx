@@ -59,17 +59,7 @@ export function GameSettingsDropdown() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">
-        <DropdownMenuLabel className="flex items-center gap-2">
-          <Clock className="h-4 w-4" />
-          {scopedT("nextImage")}
-        </DropdownMenuLabel>
-        <div className="px-2 py-1 text-center">
-          <div className="text-lg font-mono font-bold">{timeUntilNextImage}</div>
-          <div className="text-xs text-muted-foreground">{scopedT("timeRemaining")}</div>
-        </div>
-
-        <DropdownMenuSeparator />
-
+        <DropdownMenuLabel>{scopedT("setting")}</DropdownMenuLabel>
         <DropdownMenuSub>
           <DropdownMenuSubTrigger>
             <Languages className="mr-2 h-4 w-4" />
@@ -92,6 +82,19 @@ export function GameSettingsDropdown() {
             ))}
           </DropdownMenuSubContent>
         </DropdownMenuSub>
+        <DropdownMenuSeparator />
+        <DropdownMenuLabel className="flex items-center justify-center gap-2">
+          <Clock className="h-4 w-4" />
+          {scopedT("nextImage")}
+        </DropdownMenuLabel>
+        <div className="px-2 py-1 text-center">
+          <div className="text-lg font-mono font-bold">{timeUntilNextImage}</div>
+          <div className="text-xs text-muted-foreground">{scopedT("timeRemaining")}</div>
+        </div>
+
+
+
+
       </DropdownMenuContent>
     </DropdownMenu>
   )

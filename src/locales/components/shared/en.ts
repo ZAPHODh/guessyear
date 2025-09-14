@@ -14,5 +14,6 @@ export default {
     logout: 'Log out',
     toggleTheme: 'Toggle Theme',
     light: 'Light',
-    dark: 'Dark'
+    dark: 'Dark',
+    settings: 'Settings'
 } as const

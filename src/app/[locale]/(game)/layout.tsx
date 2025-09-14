@@ -2,7 +2,7 @@ import Link from "next/link"
 import ModeToggle from "@/components/mode-toggle"
 import { siteConfig } from "@/config/site"
 import { getCurrentLocale } from "@/locales/server"
-import { GameSettingsDropdown } from "@/components/layout/game-settings-dropdown"
+import { GameSettingsDropdown } from "@/components/shared/game-settings-dropdown"
 
 export default async function GameLayout({
   children,

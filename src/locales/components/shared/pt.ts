@@ -14,5 +14,6 @@ export default {
     logout: 'Sair',
     toggleTheme: 'Alternar Tema',
     light: 'Claro',
-    dark: 'Escuro'
+    dark: 'Escuro',
+    settings: 'Configurações'
 } as const

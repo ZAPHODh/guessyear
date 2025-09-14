@@ -14,5 +14,6 @@ export default {
     logout: 'Cerrar Sesión',
     toggleTheme: 'Cambiar Tema',
     light: 'Claro',
-    dark: 'Oscuro'
+    dark: 'Oscuro',
+    settings: 'Configuraciones'
 } as const
