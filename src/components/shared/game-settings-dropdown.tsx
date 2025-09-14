@@ -59,7 +59,7 @@ export function GameSettingsDropdown() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">
-        <DropdownMenuLabel>{scopedT("setting")}</DropdownMenuLabel>
+        <DropdownMenuLabel>{scopedT("settings")}</DropdownMenuLabel>
         <DropdownMenuSub>
           <DropdownMenuSubTrigger>
             <Languages className="mr-2 h-4 w-4" />
