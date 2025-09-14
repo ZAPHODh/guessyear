@@ -10,7 +10,6 @@ import { Badge } from "@/components/ui/badge"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Info } from "lucide-react"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { submitGuess } from "../../app/[locale]/daily/actions"
 import { useScopedI18n } from "@/locales/client"
 import { useCurrentLocale } from "@/locales/client"
 import Image from "next/image"
@@ -19,6 +18,7 @@ import { useSmartRange } from "@/hooks/use-smart-range"
 import { DailyStatsChart } from "@/components/charts/daily-stats-chart"
 import { GoogleAd } from "@/components/ads/google-ad"
 import { ShareButton } from "@/components/ui/share-button"
+import { submitGuess } from "@/app/[locale]/(game)/daily/actions"
 
 interface GuessHint {
   year: number

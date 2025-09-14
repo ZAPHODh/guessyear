@@ -21,7 +21,8 @@
       "mcp__ide__getDiagnostics",
       "Bash(node:*)",
       "Bash(npx tsc:*)",
-      "mcp__shadcn__view_items_in_registries"
+      "mcp__shadcn__view_items_in_registries",
+      "Bash(ls:*)"
     ]
   },
   "enableAllProjectMcpServers": true,
