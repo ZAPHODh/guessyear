@@ -9,6 +9,8 @@ export default {
         italian: 'Italian'
     },
     changeLocale: 'Change Locale',
+    nextImage: 'Next Image',
+    timeRemaining: 'Time remaining',
     logout: 'Log out',
     toggleTheme: 'Toggle Theme',
     light: 'Light',

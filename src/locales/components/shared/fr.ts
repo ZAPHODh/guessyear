@@ -9,6 +9,8 @@ export default {
         italian: 'Italien'
     },
     changeLocale: 'Changer la langue',
+    nextImage: 'Prochaine Image',
+    timeRemaining: 'Temps restant',
     logout: 'Se déconnecter',
     toggleTheme: 'Changer le thème',
     light: 'Clair',

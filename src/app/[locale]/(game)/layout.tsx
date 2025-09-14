@@ -1,9 +1,8 @@
 import Link from "next/link"
-import { Settings } from "lucide-react"
-import { Button } from "@/components/ui/button"
 import ModeToggle from "@/components/mode-toggle"
 import { siteConfig } from "@/config/site"
 import { getCurrentLocale } from "@/locales/server"
+import { GameSettingsDropdown } from "@/components/layout/game-settings-dropdown"
 
 export default async function GameLayout({
   children,
@@ -19,7 +18,8 @@ export default async function GameLayout({
         <div className="container mx-auto px-4 max-w-2xl">
           <div className="flex h-16 items-center justify-between">
             <div className="flex-1 flex justify-start">
-              <ModeToggle />
+              <GameSettingsDropdown />
+
             </div>
 
             <div className="flex-1 flex justify-center">
@@ -29,10 +29,7 @@ export default async function GameLayout({
             </div>
 
             <div className="flex-1 flex justify-end">
-              <Button variant="outline" size="icon" >
-                <Settings className="h-[1.2rem] w-[1.2rem]" />
-                <span className="sr-only">Settings</span>
-              </Button>
+              <ModeToggle />
             </div>
           </div>
         </div>

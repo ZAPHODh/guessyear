@@ -9,29 +9,40 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useChangeLocale, useCurrentLocale, useScopedI18n } from "@/locales/client";
 import { Button } from "../ui/button";
+import { useLocales } from "@/hooks/use-locales";
 
+interface LocaleTogglerProps {
+  showIcon?: boolean;
+  variant?: "ghost" | "default" | "destructive" | "outline" | "secondary" | "link" | null | undefined;
+  size?: "default" | "sm" | "lg" | "icon" | null | undefined;
+  className?: string;
+  asChild?: boolean;
+}
 
-
-export default function LocaleToggler() {
+export default function LocaleToggler({
+  showIcon = true,
+  variant = "ghost",
+  size = "sm",
+  className = "w-9 px-0",
+  asChild = false
+}: LocaleTogglerProps) {
   const scopedT = useScopedI18n('shared')
   const changeLocale = useChangeLocale({ preserveSearchParams: true });
   const currentLocale = useCurrentLocale();
-  const locales = [
-    {
-      name: scopedT('locales.english'),
-      value: "en",
-    },
-    {
-      name: scopedT('locales.portuguese'),
-      value: "pt",
-    },
-  ];
+  const locales = useLocales();
+  const TriggerContent = () => (
+    <>
+      {showIcon && <LanguagesIcon className="h-5 w-5" />}
+      {!showIcon && <span>{scopedT('changeLocale')}</span>}
+      <span className="sr-only">{scopedT('changeLocale')}</span>
+    </>
+  );
+
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="sm" className="w-9 px-0">
-          <LanguagesIcon className=" h-5 w-5 " />
-          <span className="sr-only">{scopedT('changeLocale')}</span>
+      <DropdownMenuTrigger asChild={asChild}>
+        <Button variant={variant} size={size} className={className}>
+          <TriggerContent />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
