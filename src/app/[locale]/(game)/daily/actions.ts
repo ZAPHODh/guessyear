@@ -3,6 +3,7 @@
 import { z } from "zod"
 import { cookies } from "next/headers"
 import { startOfDay, format, addDays } from "date-fns"
+import { toZonedTime, fromZonedTime } from "date-fns-tz"
 import { prisma } from "@/lib/server/db"
 import { actionClient } from "@/lib/client/safe-action"
 import { getCurrentSession } from "@/lib/server/auth/session"
@@ -27,8 +28,19 @@ interface CookieGameState {
   guesses: GuessHint[]
 }
 
-function getTodayDate(): Date {
-  return startOfDay(new Date())
+function getTodayDate(userTimezone?: string): Date {
+  const now = new Date()
+
+  if (userTimezone) {
+    // Convert to user's timezone and get start of day there
+    const zonedDate = toZonedTime(now, userTimezone)
+    const startOfDayInZone = startOfDay(zonedDate)
+    // Convert back to UTC for consistent storage
+    return fromZonedTime(startOfDayInZone, userTimezone)
+  }
+
+  // Fallback to UTC if no timezone provided
+  return startOfDay(now)
 }
 
 function formatDateForCookie(date: Date): string {
@@ -87,8 +99,8 @@ async function createDefaultDailyImage(today: Date) {
   })
 }
 
-async function getOrCreateTodayImage() {
-  const today = getTodayDate()
+async function getOrCreateTodayImage(userTimezone?: string) {
+  const today = getTodayDate(userTimezone)
 
   let dailyImage = await findDailyImageByDate(today)
 
@@ -217,9 +229,9 @@ function getLocalizedTipIfEligible(attempts: number, tip: LocalizedTips | null |
   return attempts >= 3 && tip ? getLocalizedTip(tip, locale) : undefined
 }
 
-export async function getTodayImage(locale: SupportedLocale = 'en') {
-  const dailyImage = await getOrCreateTodayImage()
-  const today = getTodayDate()
+export async function getTodayImage(locale: SupportedLocale = 'en', userTimezone?: string) {
+  const dailyImage = await getOrCreateTodayImage(userTimezone)
+  const today = getTodayDate(userTimezone)
   const todayStr = formatDateForCookie(today)
 
   let cookieState = await getCookieGameState()
@@ -256,7 +268,8 @@ const submitGuessSchema = z.object({
 })
 
 const submitGuessWithLocaleSchema = submitGuessSchema.extend({
-  locale: z.string().optional().default('en')
+  locale: z.string().optional().default('en'),
+  userTimezone: z.string().optional()
 })
 
 function validateGameState(cookieState: CookieGameState) {
@@ -369,9 +382,9 @@ async function saveGameProgress(user: any, cookieState: CookieGameState, imageId
 export const submitGuess = actionClient
   .metadata({ actionName: "submitGuess" })
   .schema(submitGuessWithLocaleSchema)
-  .action(async ({ parsedInput: { year, locale } }) => {
-    const dailyImage = await getOrCreateTodayImage()
-    const today = getTodayDate()
+  .action(async ({ parsedInput: { year, locale, userTimezone } }) => {
+    const dailyImage = await getOrCreateTodayImage(userTimezone)
+    const today = getTodayDate(userTimezone)
     const todayStr = formatDateForCookie(today)
 
     let cookieState = await getCookieGameState()

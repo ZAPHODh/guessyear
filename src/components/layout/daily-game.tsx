@@ -15,10 +15,11 @@ import { useCurrentLocale } from "@/locales/client"
 import Image from "next/image"
 import Link from "next/link"
 import { useSmartRange } from "@/hooks/use-smart-range"
+import { useUserTimezone } from "@/hooks/use-user-timezone"
 import { DailyStatsChart } from "@/components/charts/daily-stats-chart"
 import { GoogleAd } from "@/components/ads/google-ad"
 import { ShareButton } from "@/components/ui/share-button"
-import { submitGuess } from "@/app/[locale]/(game)/daily/actions"
+import { submitGuess, getTodayImage } from "@/app/[locale]/(game)/daily/actions"
 
 interface GuessHint {
   year: number
@@ -55,8 +56,10 @@ interface DailyGameProps {
 
 export function DailyGame({ initialGameState }: DailyGameProps) {
   const [gameState, setGameState] = useState<GameState>(initialGameState)
+  const [isTimezoneReady, setIsTimezoneReady] = useState(false)
   const t = useScopedI18n("daily")
   const locale = useCurrentLocale()
+  const userTimezone = useUserTimezone()
 
   const { minYear, maxYear, confidence } = useSmartRange({
     correctYear: gameState.correctYear,
@@ -95,12 +98,29 @@ export function DailyGame({ initialGameState }: DailyGameProps) {
     form.setValue("year", "", { shouldValidate: false })
   }, [gameState.guesses, form])
 
+  // Revalidate game state when timezone is detected
+  useEffect(() => {
+    if (userTimezone && !isTimezoneReady) {
+      const revalidateGameState = async () => {
+        try {
+          const updatedGameState = await getTodayImage(locale, userTimezone || undefined)
+          setGameState(updatedGameState)
+          setIsTimezoneReady(true)
+        } catch (error) {
+          console.error("Failed to revalidate game state with timezone:", error)
+          setIsTimezoneReady(true) // Set ready even on error to prevent infinite retries
+        }
+      }
+      revalidateGameState()
+    }
+  }, [userTimezone, locale, isTimezoneReady])
+
   const onSubmit = async (data: GuessForm) => {
     if (gameState.completed) return
 
     try {
       const year = Number(data.year)
-      const result = await submitGuess({ year, locale })
+      const result = await submitGuess({ year, locale, userTimezone: userTimezone || undefined })
       if (result?.data) {
         setGameState(result.data)
       }
