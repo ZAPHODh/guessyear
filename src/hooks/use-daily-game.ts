@@ -1,0 +1,80 @@
+"use client"
+
+import { useState, useEffect, useMemo } from "react"
+import { useCurrentLocale } from "@/locales/client"
+import { useUserTimezone } from "./use-user-timezone"
+import { useSmartRange } from "./use-smart-range"
+import { submitGuess, getTodayImage } from "@/app/[locale]/(game)/daily/actions"
+import type { GameState } from "@/components/layout/daily-game"
+
+const MAX_ATTEMPTS = 5
+
+export function useDailyGame(initialGameState: GameState) {
+  const [gameState, setGameState] = useState<GameState>(initialGameState)
+  const [isTimezoneReady, setIsTimezoneReady] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isHydrated, setIsHydrated] = useState(false)
+
+  const locale = useCurrentLocale()
+  const userTimezone = useUserTimezone()
+
+  // Handle hydration
+  useEffect(() => {
+    setIsHydrated(true)
+  }, [])
+
+  // Calculate smart range for year inputs (only after hydration to prevent mismatch)
+  const { minYear, maxYear, confidence } = useSmartRange({
+    correctYear: isHydrated ? gameState.correctYear : undefined,
+    guesses: isHydrated ? (gameState.guesses || []) : [],
+    attempts: isHydrated ? (gameState.attempts || 0) : 0
+  })
+
+  const remainingAttempts = useMemo(() => {
+    return MAX_ATTEMPTS - gameState.attempts
+  }, [gameState.attempts])
+
+
+  useEffect(() => {
+    if (userTimezone && !isTimezoneReady) {
+      const revalidateGameState = async () => {
+        try {
+          const updatedGameState = await getTodayImage(locale, userTimezone || undefined)
+          setGameState(updatedGameState)
+          setIsTimezoneReady(true)
+        } catch (error) {
+          console.error("Failed to revalidate game state with timezone:", error)
+          setIsTimezoneReady(true)
+        }
+      }
+      revalidateGameState()
+    }
+  }, [userTimezone, locale, isTimezoneReady])
+
+  const handleSubmitGuess = async (year: number) => {
+    if (gameState.completed || isSubmitting) return
+
+    setIsSubmitting(true)
+    try {
+      const result = await submitGuess({ year, locale, userTimezone: userTimezone || undefined })
+      if (result?.data) {
+        setGameState(result.data)
+      }
+    } catch (error) {
+      console.error("Failed to submit guess:", error)
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  return {
+    gameState,
+    isSubmitting,
+    isTimezoneReady,
+    handleSubmitGuess,
+    minYear,
+    maxYear,
+    confidence,
+    remainingAttempts
+  }
+}
