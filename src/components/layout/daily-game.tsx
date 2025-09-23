@@ -29,6 +29,7 @@ export interface GameState {
     difference: number
     direction: "higher" | "lower" | "correct"
   }[]
+  gameCompleted?: boolean
   tip?: string
 }
 

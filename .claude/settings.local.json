@@ -22,7 +22,19 @@
       "Bash(node:*)",
       "Bash(npx tsc:*)",
       "mcp__shadcn__view_items_in_registries",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(pnpm exec prisma:*)",
+      "Bash(npm run dev:ws:*)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "Bash(npm run dev:full:*)",
+      "Bash(timeout:*)",
+      "Bash(taskkill:*)",
+      "Bash(mkdir:*)",
+      "Bash(rmdir:*)",
+      "Bash(tasklist)",
+      "Bash(npm run:*)",
+      "Bash(npx kill-port:*)"
     ]
   },
   "enableAllProjectMcpServers": true,

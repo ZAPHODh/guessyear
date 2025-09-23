@@ -8,25 +8,11 @@ import { prisma } from "@/lib/server/db"
 import { actionClient } from "@/lib/client/safe-action"
 import { getCurrentSession } from "@/lib/server/auth/session"
 import { getLocalizedTip, type SupportedLocale, type LocalizedTips } from "@/types/tip"
+import type { GuessHint, CookieGameState } from "@/types"
 
 const COOKIE_NAME = "daily_game_progress"
 const SESSION_COOKIE_NAME = "daily_game_session"
 const MAX_ATTEMPTS = 5
-
-interface GuessHint {
-  year: number
-  difference: number
-  direction: "higher" | "lower" | "correct"
-}
-
-interface CookieGameState {
-  date: string
-  attempts: number
-  completed: boolean
-  won: boolean
-  imageId: string
-  guesses: GuessHint[]
-}
 
 function getTodayDate(userTimezone?: string): Date {
   const now = new Date()
@@ -326,58 +312,6 @@ function createGameProgressData(cookieState: CookieGameState, imageId: string, d
   }
 }
 
-async function saveLoggedInUserProgress(userId: string, gameData: any, date: Date) {
-  await prisma.dailyGameProgress.upsert({
-    where: {
-      userId_date: {
-        userId,
-        date
-      }
-    },
-    create: {
-      userId,
-      ...gameData
-    },
-    update: {
-      attempts: gameData.attempts,
-      completed: gameData.completed,
-      won: gameData.won,
-      winAttempt: gameData.winAttempt
-    }
-  })
-}
-
-async function saveAnonymousUserProgress(sessionId: string, gameData: any, date: Date) {
-  await prisma.dailyGameProgress.upsert({
-    where: {
-      sessionId_date: {
-        sessionId,
-        date
-      }
-    },
-    create: {
-      sessionId,
-      ...gameData
-    },
-    update: {
-      attempts: gameData.attempts,
-      completed: gameData.completed,
-      won: gameData.won,
-      winAttempt: gameData.winAttempt
-    }
-  })
-}
-
-async function saveGameProgress(user: any, cookieState: CookieGameState, imageId: string, date: Date) {
-  const gameData = createGameProgressData(cookieState, imageId, date)
-
-  if (user) {
-    await saveLoggedInUserProgress(user.id, gameData, date)
-  } else {
-    const sessionId = await getOrCreateSessionId()
-    await saveAnonymousUserProgress(sessionId, gameData, date)
-  }
-}
 
 export const submitGuess = actionClient
   .metadata({ actionName: "submitGuess" })
@@ -400,12 +334,6 @@ export const submitGuess = actionClient
 
     await setCookieGameState(cookieState)
 
-    const user = await getCurrentUser()
-
-    if (gameCompleted) {
-      await saveGameProgress(user, cookieState, dailyImage.id, today)
-    }
-
     let dailyStats = undefined
     if (gameCompleted) {
       dailyStats = await getTodayGames(today, cookieState.attempts, cookieState.won)
@@ -425,7 +353,7 @@ export const submitGuess = actionClient
       correctYear: dailyImage.year,
       dailyStats,
       guesses: cookieState.guesses || [],
-      shouldTrack: true,
+      gameCompleted,
       tip: localizedTip
     }
   })

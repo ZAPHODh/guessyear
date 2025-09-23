@@ -10,12 +10,15 @@ import Header from "@/components/layout/header";
 import { cn } from "@/lib/utils";
 import ThemeProvider from "@/components/shared/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
-import Footer from "@/components/layout/footer";
+import FooterSection from "@/components/footer";
 import { CookieConsentBanner } from "@/components/cookie-consent";
 import { GoogleTracking } from "@/components/google-tracking";
 import { getCookieConsent } from "./(cookie-consent)/actions";
 import { GoogleTagManager } from "@next/third-parties/google";
 import Adsense from "@/components/adsense";
+import { GameSettingsDropdown } from "@/components/shared/game-settings-dropdown";
+import Link from "next/link";
+import ModeToggle from "@/components/mode-toggle";
 
 type Props = {
   params: Promise<{ locale: string }>;
@@ -108,16 +111,18 @@ export default async function RootLayout({
   children,
   loginDialog,
   howToPlayDialog,
+  newLobbyDialog,
   params,
 }: {
   children: React.ReactNode;
   loginDialog: React.ReactNode;
   howToPlayDialog: React.ReactNode;
+  newLobbyDialog: React.ReactNode;
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
   const cookieConsent = await getCookieConsent();
-
+  const config = siteConfig(locale)
   return (
     <html lang={locale} suppressHydrationWarning>
       <head>
@@ -133,13 +138,34 @@ export default async function RootLayout({
         <div className="[--header-height:calc(var(--spacing)*14)]">
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
             <I18nProviderClient locale={locale}>
-              <Header />
+              {/* <Header /> */}
+              <nav className="backdrop-blur supports-[backdrop-filter]:bg-background/60">
+                <div className="container mx-auto px-4 max-w-6xl">
+                  <div className="flex h-16 items-center justify-between">
+                    <div className="flex-1 flex justify-start">
+                      <GameSettingsDropdown />
+
+                    </div>
+
+                    <div className="flex-1 flex justify-center">
+                      <Link href={`/${locale}`} className="font-bold text-xl">
+                        {config.name}
+                      </Link>
+                    </div>
+
+                    <div className="flex-1 flex justify-end">
+                      <ModeToggle />
+                    </div>
+                  </div>
+                </div>
+              </nav>
               <main>
                 {children}
                 {loginDialog}
                 {howToPlayDialog}
+                {newLobbyDialog}
               </main>
-              <Footer />
+              <FooterSection />
               <CookieConsentBanner initialConsent={cookieConsent} />
               <GoogleTracking cookiePreferences={cookieConsent.preferences} />
             </I18nProviderClient>

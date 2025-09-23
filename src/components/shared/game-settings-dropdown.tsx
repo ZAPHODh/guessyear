@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Settings, Clock, Languages, CheckIcon } from "lucide-react"
+import { Settings, Clock, Languages, CheckIcon, Users } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { useChangeLocale, useCurrentLocale, useScopedI18n } from "@/locales/client"
 import { useLocales } from "@/hooks/use-locales"
+import Link from "next/link"
 
 export function GameSettingsDropdown() {
   const scopedT = useScopedI18n("shared")
@@ -60,6 +61,13 @@ export function GameSettingsDropdown() {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">
         <DropdownMenuLabel>{scopedT("settings")}</DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <Link href="/lobby">
+          <DropdownMenuItem>
+            <Users className="mr-2 h-4 w-4" />
+            <span>Multiplayer</span>
+          </DropdownMenuItem>
+        </Link>
         <DropdownMenuSub>
           <DropdownMenuSubTrigger>
             <Languages className="mr-2 h-4 w-4" />

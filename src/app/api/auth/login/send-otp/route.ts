@@ -9,7 +9,8 @@ export const POST = async (req: Request) => {
             where: {
                 email: body.email,
             },
-            update: {},
+            update: {
+            },
             create: {
                 email: body.email,
                 emailVerified: false,

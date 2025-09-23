@@ -85,3 +85,107 @@ export interface GoogleAnalyticsConfig {
 export interface GoogleAdsConfig {
   conversionId: string;
 }
+
+// Lobby and Multiplayer Types
+export interface Player {
+  id: string
+  username: string
+  score: number
+  isReady: boolean
+  userId?: string | null
+  sessionId?: string | null
+  user?: {
+    id: string
+    name?: string | null
+    picture?: string | null
+  } | null
+}
+
+export interface GameRound {
+  id: string
+  roundNumber: number
+  status: 'ACTIVE' | 'COMPLETED'
+  image: {
+    id: string
+    cloudinaryUrl: string
+    year: number
+    description?: string | null
+  }
+  guesses?: Array<{
+    id: string
+    year: number
+    points: number
+    player: Player
+  }>
+}
+
+export interface Lobby {
+  id: string
+  name: string
+  maxPlayers: number
+  rounds: number
+  status: 'WAITING' | 'PLAYING' | 'FINISHED'
+  currentRound: number
+  isOpen: boolean
+  roundTimer?: number
+  host: {
+    id: string
+    name?: string | null
+    picture?: string | null
+  }
+  players: Player[]
+  gameRounds?: GameRound[]
+}
+
+export interface RoundResult {
+  year: number
+  points: number
+  player: Player
+}
+
+export interface LobbyRoomClientProps {
+  lobby: Lobby
+  currentPlayer: Player | null
+  isHost?: boolean
+  currentUser?: CurrentUser | null
+}
+
+export interface RoundResultsModalProps {
+  isOpen: boolean
+  roundResults: RoundResult[]
+  correctAnswer: number
+  currentRound: number
+}
+
+export interface RoundTimerProps {
+  timeRemaining: number | null
+  totalTime: number
+}
+
+export interface JoinLobbyButtonProps {
+  lobbyId: string
+  variant?: "default" | "outline" | "secondary" | "ghost" | "link" | "destructive"
+  size?: "default" | "sm" | "lg" | "icon"
+  children: React.ReactNode
+  className?: string
+}
+
+// Daily Game Types
+export interface GuessHint {
+  year: number
+  difference: number
+  direction: "higher" | "lower" | "correct"
+}
+
+export interface CookieGameState {
+  date: string
+  attempts: number
+  completed: boolean
+  won: boolean
+  imageId: string
+  guesses: GuessHint[]
+}
+
+export interface DailyPageProps {
+  params: Promise<{ locale: string }>
+}
