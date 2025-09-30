@@ -34,7 +34,11 @@
       "Bash(rmdir:*)",
       "Bash(tasklist)",
       "Bash(npm run:*)",
-      "Bash(npx kill-port:*)"
+      "Bash(npx kill-port:*)",
+      "Read(//c/Users/lulup/salon-server/**)",
+      "Read(//c/Users/lulup/ws-server-loqano/**)",
+      "mcp__shadcn__list_items_in_registries",
+      "mcp__kibo-ui__getComponent"
     ]
   },
   "enableAllProjectMcpServers": true,

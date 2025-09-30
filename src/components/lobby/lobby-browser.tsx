@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
+import { useScopedI18n } from '@/locales/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -9,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
 import { getLobbies } from '@/app/[locale]/(game)/lobby/actions';
+import { format } from 'date-fns';
 import {
   Users,
   Clock,
@@ -25,7 +27,7 @@ import {
 interface Lobby {
   id: string;
   name: string;
-  description?: string;
+  description?: string | null;
   isOpen: boolean;
   maxPlayers: number;
   rounds: number;
@@ -33,10 +35,10 @@ interface Lobby {
   gameMode: 'CLASSIC' | 'ELIMINATION' | 'MARATHON';
   status: 'WAITING' | 'PLAYING' | 'FINISHED';
   hintsEnabled: boolean;
-  targetScore?: number;
+  targetScore?: number | null;
   host: {
-    name?: string;
-    username?: string;
+    name?: string | null;
+    username?: string | null;
   };
   _count: {
     players: number;
@@ -50,6 +52,7 @@ interface LobbyBrowserProps {
 }
 
 export function LobbyBrowser({ user, initialLobbies }: LobbyBrowserProps) {
+  const t = useScopedI18n('lobby');
   const [lobbies, setLobbies] = useState<Lobby[]>(initialLobbies);
   const [searchTerm, setSearchTerm] = useState('');
   const [filter, setFilter] = useState('all');
@@ -61,13 +64,17 @@ export function LobbyBrowser({ user, initialLobbies }: LobbyBrowserProps) {
       try {
         const result = await getLobbies({});
         if (result?.data?.lobbies) {
-          setLobbies(result.data.lobbies);
+          const formattedLobbies = result.data.lobbies.map(lobby => ({
+            ...lobby,
+            createdAt: lobby.createdAt.toISOString()
+          }));
+          setLobbies(formattedLobbies);
         } else if (result?.serverError) {
-          toast.error('Failed to load lobbies');
+          toast.error(t('browser.loading'));
         }
       } catch (error) {
         console.error('Error fetching lobbies:', error);
-        toast.error('Failed to load lobbies');
+        toast.error(t('browser.loading'));
       }
     });
   };
@@ -77,14 +84,14 @@ export function LobbyBrowser({ user, initialLobbies }: LobbyBrowserProps) {
       router.push(`/lobby/${lobbyId}`);
     } catch (error) {
       console.error('Error joining lobby:', error);
-      toast.error('Failed to join lobby');
+      toast.error(t('errors.connectionFailed'));
     }
   };
 
   const filteredLobbies = lobbies.filter(lobby => {
     const matchesSearch = lobby.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         lobby.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         lobby.host.name?.toLowerCase().includes(searchTerm.toLowerCase());
+      lobby.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      lobby.host.name?.toLowerCase().includes(searchTerm.toLowerCase());
 
     switch (filter) {
       case 'waiting':
@@ -123,12 +130,11 @@ export function LobbyBrowser({ user, initialLobbies }: LobbyBrowserProps) {
 
   return (
     <div className="space-y-6">
-      {/* Search and Filters */}
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Search lobbies..."
+            placeholder={t('browser.searchPlaceholder')}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-10"
@@ -137,21 +143,20 @@ export function LobbyBrowser({ user, initialLobbies }: LobbyBrowserProps) {
 
         <Tabs value={filter} onValueChange={setFilter} className="w-full sm:w-auto">
           <TabsList className="grid grid-cols-4 w-full sm:w-auto">
-            <TabsTrigger value="all">All</TabsTrigger>
-            <TabsTrigger value="waiting">Waiting</TabsTrigger>
-            <TabsTrigger value="playing">Playing</TabsTrigger>
-            <TabsTrigger value="public">Public</TabsTrigger>
+            <TabsTrigger value="all">{t('browser.filters.all')}</TabsTrigger>
+            <TabsTrigger value="waiting">{t('browser.filters.waiting')}</TabsTrigger>
+            <TabsTrigger value="playing">{t('browser.filters.playing')}</TabsTrigger>
+            <TabsTrigger value="public">{t('browser.filters.public')}</TabsTrigger>
           </TabsList>
         </Tabs>
       </div>
 
-      {/* Lobby List */}
       <div className="space-y-4">
         {filteredLobbies.length === 0 ? (
           <Card>
             <CardContent className="pt-6 text-center">
               <div className="text-muted-foreground">
-                {searchTerm || filter !== 'all' ? 'No lobbies found matching your criteria' : 'No active lobbies'}
+                {searchTerm || filter !== 'all' ? t('browser.noLobbiesFiltered') : t('browser.noLobbies')}
               </div>
               <Button
                 variant="outline"
@@ -159,7 +164,7 @@ export function LobbyBrowser({ user, initialLobbies }: LobbyBrowserProps) {
                 disabled={isPending}
                 className="mt-4"
               >
-                {isPending ? 'Loading...' : 'Refresh'}
+                {isPending ? t('browser.loading') : t('browser.refresh')}
               </Button>
             </CardContent>
           </Card>
@@ -174,12 +179,12 @@ export function LobbyBrowser({ user, initialLobbies }: LobbyBrowserProps) {
                       {lobby.name}
                     </CardTitle>
                     <p className="text-sm text-muted-foreground">
-                      Host: {lobby.host.name || 'Anonymous'}
+                      {t('browser.hostBy', { name: lobby.host.name || t('browser.hostAnonymous') })}
                     </p>
                   </div>
                   <div className="flex items-center gap-2">
                     <Badge className={getStatusColor(lobby.status)}>
-                      {lobby.status.toLowerCase()}
+                      {t(`lobby.status.${lobby.status?.toLowerCase()}` as any)}
                     </Badge>
                   </div>
                 </div>
@@ -199,24 +204,24 @@ export function LobbyBrowser({ user, initialLobbies }: LobbyBrowserProps) {
                   </div>
                   <div className="flex items-center gap-1">
                     <Clock className="h-4 w-4" />
-                    {lobby.roundTimer}s per round
+                    {t('lobby.roundTimer', { seconds: lobby.roundTimer })}
                   </div>
                   <div className="flex items-center gap-1">
                     {getGameModeIcon(lobby.gameMode)}
-                    {lobby.gameMode?.toLowerCase()}
-                    {lobby.gameMode === 'CLASSIC' && ` (${lobby.rounds} rounds)`}
-                    {lobby.gameMode === 'MARATHON' && ` (${lobby.targetScore} pts)`}
+                    {t(`lobby.gameMode.${lobby.gameMode?.toLowerCase()}` as any)}
+                    {lobby.gameMode === 'CLASSIC' && ` (${t('lobby.rounds', { count: lobby.rounds })})`}
+                    {lobby.gameMode === 'MARATHON' && ` (${t('lobby.targetScore', { score: lobby.targetScore })})`}
                   </div>
                   {lobby.hintsEnabled && (
                     <Badge variant="secondary" className="text-xs">
-                      Hints enabled
+                      {t('lobby.hintsEnabled')}
                     </Badge>
                   )}
                 </div>
 
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-muted-foreground">
-                    Created {new Date(lobby.createdAt).toLocaleDateString()}
+                    {t('browser.createdDate', { date: format(new Date(lobby.createdAt), 'MMM d, yyyy') })}
                   </span>
                   <Button
                     onClick={() => joinLobby(lobby.id)}
@@ -228,7 +233,7 @@ export function LobbyBrowser({ user, initialLobbies }: LobbyBrowserProps) {
                     className="gap-2"
                   >
                     <Play className="h-4 w-4" />
-                    {lobby.status === 'WAITING' ? 'Join' : 'Spectate'}
+                    {lobby.status === 'WAITING' ? t('lobby.actions.join') : t('lobby.actions.spectate')}
                   </Button>
                 </div>
               </CardContent>

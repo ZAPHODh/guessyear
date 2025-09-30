@@ -1,13 +1,13 @@
-"use client"
-
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Info } from "lucide-react"
-import { useScopedI18n } from "@/locales/client"
+import { getScopedI18n } from "@/locales/server"
 import Image from "next/image"
 import Link from "next/link"
-import { useDailyGame } from "@/hooks/use-daily-game"
-import { GameForm, GameComplete, GameHints, GuessHistory } from "@/components/game"
+import { GameComplete } from "@/components/game"
+import { DailyGameClient } from "./daily-game-client"
+import { ImageZoom } from "@/components/ui/kibo-ui/image-zoom"
+import { Suspense } from "react"
 
 export interface GameState {
   imageUrl: string
@@ -37,17 +37,9 @@ interface DailyGameProps {
   initialGameState: GameState
 }
 
-export function DailyGame({ initialGameState }: DailyGameProps) {
-  const t = useScopedI18n("daily")
-  const {
-    gameState,
-    isSubmitting,
-    handleSubmitGuess,
-    minYear,
-    maxYear,
-    confidence,
-    remainingAttempts
-  } = useDailyGame(initialGameState)
+export async function DailyGame({ initialGameState }: DailyGameProps) {
+  const t = await getScopedI18n("daily")
+  const remainingAttempts = 5 - initialGameState.attempts
 
   return (
     <div className="space-y-6">
@@ -62,46 +54,43 @@ export function DailyGame({ initialGameState }: DailyGameProps) {
             {t("howToPlay")}
           </Button>
         </Link>
-        {!gameState.completed && <Badge variant={gameState.completed ? "destructive" : "secondary"}>
-          {remainingAttempts} {t("attemptsLeft")}
-        </Badge>}
+        {!initialGameState.completed && (
+          <Badge variant="secondary">
+            {remainingAttempts} {t("attemptsLeft")}
+          </Badge>
+        )}
       </div>
 
       <div className="space-y-6">
-        {!gameState.completed && (
+        {!initialGameState.completed && (
           <div className="relative aspect-video w-full overflow-hidden rounded-xl shadow-lg">
-            <Image
-              src={gameState.imageUrl}
-              alt="Daily challenge image"
-              fill
-              className="object-cover"
-              priority
-            />
+            <ImageZoom className="w-full h-full">
+              <Image
+                src={initialGameState.imageUrl}
+                alt="Daily challenge image"
+                fill
+                className="object-cover cursor-zoom-in"
+                priority
+              />
+            </ImageZoom>
           </div>
         )}
 
-        {!gameState.completed ? (
-          <div className="space-y-6">
-            <GameForm
-              minYear={minYear}
-              maxYear={maxYear}
-              confidence={confidence}
-              isSubmitting={isSubmitting}
-              onSubmit={handleSubmitGuess}
-              resetTrigger={gameState.guesses}
-            />
-
-            <GameHints attempts={gameState.attempts} tip={gameState.tip} />
-
-            <GuessHistory guesses={gameState.guesses || []} />
-          </div>
+        {!initialGameState.completed ? (
+          <Suspense fallback={<div className="space-y-6">
+            <div className="h-20 bg-muted rounded-lg animate-pulse" />
+            <div className="h-12 bg-muted rounded-lg animate-pulse" />
+            <div className="h-16 bg-muted rounded-lg animate-pulse" />
+          </div>}>
+            <DailyGameClient initialGameState={initialGameState} />
+          </Suspense>
         ) : (
           <GameComplete
-            won={gameState.won}
-            correctYear={gameState.correctYear!}
-            attempts={gameState.attempts}
-            guesses={gameState.guesses || []}
-            dailyStats={gameState.dailyStats}
+            won={initialGameState.won}
+            correctYear={initialGameState.correctYear!}
+            attempts={initialGameState.attempts}
+            guesses={initialGameState.guesses || []}
+            dailyStats={initialGameState.dailyStats}
           />
         )}
       </div>

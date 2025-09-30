@@ -1,5 +1,6 @@
 export default {
     daily: "Diario",
+    lobby: "Sala",
     freelancers: "Freelancers",
     login: "Iniciar Sesión",
     account: "Cuenta",

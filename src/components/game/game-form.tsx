@@ -3,10 +3,11 @@
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
-import { useMemo, useEffect } from "react"
+import { useMemo, useEffect, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { YearInput } from "@/components/ui/year-input"
 import { useScopedI18n } from "@/locales/client"
 
 type GuessForm = {
@@ -57,8 +58,13 @@ export function GameForm({
     mode: "onChange"
   })
 
+  const previousResetTrigger = useRef(resetTrigger)
+
   useEffect(() => {
-    form.setValue("year", "", { shouldValidate: false })
+    if (resetTrigger !== previousResetTrigger.current) {
+      form.setValue("year", "", { shouldValidate: false })
+      previousResetTrigger.current = resetTrigger
+    }
   }, [resetTrigger, form])
 
   const handleSubmit = async (data: GuessForm) => {
@@ -81,14 +87,14 @@ export function GameForm({
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Input
-                      type="number"
+                    <YearInput
+                      value={field.value}
+                      onChange={field.onChange}
+                      placeholder={t("yearPlaceholder")}
+                      disabled={isSubmitting}
                       min={minYear}
                       max={maxYear}
-                      {...field}
-                      placeholder={t("yearPlaceholder")}
-                      className="text-center text-xl py-3"
-                      disabled={isSubmitting}
+                      className="w-full"
                     />
                   </FormControl>
                   <FormMessage />

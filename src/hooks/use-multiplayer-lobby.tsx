@@ -1,28 +1,12 @@
 "use client";
 
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { socket } from '@/lib/socket';
 import { toast } from 'sonner';
-
-interface Player {
-  id: string;
-  username: string;
-  avatar: string;
-  score: number;
-  isReady: boolean;
-  isEliminated: boolean;
-  streak: number;
-  userId?: string;
-  sessionId?: string;
-}
-
-interface ChatMessage {
-  id: string;
-  username: string;
-  message: string;
-  type: 'CHAT' | 'SYSTEM' | 'QUICK_PHRASE';
-  createdAt: string;
-}
+import { useWebSocket } from './use-websocket';
+import { useLobbyState } from './use-lobby-state';
+import { useGameTimer } from './use-game-timer';
+import { useChatMessages } from './use-chat-messages';
 
 interface Guess {
   player: string;
@@ -42,30 +26,13 @@ interface RoundData {
   hintsEnabled: boolean;
 }
 
-interface GameState {
-  lobby: any;
-  players: Player[];
-  isConnected: boolean;
-  gameState: 'WAITING' | 'STARTING' | 'PLAYING' | 'ROUND_RESULTS' | 'FINISHED';
-  currentRound: RoundData | null;
-  timeRemaining: number;
-  chatMessages: ChatMessage[];
-  leaderboard: Player[];
-  lastRoundResults: {
-    correctYear: number;
-    guesses: Guess[];
-  } | null;
-  hasSubmittedGuess: boolean;
-  countdown: number | null;
-  nextRoundCountdown: number | null;
-}
-
 interface UseMultiplayerLobbyProps {
   lobbyId: string;
   userId?: string;
   sessionId?: string;
   username: string;
   avatar?: string;
+  enabled?: boolean;
 }
 
 export function useMultiplayerLobby({
@@ -73,34 +40,32 @@ export function useMultiplayerLobby({
   userId,
   sessionId,
   username,
-  avatar = '🎮'
+  avatar = '🎮',
+  enabled = true
 }: UseMultiplayerLobbyProps) {
-  const [gameState, setGameState] = useState<GameState>({
-    lobby: null,
-    players: [],
-    isConnected: false,
-    gameState: 'WAITING',
-    currentRound: null,
-    timeRemaining: 0,
-    chatMessages: [],
-    leaderboard: [],
-    lastRoundResults: null,
-    hasSubmittedGuess: false,
-    countdown: null,
-    nextRoundCountdown: null
+  const [currentRound, setCurrentRound] = useState<RoundData | null>(null);
+  const [hasSubmittedGuess, setHasSubmittedGuess] = useState(false);
+  const [lastRoundResults, setLastRoundResults] = useState<{
+    correctYear: number;
+    guesses: Guess[];
+  } | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  // Use smaller, focused hooks
+  const { isConnected, connect, disconnect } = useWebSocket({
+    onConnect: () => setError(null),
+    onError: (message) => {
+      setError(message);
+    }
   });
 
-  const [error, setError] = useState<string | null>(null);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
-  const countdownRef = useRef<NodeJS.Timeout | null>(null);
-  const nextRoundCountdownRef = useRef<NodeJS.Timeout | null>(null);
+  const lobbyState = useLobbyState();
+  const timer = useGameTimer();
+  const chat = useChatMessages();
 
   // Connection management
-  const connect = useCallback(() => {
-    if (!socket.connected) {
-      socket.connect();
-    }
-
+  const joinLobby = useCallback(() => {
+    connect();
     socket.emit('join_lobby', {
       lobbyId,
       userId,
@@ -108,21 +73,13 @@ export function useMultiplayerLobby({
       username,
       avatar
     });
-  }, [lobbyId, userId, sessionId, username, avatar]);
+  }, [connect, lobbyId, userId, sessionId, username, avatar]);
 
-  const disconnect = useCallback(() => {
+  const leaveLobby = useCallback(() => {
     socket.emit('leave_lobby');
-    socket.disconnect();
-    if (timerRef.current) {
-      clearInterval(timerRef.current);
-    }
-    if (countdownRef.current) {
-      clearInterval(countdownRef.current);
-    }
-    if (nextRoundCountdownRef.current) {
-      clearInterval(nextRoundCountdownRef.current);
-    }
-  }, []);
+    timer.clearAllTimers();
+    disconnect();
+  }, [disconnect, timer]);
 
   // Game actions
   const toggleReady = useCallback((isReady: boolean) => {
@@ -135,7 +92,7 @@ export function useMultiplayerLobby({
 
   const submitGuess = useCallback((year: number) => {
     socket.emit('submit_guess', { year });
-    setGameState(prev => ({ ...prev, hasSubmittedGuess: true }));
+    setHasSubmittedGuess(true);
   }, []);
 
   const sendMessage = useCallback((message: string, type: 'CHAT' | 'QUICK_PHRASE' = 'CHAT') => {
@@ -159,161 +116,77 @@ export function useMultiplayerLobby({
     socket.emit('transfer_host', { playerId });
   }, []);
 
+  const restartGame = useCallback(() => {
+    socket.emit('restart_game');
+  }, []);
+
+  const updateLobbySettings = useCallback((settings: any) => {
+    socket.emit('update_lobby_settings', settings);
+  }, []);
+
   // Socket event handlers
   useEffect(() => {
-    const handleConnection = () => {
-      setGameState(prev => ({ ...prev, isConnected: true }));
-      setError(null);
-    };
-
-    const handleDisconnection = () => {
-      setGameState(prev => ({ ...prev, isConnected: false }));
-    };
-
     const handleLobbyJoined = (lobby: any) => {
-      setGameState(prev => ({
-        ...prev,
-        lobby,
-        players: lobby.players || [],
-        chatMessages: lobby.chatMessages || []
-      }));
+      lobbyState.actions.updateLobby(lobby);
+      if (lobby.chatMessages) {
+        lobby.chatMessages.forEach((msg: any) => chat.addMessage(msg));
+      }
     };
 
-    const handlePlayerJoined = ({ player }: { player: Player }) => {
-      setGameState(prev => ({
-        ...prev,
-        players: prev.players.some(p => p.id === player.id)
-          ? prev.players
-          : [...prev.players, player]
-      }));
+    const handlePlayerJoined = ({ player }: { player: any }) => {
+      lobbyState.actions.addPlayer(player);
       toast.success(`${player.username} joined the lobby`);
     };
 
     const handlePlayerLeft = ({ username }: { username: string }) => {
-      setGameState(prev => ({
-        ...prev,
-        players: prev.players.filter(p => p.username !== username)
-      }));
+      lobbyState.actions.removePlayer(username);
       toast.info(`${username} left the lobby`);
     };
 
     const handlePlayerReadyChanged = ({ playerId, isReady }: { playerId: string; isReady: boolean }) => {
-      setGameState(prev => ({
-        ...prev,
-        players: prev.players.map(p =>
-          p.id === playerId ? { ...p, isReady } : p
-        )
-      }));
+      lobbyState.actions.updatePlayerReady(playerId, isReady);
     };
 
     const handleGameStarting = ({ countdown }: { countdown: number }) => {
-      setGameState(prev => ({ ...prev, gameState: 'STARTING', countdown }));
-
-      countdownRef.current = setInterval(() => {
-        setGameState(prev => {
-          if (prev.countdown && prev.countdown > 1) {
-            return { ...prev, countdown: prev.countdown - 1 };
-          } else {
-            if (countdownRef.current) {
-              clearInterval(countdownRef.current);
-            }
-            return { ...prev, countdown: null };
-          }
-        });
-      }, 1000);
+      lobbyState.actions.updateGameState('STARTING');
+      timer.startCountdown(countdown);
     };
 
     const handleGameStarted = () => {
-      setGameState(prev => ({
-        ...prev,
-        gameState: 'PLAYING',
-        countdown: null
-      }));
+      lobbyState.actions.updateGameState('PLAYING');
       toast.success('Game started!');
     };
 
     const handleRoundStarted = (roundData: RoundData) => {
-      // Clear any existing timers
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-      }
-      if (nextRoundCountdownRef.current) {
-        clearInterval(nextRoundCountdownRef.current);
-      }
-
-      setGameState(prev => ({
-        ...prev,
-        gameState: 'PLAYING',
-        currentRound: roundData,
-        timeRemaining: roundData.timer,
-        hasSubmittedGuess: false,
-        lastRoundResults: null,
-        nextRoundCountdown: null
-      }));
-
-      // Start timer
-      timerRef.current = setInterval(() => {
-        setGameState(prev => {
-          if (prev.timeRemaining > 0) {
-            return { ...prev, timeRemaining: prev.timeRemaining - 1 };
-          } else {
-            if (timerRef.current) {
-              clearInterval(timerRef.current);
-            }
-            return prev;
-          }
-        });
-      }, 1000);
+      timer.clearAllTimers();
+      lobbyState.actions.updateGameState('PLAYING');
+      setCurrentRound(roundData);
+      setHasSubmittedGuess(false);
+      setLastRoundResults(null);
+      timer.startTimer(roundData.timer);
     };
 
     const handleRoundEnded = (results: {
       correctYear: number;
       guesses: Guess[];
-      leaderboard: Player[];
+      leaderboard: any[];
       nextRoundCountdown?: number;
     }) => {
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-      }
+      lobbyState.actions.updateGameState('ROUND_RESULTS');
+      lobbyState.actions.updateLeaderboard(results.leaderboard);
+      setLastRoundResults({
+        correctYear: results.correctYear,
+        guesses: results.guesses
+      });
 
-      setGameState(prev => ({
-        ...prev,
-        gameState: 'ROUND_RESULTS',
-        lastRoundResults: {
-          correctYear: results.correctYear,
-          guesses: results.guesses
-        },
-        leaderboard: results.leaderboard,
-        players: prev.players.map(player => {
-          const updatedPlayer = results.leaderboard.find(p => p.id === player.id);
-          return updatedPlayer || player;
-        }),
-        nextRoundCountdown: results.nextRoundCountdown || null
-      }));
-
-      // Start next round countdown if provided
       if (results.nextRoundCountdown) {
-        nextRoundCountdownRef.current = setInterval(() => {
-          setGameState(prev => {
-            if (prev.nextRoundCountdown && prev.nextRoundCountdown > 1) {
-              return { ...prev, nextRoundCountdown: prev.nextRoundCountdown - 1 };
-            } else {
-              if (nextRoundCountdownRef.current) {
-                clearInterval(nextRoundCountdownRef.current);
-              }
-              return { ...prev, nextRoundCountdown: null };
-            }
-          });
-        }, 1000);
+        timer.startNextRoundCountdown(results.nextRoundCountdown);
       }
     };
 
-    const handleGameEnded = ({ finalLeaderboard }: { finalLeaderboard: Player[] }) => {
-      setGameState(prev => ({
-        ...prev,
-        gameState: 'FINISHED',
-        leaderboard: finalLeaderboard
-      }));
+    const handleGameEnded = ({ finalLeaderboard }: { finalLeaderboard: any[] }) => {
+      lobbyState.actions.updateGameState('FINISHED');
+      lobbyState.actions.updateLeaderboard(finalLeaderboard);
       toast.success('Game finished!');
     };
 
@@ -321,15 +194,11 @@ export function useMultiplayerLobby({
       toast.success('Guess submitted!');
     };
 
-    const handleNewMessage = (message: ChatMessage) => {
-      setGameState(prev => ({
-        ...prev,
-        chatMessages: [...prev.chatMessages, message]
-      }));
+    const handleNewMessage = (message: any) => {
+      chat.addMessage(message);
     };
 
     const handleNewReaction = (reaction: any) => {
-      // Handle reaction UI updates
       toast(`${reaction.emoji}`, { duration: 1000 });
     };
 
@@ -337,25 +206,35 @@ export function useMultiplayerLobby({
       toast.info(`Hint: ${hint}`);
     };
 
-    const handleError = ({ message }: { message: string }) => {
-      setError(message);
-      toast.error(message);
-    };
-
-    const handleHostTransferred = ({ newHostUserId, newHostPlayerId }: { newHostUserId: string; newHostPlayerId: string }) => {
-      setGameState(prev => ({
-        ...prev,
-        lobby: {
-          ...prev.lobby,
-          hostUserId: newHostUserId
-        }
-      }));
+    const handleHostTransferred = ({ newHostUserId }: { newHostUserId: string }) => {
+      lobbyState.actions.updateHost(newHostUserId);
       toast.success('Host has been transferred');
     };
 
+    const handleGameRestarted = ({ lobby, players, chatMessages }: { lobby: any; players: any[]; chatMessages: any[] }) => {
+      lobbyState.actions.updateLobby(lobby);
+      lobbyState.actions.setPlayers(players);
+      setCurrentRound(null);
+      setHasSubmittedGuess(false);
+      setLastRoundResults(null);
+      timer.clearAllTimers();
+      chat.clearMessages();
+      chatMessages.forEach((msg: any) => chat.addMessage(msg));
+      toast.success('Game has been restarted!');
+    };
+
+    const handleLobbyUpdated = ({ lobby }: { lobby: any }) => {
+      lobbyState.actions.updateLobby(lobby);
+      toast.success('Game settings updated!');
+    };
+
+    const handleLobbyFinished = ({ lobbyId, reason }: { lobbyId: string; reason: string }) => {
+      toast.error(`Lobby ended: ${reason}`);
+      // Redirect to lobby browser
+      window.location.href = '/lobby';
+    };
+
     // Register event listeners
-    socket.on('connect', handleConnection);
-    socket.on('disconnect', handleDisconnection);
     socket.on('lobby_joined', handleLobbyJoined);
     socket.on('player_joined', handlePlayerJoined);
     socket.on('player_left', handlePlayerLeft);
@@ -369,12 +248,12 @@ export function useMultiplayerLobby({
     socket.on('new_message', handleNewMessage);
     socket.on('new_reaction', handleNewReaction);
     socket.on('hint_available', handleHintAvailable);
-    socket.on('error', handleError);
     socket.on('host_transferred', handleHostTransferred);
+    socket.on('game_restarted', handleGameRestarted);
+    socket.on('lobby_updated', handleLobbyUpdated);
+    socket.on('lobby_finished', handleLobbyFinished);
 
     return () => {
-      socket.off('connect', handleConnection);
-      socket.off('disconnect', handleDisconnection);
       socket.off('lobby_joined', handleLobbyJoined);
       socket.off('player_joined', handlePlayerJoined);
       socket.off('player_left', handlePlayerLeft);
@@ -388,32 +267,113 @@ export function useMultiplayerLobby({
       socket.off('new_message', handleNewMessage);
       socket.off('new_reaction', handleNewReaction);
       socket.off('hint_available', handleHintAvailable);
-      socket.off('error', handleError);
       socket.off('host_transferred', handleHostTransferred);
+      socket.off('game_restarted', handleGameRestarted);
+      socket.off('lobby_updated', handleLobbyUpdated);
+      socket.off('lobby_finished', handleLobbyFinished);
     };
-  }, []);
+  }, [lobbyState.actions, chat, timer]);
 
-  // Auto-connect on mount
+  // Auto-connect on mount - only run once per lobby and when enabled
   useEffect(() => {
-    connect();
+    if (!enabled) return;
+
+    // Direct connection without using the connect callback to avoid dependencies
+    if (!socket.connected) {
+      socket.connect();
+    }
+
+    socket.emit('join_lobby', {
+      lobbyId,
+      userId,
+      sessionId,
+      username,
+      avatar
+    });
+
     return () => {
-      disconnect();
+      socket.emit('leave_lobby');
+      timer.clearAllTimers();
+      // Don't disconnect socket here, just leave the lobby
     };
-  }, [connect, disconnect]);
+  }, [lobbyId, enabled, userId, sessionId, username, avatar]); // Re-run if any identification parameters change
+
+  // Return disabled state when not enabled
+  if (!enabled) {
+    return {
+      // Lobby state
+      lobby: null,
+      players: [],
+      gameState: 'WAITING',
+      leaderboard: [],
+
+      // Connection state
+      isConnected: false,
+      error: null,
+
+      // Game state
+      currentRound: null,
+      timeRemaining: 0,
+      countdown: null,
+      nextRoundCountdown: null,
+      hasSubmittedGuess: false,
+      lastRoundResults: null,
+
+      // Chat
+      chatMessages: [],
+
+      // Actions
+      actions: {
+        connect: () => {},
+        disconnect: () => {},
+        toggleReady: () => {},
+        startGame: () => {},
+        submitGuess: () => {},
+        sendMessage: () => {},
+        sendReaction: () => {},
+        kickPlayer: () => {},
+        transferHost: () => {},
+        restartGame: () => {},
+        updateLobbySettings: () => {}
+      }
+    };
+  }
 
   return {
-    ...gameState,
+    // Lobby state
+    lobby: lobbyState.lobby,
+    players: lobbyState.players,
+    gameState: lobbyState.gameState,
+    leaderboard: lobbyState.leaderboard,
+
+    // Connection state
+    isConnected,
     error,
+
+    // Game state
+    currentRound,
+    timeRemaining: timer.timeRemaining,
+    countdown: timer.countdown,
+    nextRoundCountdown: timer.nextRoundCountdown,
+    hasSubmittedGuess,
+    lastRoundResults,
+
+    // Chat
+    chatMessages: chat.messages,
+
+    // Actions
     actions: {
-      connect,
-      disconnect,
+      connect: joinLobby,
+      disconnect: leaveLobby,
       toggleReady,
       startGame,
       submitGuess,
       sendMessage,
       sendReaction,
       kickPlayer,
-      transferHost
+      transferHost,
+      restartGame,
+      updateLobbySettings
     }
   };
 }

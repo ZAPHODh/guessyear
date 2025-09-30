@@ -1,5 +1,6 @@
 export default {
     daily: "Giornaliero",
+    lobby: "Lobby",
     freelancers: "Freelancer",
     login: "Accedi",
     account: "Account",

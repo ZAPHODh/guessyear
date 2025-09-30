@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { LoaderCircle } from "lucide-react";
 import Icons from "../shared/icons";
 import { useScopedI18n } from "@/locales/client";
+import { useRouter } from "next/navigation";
 
 const userAuthSchema = z.object({
     email: z.email(),
@@ -24,6 +25,7 @@ type FormData = z.infer<typeof userAuthSchema>;
 
 export default function AuthForm() {
     const t = useScopedI18n('auth')
+    const { back } = useRouter()
     const [currentStep, setCurrentStep] = useState(1);
     const [isLoading, setIsLoading] = useState(false);
     const [isGithubLoading, setIsGithubLoading] = useState(false);
@@ -106,7 +108,7 @@ export default function AuthForm() {
             toast.success(
                 t('verifiedSuccess')
             );
-            window.location.href = "/projects";
+            back()
         } catch (error) {
             const errorMessage =
                 error instanceof Error ? error.message : "Something went wrong";

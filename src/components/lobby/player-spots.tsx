@@ -1,5 +1,6 @@
 "use client";
 
+import { useScopedI18n } from '@/locales/client';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -41,6 +42,7 @@ export function PlayerSpots({
   onKickPlayer,
   onTransferHost
 }: PlayerSpotsProps) {
+  const t = useScopedI18n('lobby');
 
   const spots = Array.from({ length: maxPlayers }, (_, index) => {
     const player = players[index];
@@ -54,9 +56,9 @@ export function PlayerSpots({
 
   const getStatusMessage = () => {
     if (gameState === 'STARTING') return null;
-    if (players.length < 2) return "Waiting for more players...";
-    if (!players.every(p => p.isReady)) return "Waiting for all players to be ready...";
-    return "All players ready!";
+    if (players.length < 2) return t('players.waitingForMorePlayers');
+    if (!players.every(p => p.isReady)) return t('players.waitingForAllReady');
+    return t('players.allPlayersReady');
   };
 
   const statusMessage = getStatusMessage();
@@ -64,10 +66,10 @@ export function PlayerSpots({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold">Players</h3>
+        <h3 className="text-lg font-semibold">{t('players.title')}</h3>
         <div className="flex items-center gap-3">
           {statusMessage && (
-            <Badge variant={statusMessage.includes("All players ready") ? "default" : "secondary"} className="text-xs">
+            <Badge variant={statusMessage.includes(t('players.allPlayersReady')) ? "default" : "secondary"} className="text-xs">
               {statusMessage}
             </Badge>
           )}
@@ -92,22 +94,22 @@ export function PlayerSpots({
             <CardContent className="p-2 sm:p-3 h-full w-full flex flex-col overflow-hidden">
               {isEmpty ? (
                 <div className="flex-1 flex flex-col items-center justify-center">
-                  <span className="text-sm text-muted-foreground">Empty</span>
+                  <span className="text-sm text-muted-foreground">{t('players.empty')}</span>
                 </div>
               ) : (
                 <>
                   {/* Top row: Make Host button and Kick button with badges */}
                   <div className="flex justify-between items-start mb-1 sm:mb-2 min-h-5 sm:min-h-6">
                     <div>
-                      {/* Make Host button for current host - can transfer to anyone except themselves */}
-                      {isHost && onTransferHost && player.id !== currentPlayer?.id && (
+                      {/* Make Host button for current host - can transfer to anyone except themselves - only show during WAITING */}
+                      {isHost && onTransferHost && player.id !== currentPlayer?.id && gameState === 'WAITING' && (
                         <Button
                           onClick={() => onTransferHost(player.id)}
                           variant="outline"
                           size="sm"
                           className="h-5 sm:h-6 px-1 sm:px-2 text-xs"
                         >
-                          Host
+                          {t('players.makeHost')}
                         </Button>
                       )}
                     </div>
@@ -117,18 +119,18 @@ export function PlayerSpots({
                         {/* Owner badge */}
                         {index === 0 && (
                           <Badge variant="default" className="text-xs h-4 sm:h-5 px-1">
-                            Owner
+                            {t('players.owner')}
                           </Badge>
                         )}
                         {/* Current player badge */}
                         {player.id === currentPlayer?.id && (
                           <Badge variant="outline" className="text-xs h-4 sm:h-5 px-1">
-                            You
+                            {t('players.you')}
                           </Badge>
                         )}
                       </div>
-                      {/* Kick button for host - can kick anyone except themselves */}
-                      {isHost && onKickPlayer && player.id !== currentPlayer?.id && (
+                      {/* Kick button for host - can kick anyone except themselves - only show during WAITING */}
+                      {isHost && onKickPlayer && player.id !== currentPlayer?.id && gameState === 'WAITING' && (
                         <Button
                           onClick={() => onKickPlayer(player.id)}
                           variant="outline"
@@ -156,11 +158,11 @@ export function PlayerSpots({
 
                       {showScores ? (
                         <p className="text-xs text-muted-foreground">
-                          {player.score} pts
+                          {t('players.points', { points: player.score })}
                         </p>
                       ) : (
                         <p className="text-xs text-muted-foreground">
-                          {player.isReady ? 'Ready' : 'Waiting'}
+                          {player.isReady ? t('players.ready') : t('players.waiting')}
                         </p>
                       )}
                     </div>
@@ -174,7 +176,7 @@ export function PlayerSpots({
                       size="sm"
                       className="w-full text-xs h-6 sm:h-8 flex-shrink-0 mt-auto"
                     >
-                      {player.isReady ? 'Ready' : 'Ready?'}
+                      {player.isReady ? t('players.ready') : t('players.readyQuestion')}
                     </Button>
                   )}
                 </>

@@ -68,29 +68,56 @@ async function findRandomUnscheduledImage() {
 }
 
 async function scheduleImageForToday(imageId: string, today: Date) {
-  return prisma.dailyImage.update({
-    where: { id: imageId },
-    data: { date: today }
-  })
+  try {
+    return await prisma.dailyImage.update({
+      where: { id: imageId },
+      data: { date: today }
+    })
+  } catch (error: any) {
+    // If unique constraint failed, there's already an image for today
+    if (error.code === 'P2002') {
+      // Find and return the existing image for today
+      const existingImage = await findDailyImageByDate(today)
+      if (existingImage) {
+        return existingImage
+      }
+      // If no existing image found, create default
+      return createDefaultDailyImage(today)
+    }
+    throw error
+  }
 }
 
 async function createDefaultDailyImage(today: Date) {
-  return prisma.dailyImage.create({
-    data: {
-      cloudinaryUrl: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2000&q=80",
-      year: 2012,
-      description: "Classic mountain landscape",
-      date: today
+  try {
+    return await prisma.dailyImage.create({
+      data: {
+        cloudinaryUrl: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2000&q=80",
+        year: 2012,
+        description: "Classic mountain landscape",
+        date: today
+      }
+    })
+  } catch (error: any) {
+    // If unique constraint failed, return existing image
+    if (error.code === 'P2002') {
+      const existingImage = await findDailyImageByDate(today)
+      if (existingImage) {
+        return existingImage
+      }
     }
-  })
+    throw error
+  }
 }
 
 async function getOrCreateTodayImage(userTimezone?: string) {
   const today = getTodayDate(userTimezone)
 
+  // First check if there's already an image for today
   let dailyImage = await findDailyImageByDate(today)
 
   if (!dailyImage) {
+    // Try to schedule a random unscheduled image
     const randomImage = await findRandomUnscheduledImage()
 
     if (randomImage) {
@@ -98,6 +125,17 @@ async function getOrCreateTodayImage(userTimezone?: string) {
     } else {
       dailyImage = await createDefaultDailyImage(today)
     }
+
+    // Double-check we got a valid image - if scheduling failed due to race condition,
+    // try to find the existing one again
+    if (!dailyImage) {
+      dailyImage = await findDailyImageByDate(today)
+    }
+  }
+
+  // Final safety check
+  if (!dailyImage) {
+    throw new Error(`Unable to create or find daily image for ${today.toISOString()}`)
   }
 
   return dailyImage

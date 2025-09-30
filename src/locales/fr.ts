@@ -8,6 +8,7 @@ import privacy from './components/privacy/fr';
 import contact from './components/contact/fr';
 import help from './components/help/fr';
 import daily from './components/daily/fr';
+import lobby from './components/lobby/fr';
 import cookieConsent from './components/cookie-consent/fr';
 import howToPlay from './components/how-to-play/fr';
 
@@ -22,6 +23,7 @@ export default {
     contact,
     help,
     daily,
+    lobby,
     cookieConsent,
     howToPlay,
     metadata: {

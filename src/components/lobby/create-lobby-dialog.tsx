@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { useScopedI18n } from '@/locales/client';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -37,6 +38,7 @@ interface CreateLobbyDialogProps {
 }
 
 export function CreateLobbyDialog({ children, open, onOpenChange }: CreateLobbyDialogProps) {
+  const t = useScopedI18n('lobby');
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
@@ -60,15 +62,15 @@ export function CreateLobbyDialog({ children, open, onOpenChange }: CreateLobbyD
     try {
       const result = await createLobby(data);
       if (result?.data?.success && result?.data?.lobby) {
-        toast.success('Lobby created successfully!');
+        toast.success(t('create.success'));
         onOpenChange?.(false);
         router.push(`/lobby/${result.data.lobby.id}`);
       } else {
-        toast.error('Failed to create lobby');
+        toast.error(t('create.failed'));
       }
     } catch (error) {
       console.error('Error creating lobby:', error);
-      toast.error('Failed to create lobby');
+      toast.error(t('create.failed'));
     } finally {
       setIsLoading(false);
     }
@@ -80,7 +82,7 @@ export function CreateLobbyDialog({ children, open, onOpenChange }: CreateLobbyD
       <DialogHeader>
         <DialogTitle className="flex items-center gap-2">
           <Settings className="h-5 w-5" />
-          Create New Lobby
+          {t('create.title')}
         </DialogTitle>
       </DialogHeader>
 
@@ -92,10 +94,10 @@ export function CreateLobbyDialog({ children, open, onOpenChange }: CreateLobbyD
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Lobby Name</FormLabel>
+                  <FormLabel>{t('create.lobbyName')}</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="Epic Guessing Battle"
+                      placeholder={t('create.lobbyNamePlaceholder')}
                       maxLength={50}
                       {...field}
                     />
@@ -110,10 +112,10 @@ export function CreateLobbyDialog({ children, open, onOpenChange }: CreateLobbyD
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Description</FormLabel>
+                  <FormLabel>{t('create.description')}</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Come join our friendly guessing game!"
+                      placeholder={t('create.descriptionPlaceholder')}
                       maxLength={200}
                       rows={3}
                       {...field}
@@ -125,7 +127,7 @@ export function CreateLobbyDialog({ children, open, onOpenChange }: CreateLobbyD
             />
           </div>
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Game Settings</h3>
+            <h3 className="text-lg font-semibold">{t('create.gameSettings')}</h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
@@ -135,7 +137,7 @@ export function CreateLobbyDialog({ children, open, onOpenChange }: CreateLobbyD
                   <FormItem>
                     <FormLabel className="flex items-center gap-2">
                       <Users className="h-4 w-4" />
-                      Max Players
+                      {t('create.maxPlayers')}
                     </FormLabel>
                     <Select
                       onValueChange={(value) => field.onChange(parseInt(value))}
@@ -149,7 +151,7 @@ export function CreateLobbyDialog({ children, open, onOpenChange }: CreateLobbyD
                       <SelectContent>
                         {[2, 3, 4, 5, 6, 7, 8].map(num => (
                           <SelectItem key={num} value={num.toString()}>
-                            {num} players
+                            {t('create.playersCount', { count: num })}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -166,7 +168,7 @@ export function CreateLobbyDialog({ children, open, onOpenChange }: CreateLobbyD
                   <FormItem>
                     <FormLabel className="flex items-center gap-2">
                       <Clock className="h-4 w-4" />
-                      Round Timer (seconds)
+                      {t('create.roundTimer')}
                     </FormLabel>
                     <Select
                       onValueChange={(value) => field.onChange(parseInt(value))}
@@ -196,7 +198,7 @@ export function CreateLobbyDialog({ children, open, onOpenChange }: CreateLobbyD
               name="gameMode"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Game Mode</FormLabel>
+                  <FormLabel>{t('create.gameMode')}</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger className='min-h-[50px] min-w-[250px]'>
@@ -206,20 +208,20 @@ export function CreateLobbyDialog({ children, open, onOpenChange }: CreateLobbyD
                     <SelectContent>
                       <SelectItem value="CLASSIC">
                         <div>
-                          <div className="font-medium">Classic</div>
-                          <div className="text-sm text-muted-foreground">All players play all rounds</div>
+                          <div className="font-medium">{t('lobby.gameMode.classic')}</div>
+                          <div className="text-sm text-muted-foreground">{t('create.gameModes.classicDescription')}</div>
                         </div>
                       </SelectItem>
                       <SelectItem value="ELIMINATION">
                         <div>
-                          <div className="font-medium">Elimination</div>
-                          <div className="text-sm text-muted-foreground">Last place eliminated each round</div>
+                          <div className="font-medium">{t('lobby.gameMode.elimination')}</div>
+                          <div className="text-sm text-muted-foreground">{t('create.gameModes.eliminationDescription')}</div>
                         </div>
                       </SelectItem>
                       <SelectItem value="MARATHON">
                         <div>
-                          <div className="font-medium">Marathon</div>
-                          <div className="text-sm text-muted-foreground">Play until target score reached</div>
+                          <div className="font-medium">{t('lobby.gameMode.marathon')}</div>
+                          <div className="text-sm text-muted-foreground">{t('create.gameModes.marathonDescription')}</div>
                         </div>
                       </SelectItem>
                     </SelectContent>
@@ -237,7 +239,7 @@ export function CreateLobbyDialog({ children, open, onOpenChange }: CreateLobbyD
                   <FormItem>
                     <FormLabel className="flex items-center gap-2">
                       <Target className="h-4 w-4" />
-                      Number of Rounds
+                      {t('create.numberOfRounds')}
                     </FormLabel>
                     <Select
                       onValueChange={(value) => field.onChange(parseInt(value))}
@@ -251,7 +253,7 @@ export function CreateLobbyDialog({ children, open, onOpenChange }: CreateLobbyD
                       <SelectContent>
                         {[3, 5, 7, 10, 15].map(num => (
                           <SelectItem key={num} value={num.toString()}>
-                            {num} rounds
+                            {t('create.roundsCount', { count: num })}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -268,7 +270,7 @@ export function CreateLobbyDialog({ children, open, onOpenChange }: CreateLobbyD
                 name="targetScore"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Target Score</FormLabel>
+                    <FormLabel>{t('create.targetScore')}</FormLabel>
                     <FormControl>
                       <Input
                         type="number"
@@ -288,7 +290,7 @@ export function CreateLobbyDialog({ children, open, onOpenChange }: CreateLobbyD
 
           {/* Advanced Options */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Advanced Options</h3>
+            <h3 className="text-lg font-semibold">{t('create.advancedOptions')}</h3>
 
             <FormField
               control={form.control}
@@ -296,9 +298,9 @@ export function CreateLobbyDialog({ children, open, onOpenChange }: CreateLobbyD
               render={({ field }) => (
                 <FormItem className="flex items-center justify-between space-y-0">
                   <div>
-                    <FormLabel>Public Lobby</FormLabel>
+                    <FormLabel>{t('create.publicLobby')}</FormLabel>
                     <FormDescription>
-                      Allow anyone to find and join this lobby
+                      {t('create.publicLobbyDescription')}
                     </FormDescription>
                   </div>
                   <FormControl>
@@ -317,9 +319,9 @@ export function CreateLobbyDialog({ children, open, onOpenChange }: CreateLobbyD
               render={({ field }) => (
                 <FormItem className="flex items-center justify-between space-y-0">
                   <div>
-                    <FormLabel>Enable Hints</FormLabel>
+                    <FormLabel>{t('create.enableHints')}</FormLabel>
                     <FormDescription>
-                      Show optional hints during rounds
+                      {t('create.enableHintsDescription')}
                     </FormDescription>
                   </div>
                   <FormControl>
@@ -341,14 +343,14 @@ export function CreateLobbyDialog({ children, open, onOpenChange }: CreateLobbyD
               onClick={() => onOpenChange?.(false)}
               className="flex-1"
             >
-              Cancel
+              {t('create.cancel')}
             </Button>
             <Button
               type="submit"
               disabled={isLoading}
               className="flex-1"
             >
-              {isLoading ? 'Creating...' : 'Create Lobby'}
+              {isLoading ? t('create.creating') : t('create.createButton')}
             </Button>
           </div>
         </form>

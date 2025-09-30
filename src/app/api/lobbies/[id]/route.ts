@@ -18,11 +18,12 @@ const updateLobbySchema = z.object({
 // GET /api/lobbies/[id] - Get specific lobby
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   try {
     const lobby = await prisma.lobby.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         host: {
           select: {
@@ -87,8 +88,9 @@ export async function GET(
 // PATCH /api/lobbies/[id] - Update lobby (host only)
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   try {
     const { user } = await getCurrentSession();
     if (!user) {
@@ -99,7 +101,7 @@ export async function PATCH(
     }
 
     const lobby = await prisma.lobby.findUnique({
-      where: { id: params.id },
+      where: { id: id },
       select: { hostUserId: true, status: true }
     });
 
@@ -128,7 +130,7 @@ export async function PATCH(
     const validatedData = updateLobbySchema.parse(body);
 
     const updatedLobby = await prisma.lobby.update({
-      where: { id: params.id },
+      where: { id: id },
       data: validatedData,
       include: {
         host: {
@@ -152,7 +154,7 @@ export async function PATCH(
 
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Invalid input data', details: error.errors },
+        { error: 'Invalid input data', details: error.issues },
         { status: 400 }
       );
     }
@@ -167,8 +169,9 @@ export async function PATCH(
 // DELETE /api/lobbies/[id] - Delete lobby (host only)
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   try {
     const { user } = await getCurrentSession();
     if (!user) {
@@ -179,7 +182,7 @@ export async function DELETE(
     }
 
     const lobby = await prisma.lobby.findUnique({
-      where: { id: params.id },
+      where: { id: id },
       select: { hostUserId: true, status: true }
     });
 
@@ -205,7 +208,7 @@ export async function DELETE(
     }
 
     await prisma.lobby.delete({
-      where: { id: params.id }
+      where: { id: id }
     });
 
     return NextResponse.json({ success: true });

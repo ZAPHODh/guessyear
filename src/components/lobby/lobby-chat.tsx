@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from 'react';
+import { useScopedI18n } from '@/locales/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -9,6 +10,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Send, Smile } from 'lucide-react';
 import { toast } from 'sonner';
+import { format } from 'date-fns';
 
 interface ChatMessage {
   id: string;
@@ -25,16 +27,7 @@ interface LobbyChatProps {
   compact?: boolean;
 }
 
-const QUICK_PHRASES = [
-  'Boa!',
-  'Quase!',
-  'Nossa!',
-  'Muito difícil',
-  'Fácil demais',
-  'GG!',
-  'Vamos lá!',
-  'Concentra!'
-];
+// Quick phrases will be loaded from translations
 
 const EMOJIS = [
   '😂', '😍', '🤔', '😭', '🔥', '❤️', '👏', '🙈',
@@ -43,10 +36,20 @@ const EMOJIS = [
 ];
 
 export function LobbyChat({ messages, onSendMessage, currentUsername, compact = false }: LobbyChatProps) {
+  const t = useScopedI18n('lobby');
   const [message, setMessage] = useState('');
   const [showEmojiPopover, setShowEmojiPopover] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const QUICK_PHRASES = [t('chat.quickPhrasesList.0'), t('chat.quickPhrasesList.1'), t('chat.quickPhrasesList.2'),
+  t('chat.quickPhrasesList.3'), t('chat.quickPhrasesList.4'), t('chat.quickPhrasesList.5'),
+  t('chat.quickPhrasesList.6'), t('chat.quickPhrasesList.7')];
+
+  // Deduplicate messages to prevent React key conflicts
+  const uniqueMessages = messages.filter((message, index, self) =>
+    index === self.findIndex(m => m.id === message.id)
+  );
 
   // Auto-scroll the ScrollArea to bottom when new messages arrive
   useEffect(() => {
@@ -56,7 +59,7 @@ export function LobbyChat({ messages, onSendMessage, currentUsername, compact = 
         scrollElement.scrollTop = scrollElement.scrollHeight;
       }
     }
-  }, [messages]);
+  }, [uniqueMessages]);
 
   const handleSendMessage = () => {
     if (!message.trim()) return;
@@ -84,10 +87,7 @@ export function LobbyChat({ messages, onSendMessage, currentUsername, compact = 
 
   const formatTime = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleTimeString('pt-BR', {
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+    return format(date, 'HH:mm');
   };
 
   const getMessageTypeStyle = (type: string) => {
@@ -105,7 +105,7 @@ export function LobbyChat({ messages, onSendMessage, currentUsername, compact = 
     <Card className={`${compact ? 'h-[400px]' : 'h-[500px]'} flex flex-col`}>
       <CardHeader className={compact ? 'pb-3 flex-shrink-0' : 'flex-shrink-0'}>
         <CardTitle className={compact ? 'text-lg' : ''}>
-          Chat
+          {t('chat.title')}
         </CardTitle>
       </CardHeader>
       <CardContent className="px-0 py-0 flex flex-col flex-1 min-h-0">
@@ -114,13 +114,13 @@ export function LobbyChat({ messages, onSendMessage, currentUsername, compact = 
           ref={scrollAreaRef}
         >
           <div className="space-y-3 pb-4">
-            {messages.length === 0 ? (
+            {uniqueMessages.length === 0 ? (
               <div className="text-center text-muted-foreground py-4">
-                <p>No messages yet</p>
-                <p className="text-sm">Start the conversation!</p>
+                <p>{t('chat.noMessages')}</p>
+                <p className="text-sm">{t('chat.startConversation')}</p>
               </div>
             ) : (
-              messages.map((msg) => {
+              uniqueMessages.map((msg) => {
                 const isOwnMessage = msg.username === currentUsername;
                 const isSystemMessage = msg.type === 'SYSTEM';
 
@@ -153,7 +153,7 @@ export function LobbyChat({ messages, onSendMessage, currentUsername, compact = 
                           </span>
                           {msg.type === 'QUICK_PHRASE' && (
                             <Badge variant="outline" className="text-xs">
-                              Quick
+                              {t('chat.quick')}
                             </Badge>
                           )}
                         </div>
@@ -231,7 +231,7 @@ export function LobbyChat({ messages, onSendMessage, currentUsername, compact = 
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 onKeyPress={handleKeyPress}
-                placeholder="Type a message..."
+                placeholder={t('chat.placeholder')}
                 maxLength={200}
                 className="flex-1"
               />

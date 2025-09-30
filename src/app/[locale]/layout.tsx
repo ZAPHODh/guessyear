@@ -19,6 +19,7 @@ import Adsense from "@/components/adsense";
 import { GameSettingsDropdown } from "@/components/shared/game-settings-dropdown";
 import Link from "next/link";
 import ModeToggle from "@/components/mode-toggle";
+import Nav from "@/components/shared/nav";
 
 type Props = {
   params: Promise<{ locale: string }>;
@@ -111,18 +112,15 @@ export default async function RootLayout({
   children,
   loginDialog,
   howToPlayDialog,
-  newLobbyDialog,
   params,
 }: {
   children: React.ReactNode;
   loginDialog: React.ReactNode;
   howToPlayDialog: React.ReactNode;
-  newLobbyDialog: React.ReactNode;
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
   const cookieConsent = await getCookieConsent();
-  const config = siteConfig(locale)
   return (
     <html lang={locale} suppressHydrationWarning>
       <head>
@@ -138,32 +136,11 @@ export default async function RootLayout({
         <div className="[--header-height:calc(var(--spacing)*14)]">
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
             <I18nProviderClient locale={locale}>
-              {/* <Header /> */}
-              <nav className="backdrop-blur supports-[backdrop-filter]:bg-background/60">
-                <div className="container mx-auto px-4 max-w-6xl">
-                  <div className="flex h-16 items-center justify-between">
-                    <div className="flex-1 flex justify-start">
-                      <GameSettingsDropdown />
-
-                    </div>
-
-                    <div className="flex-1 flex justify-center">
-                      <Link href={`/${locale}`} className="font-bold text-xl">
-                        {config.name}
-                      </Link>
-                    </div>
-
-                    <div className="flex-1 flex justify-end">
-                      <ModeToggle />
-                    </div>
-                  </div>
-                </div>
-              </nav>
+              <Nav locale={locale} />
               <main>
                 {children}
                 {loginDialog}
                 {howToPlayDialog}
-                {newLobbyDialog}
               </main>
               <FooterSection />
               <CookieConsentBanner initialConsent={cookieConsent} />

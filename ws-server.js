@@ -229,6 +229,146 @@ io.on('connection', (socket) => {
     }
   });
 
+  // Update lobby settings (host only)
+  socket.on('update_lobby_settings', async (data) => {
+    try {
+      const lobby = await prisma.lobby.findUnique({
+        where: { id: socket.lobbyId },
+        include: { players: true }
+      });
+
+      if (lobby.hostUserId !== socket.userId) {
+        socket.emit('error', { message: 'Only host can update lobby settings' });
+        return;
+      }
+
+      if (lobby.status !== 'WAITING') {
+        socket.emit('error', { message: 'Cannot update settings during game' });
+        return;
+      }
+
+      // Update the lobby in database
+      const updatedLobby = await prisma.lobby.update({
+        where: { id: socket.lobbyId },
+        data: {
+          gameMode: data.gameMode,
+          roundTimer: data.roundTimer,
+          rounds: data.rounds,
+          hintsEnabled: data.hintsEnabled,
+          maxPlayers: data.maxPlayers
+        },
+        include: {
+          players: true,
+          host: true
+        }
+      });
+
+      // Broadcast to all players in the lobby
+      broadcastToLobby(socket.lobbyId, 'lobby_updated', {
+        lobby: updatedLobby
+      });
+
+      // Send system message
+      await createSystemMessage(socket.lobbyId, 'Host updated game settings');
+
+    } catch (error) {
+      console.error('Error updating lobby settings:', error);
+      socket.emit('error', { message: 'Failed to update lobby settings' });
+    }
+  });
+
+  // Restart game (host only)
+  socket.on('restart_game', async () => {
+    try {
+      const lobby = await prisma.lobby.findUnique({
+        where: { id: socket.lobbyId },
+        include: { players: true }
+      });
+
+      if (lobby.hostUserId !== socket.userId) {
+        socket.emit('error', { message: 'Only host can restart the game' });
+        return;
+      }
+
+      if (lobby.status !== 'FINISHED') {
+        socket.emit('error', { message: 'Can only restart finished games' });
+        return;
+      }
+
+      // Reset lobby to waiting state
+      await prisma.lobby.update({
+        where: { id: socket.lobbyId },
+        data: {
+          status: 'WAITING',
+          currentRound: 0
+        }
+      });
+
+      // Reset all players
+      await prisma.lobbyPlayer.updateMany({
+        where: { lobbyId: socket.lobbyId },
+        data: {
+          isReady: false,
+          score: 0,
+          streak: 0,
+          isEliminated: false
+        }
+      });
+
+      // Delete previous game rounds and guesses
+      const rounds = await prisma.multiplayerGameRound.findMany({
+        where: { lobbyId: socket.lobbyId },
+        select: { id: true }
+      });
+
+      if (rounds.length > 0) {
+        const roundIds = rounds.map(r => r.id);
+
+        // Delete all guesses for these rounds
+        await prisma.multiplayerGuess.deleteMany({
+          where: { roundId: { in: roundIds } }
+        });
+
+        // Delete all rounds
+        await prisma.multiplayerGameRound.deleteMany({
+          where: { lobbyId: socket.lobbyId }
+        });
+      }
+
+      // Clear any active timers
+      if (roundTimers.has(socket.lobbyId)) {
+        clearTimeout(roundTimers.get(socket.lobbyId));
+        roundTimers.delete(socket.lobbyId);
+      }
+
+      // Get updated lobby with reset players
+      const updatedLobby = await prisma.lobby.findUnique({
+        where: { id: socket.lobbyId },
+        include: {
+          players: true,
+          chatMessages: {
+            orderBy: { createdAt: 'asc' },
+            take: 50
+          }
+        }
+      });
+
+      // Broadcast lobby reset to all players
+      broadcastToLobby(socket.lobbyId, 'game_restarted', {
+        lobby: updatedLobby,
+        players: updatedLobby.players,
+        chatMessages: updatedLobby.chatMessages
+      });
+
+      // Send system message
+      await createSystemMessage(socket.lobbyId, 'Host restarted the game');
+
+    } catch (error) {
+      console.error('Error restarting game:', error);
+      socket.emit('error', { message: 'Failed to restart game' });
+    }
+  });
+
   // Submit guess
   socket.on('submit_guess', async (data) => {
     try {

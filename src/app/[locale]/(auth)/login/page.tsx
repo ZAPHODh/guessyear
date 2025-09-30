@@ -5,7 +5,7 @@ import { getCurrentSession } from "@/lib/server/auth/session";
 
 export default async function Login() {
     const { session } = await getCurrentSession();
-    if (session) return redirect("/projects");
+    if (session) return redirect("/lobby");
     return (
         <section>
             <div className="container mx-auto">
