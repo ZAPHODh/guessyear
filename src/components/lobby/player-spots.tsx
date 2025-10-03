@@ -29,6 +29,7 @@ interface PlayerSpotsProps {
   isHost?: boolean;
   onKickPlayer?: (playerId: string) => void;
   onTransferHost?: (playerId: string) => void;
+  optimisticReady?: boolean;
 }
 
 export function PlayerSpots({
@@ -40,7 +41,8 @@ export function PlayerSpots({
   showScores = false,
   isHost = false,
   onKickPlayer,
-  onTransferHost
+  onTransferHost,
+  optimisticReady
 }: PlayerSpotsProps) {
   const t = useScopedI18n('lobby');
 
@@ -172,11 +174,11 @@ export function PlayerSpots({
                   {player.id === currentPlayer?.id && onToggleReady && gameState === 'WAITING' && (
                     <Button
                       onClick={onToggleReady}
-                      variant={player.isReady ? "default" : "outline"}
+                      variant={optimisticReady !== undefined ? (optimisticReady ? "default" : "outline") : (player.isReady ? "default" : "outline")}
                       size="sm"
                       className="w-full text-xs h-6 sm:h-8 flex-shrink-0 mt-auto"
                     >
-                      {player.isReady ? t('players.ready') : t('players.readyQuestion')}
+                      {optimisticReady !== undefined ? (optimisticReady ? t('players.ready') : t('players.readyQuestion')) : (player.isReady ? t('players.ready') : t('players.readyQuestion'))}
                     </Button>
                   )}
                 </>

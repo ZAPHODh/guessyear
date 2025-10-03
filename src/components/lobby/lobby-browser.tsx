@@ -63,7 +63,7 @@ export function LobbyBrowser({ user, initialLobbies }: LobbyBrowserProps) {
     startTransition(async () => {
       try {
         const result = await getLobbies({});
-        if (result?.data?.lobbies) {
+        if (result?.data?.lobbies && Array.isArray(result.data.lobbies)) {
           const formattedLobbies = result.data.lobbies.map(lobby => ({
             ...lobby,
             createdAt: lobby.createdAt.toISOString()

@@ -38,7 +38,16 @@
       "Read(//c/Users/lulup/salon-server/**)",
       "Read(//c/Users/lulup/ws-server-loqano/**)",
       "mcp__shadcn__list_items_in_registries",
-      "mcp__kibo-ui__getComponent"
+      "mcp__kibo-ui__getComponent",
+      "Bash(npx shadcn@latest list:*)",
+      "Bash(npx shadcn@latest search:*)",
+      "Bash(npx shadcn@latest add:*)",
+      "Bash(robocopy:*)",
+      "Bash(cmd /c robocopy:*)",
+      "Bash(cp:*)",
+      "Bash(pnpm prisma generate:*)",
+      "Bash(echo $NEXT_PUBLIC_WS_SERVER)",
+      "Bash(pnpm add:*)"
     ]
   },
   "enableAllProjectMcpServers": true,

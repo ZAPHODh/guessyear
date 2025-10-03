@@ -4,6 +4,7 @@ import { z } from "zod";
 import { redirect } from "next/navigation";
 import { authActionClient, actionClient } from "@/lib/client/safe-action";
 import { prisma } from "@/lib/server/db";
+import { lobbyCache } from "@/lib/lobby-cache";
 
 const createLobbySchema = z.object({
   name: z.string().min(1, 'Lobby name is required').max(50, 'Name must be 50 characters or less'),
@@ -44,75 +45,98 @@ export const createLobby = authActionClient
   .metadata({ actionName: "createLobby" })
   .schema(createLobbySchema)
   .action(async ({ parsedInput, ctx }) => {
-    const inviteCode = !parsedInput.isOpen
-      ? Math.random().toString(36).substring(2, 8).toUpperCase()
-      : null;
+    try {
+      const inviteCode = !parsedInput.isOpen
+        ? Math.random().toString(36).substring(2, 8).toUpperCase()
+        : null;
 
-    const lobby = await prisma.lobby.create({
-      data: {
-        ...parsedInput,
-        hostUserId: ctx.userId,
-        inviteCode,
-        status: 'WAITING'
-      },
-      include: {
-        host: {
-          select: {
-            id: true,
-            name: true,
-            email: true
+      // Use transaction to ensure atomicity
+      const result = await prisma.$transaction(async (tx) => {
+        const lobby = await tx.lobby.create({
+          data: {
+            ...parsedInput,
+            hostUserId: ctx.userId,
+            inviteCode,
+            status: 'WAITING'
+          },
+          include: {
+            host: {
+              select: {
+                id: true,
+                name: true,
+                email: true
+              }
+            },
+            _count: {
+              select: {
+                players: true
+              }
+            }
           }
-        },
-        _count: {
-          select: {
-            players: true
+        });
+
+        const user = await tx.user.findUnique({
+          where: { id: ctx.userId },
+          select: { name: true, email: true }
+        });
+
+        await tx.lobbyPlayer.create({
+          data: {
+            lobbyId: lobby.id,
+            userId: ctx.userId,
+            username: user?.name || user?.email?.split('@')[0] || 'Host',
+            avatar: '👑',
+            isReady: false
           }
+        });
+
+        return lobby;
+      });
+
+      // Invalidate lobbies cache
+      lobbyCache.invalidatePattern(/^lobbies:/);
+
+      return { success: true, lobby: result };
+    } catch (error) {
+      console.error('[createLobby]', error);
+
+      if (error && typeof error === 'object' && 'code' in error) {
+        if (error.code === 'P2002') {
+          return {
+            success: false,
+            error: 'A lobby with this name already exists'
+          };
         }
       }
-    });
 
-    // Get user data and automatically add the host as a player
-    const user = await prisma.user.findUnique({
-      where: { id: ctx.userId },
-      select: { name: true, email: true }
-    });
-
-    await prisma.lobbyPlayer.create({
-      data: {
-        lobbyId: lobby.id,
-        userId: ctx.userId,
-        username: user?.name || user?.email?.split('@')[0] || 'Host',
-        avatar: '👑', // Crown for host
-        isReady: false
-      }
-    });
-
-    return { lobby, success: true };
+      return {
+        success: false,
+        error: 'Failed to create lobby. Please try again.'
+      };
+    }
   });
 
 export const getLobbies = actionClient
   .metadata({ actionName: "getLobbies" })
   .schema(getLobbiesSchema)
   .action(async ({ parsedInput }) => {
-    const where: any = {
-      // By default, exclude finished lobbies unless specifically requested
-      status: parsedInput.status || { not: 'FINISHED' }
-    };
+    const cacheKey = `lobbies:${JSON.stringify(parsedInput)}`;
 
-    if (parsedInput.status) {
-      where.status = parsedInput.status;
-    }
-
-    if (parsedInput.gameMode) {
-      where.gameMode = parsedInput.gameMode;
-    }
-
-    if (parsedInput.isOpen !== undefined) {
-      where.isOpen = parsedInput.isOpen;
+    // Try cache first
+    const cached = lobbyCache.get(cacheKey);
+    if (cached) {
+      return { success: true, lobbies: cached, fromCache: true };
     }
 
     const lobbies = await prisma.lobby.findMany({
-      where,
+      where: {
+        ...(parsedInput.status
+          ? { status: parsedInput.status as 'WAITING' | 'PLAYING' | 'FINISHED' }
+          : { status: { not: 'FINISHED' as const } }
+        ),
+        ...(parsedInput.gameMode && { gameMode: parsedInput.gameMode as 'CLASSIC' | 'ELIMINATION' | 'MARATHON' }),
+        ...(parsedInput.isOpen !== undefined && { isOpen: parsedInput.isOpen })
+      },
       include: {
         host: {
           select: {
@@ -128,10 +152,13 @@ export const getLobbies = actionClient
         }
       },
       orderBy: [
-        { status: 'asc' }, // WAITING first
+        { status: 'asc' },
         { createdAt: 'desc' }
       ]
     });
+
+    // Cache for 30 seconds
+    lobbyCache.set(cacheKey, lobbies, 30000);
 
     return { lobbies };
   });
@@ -140,143 +167,186 @@ export const getLobby = actionClient
   .metadata({ actionName: "getLobby" })
   .schema(getLobbySchema)
   .action(async ({ parsedInput }) => {
-    const lobby = await prisma.lobby.findUnique({
-      where: { id: parsedInput.id },
-      include: {
-        host: {
-          select: {
-            id: true,
-            name: true,
-            email: true
-          }
-        },
-        players: {
-          include: {
-            user: {
-              select: {
-                id: true,
-                name: true,
-                email: true
-              }
+    try {
+      const lobby = await prisma.lobby.findUnique({
+        where: { id: parsedInput.id },
+        include: {
+          host: {
+            select: {
+              id: true,
+              name: true,
+              email: true
             }
           },
-          orderBy: { createdAt: 'asc' }
-        },
-        gameRounds: {
-          include: {
-            image: true,
-            guesses: {
-              include: {
-                player: true
+          players: {
+            include: {
+              user: {
+                select: {
+                  id: true,
+                  name: true,
+                  email: true
+                }
               }
-            }
+            },
+            orderBy: { createdAt: 'asc' }
           },
-          orderBy: { roundNumber: 'desc' },
-          take: 1 // Only latest round
-        },
-        chatMessages: {
-          orderBy: { createdAt: 'asc' },
-          take: 50 // Last 50 messages
-        },
-        _count: {
-          select: {
-            players: true
+          gameRounds: {
+            include: {
+              image: true,
+              guesses: {
+                include: {
+                  player: true
+                }
+              }
+            },
+            orderBy: { roundNumber: 'desc' },
+            take: 1
+          },
+          chatMessages: {
+            orderBy: { createdAt: 'asc' },
+            take: 50
+          },
+          _count: {
+            select: {
+              players: true
+            }
           }
         }
+      });
+
+      if (!lobby) {
+        return {
+          success: false,
+          error: 'Lobby not found'
+        };
       }
-    });
 
-    if (!lobby) {
-      throw new Error('Lobby not found');
+      return { success: true, lobby };
+    } catch (error) {
+      console.error('[getLobby]', error);
+      return {
+        success: false,
+        error: 'Failed to fetch lobby'
+      };
     }
-
-    return { lobby };
   });
 
 export const updateLobby = authActionClient
   .metadata({ actionName: "updateLobby" })
   .schema(updateLobbySchema)
   .action(async ({ parsedInput, ctx }) => {
-    const { id, ...updateData } = parsedInput;
+    try {
+      const { id, ...updateData } = parsedInput;
 
-    // Check if user is the host
-    const existingLobby = await prisma.lobby.findUnique({
-      where: { id },
-      select: { hostUserId: true, status: true }
-    });
+      const existingLobby = await prisma.lobby.findUnique({
+        where: { id },
+        select: { hostUserId: true, status: true }
+      });
 
-    if (!existingLobby) {
-      throw new Error('Lobby not found');
-    }
+      if (!existingLobby) {
+        return {
+          success: false,
+          error: 'Lobby not found'
+        };
+      }
 
-    if (existingLobby.hostUserId !== ctx.userId) {
-      throw new Error('Only the host can update this lobby');
-    }
+      if (existingLobby.hostUserId !== ctx.userId) {
+        return {
+          success: false,
+          error: 'Only the host can update this lobby'
+        };
+      }
 
-    if (existingLobby.status !== 'WAITING') {
-      throw new Error('Cannot update lobby that is not in waiting state');
-    }
+      if (existingLobby.status !== 'WAITING') {
+        return {
+          success: false,
+          error: 'Cannot update lobby that is not in waiting state'
+        };
+      }
 
-    const updatedLobby = await prisma.lobby.update({
-      where: { id },
-      data: updateData,
-      include: {
-        host: {
-          select: {
-            id: true,
-            name: true,
-            email: true
-          }
-        },
-        players: {
-          include: {
-            user: {
-              select: {
-                id: true,
-                name: true,
-                email: true
+      const updatedLobby = await prisma.lobby.update({
+        where: { id },
+        data: updateData,
+        include: {
+          host: {
+            select: {
+              id: true,
+              name: true,
+              email: true
+            }
+          },
+          players: {
+            include: {
+              user: {
+                select: {
+                  id: true,
+                  name: true,
+                  email: true
+                }
               }
             }
-          }
-        },
-        _count: {
-          select: {
-            players: true
+          },
+          _count: {
+            select: {
+              players: true
+            }
           }
         }
-      }
-    });
+      });
 
-    return { lobby: updatedLobby };
+      return { success: true, lobby: updatedLobby };
+    } catch (error) {
+      console.error('[updateLobby]', error);
+      return {
+        success: false,
+        error: 'Failed to update lobby'
+      };
+    }
   });
 
 export const deleteLobby = authActionClient
   .metadata({ actionName: "deleteLobby" })
   .schema(getLobbySchema)
   .action(async ({ parsedInput, ctx }) => {
-    const { id } = parsedInput;
+    try {
+      const { id } = parsedInput;
 
-    // Check if user is the host
-    const existingLobby = await prisma.lobby.findUnique({
-      where: { id },
-      select: { hostUserId: true, status: true }
-    });
+      const existingLobby = await prisma.lobby.findUnique({
+        where: { id },
+        select: { hostUserId: true, status: true }
+      });
 
-    if (!existingLobby) {
-      throw new Error('Lobby not found');
+      if (!existingLobby) {
+        return {
+          success: false,
+          error: 'Lobby not found'
+        };
+      }
+
+      if (existingLobby.hostUserId !== ctx.userId) {
+        return {
+          success: false,
+          error: 'Only the host can delete this lobby'
+        };
+      }
+
+      if (existingLobby.status === 'PLAYING') {
+        return {
+          success: false,
+          error: 'Cannot delete a game in progress'
+        };
+      }
+
+      await prisma.lobby.delete({
+        where: { id }
+      });
+
+      redirect('/lobby');
+    } catch (error) {
+      console.error('[deleteLobby]', error);
+      return {
+        success: false,
+        error: 'Failed to delete lobby'
+      };
     }
-
-    if (existingLobby.hostUserId !== ctx.userId) {
-      throw new Error('Only the host can delete this lobby');
-    }
-
-    if (existingLobby.status === 'PLAYING') {
-      throw new Error('Cannot delete a game in progress');
-    }
-
-    await prisma.lobby.delete({
-      where: { id }
-    });
-
-    redirect('/lobby');
   });

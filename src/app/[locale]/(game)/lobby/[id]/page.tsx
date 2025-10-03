@@ -1,10 +1,9 @@
-import { Suspense } from 'react';
-
 import { redirect, notFound } from 'next/navigation';
 import { LobbyRoom } from '@/components/lobby/lobby-room';
-import { LobbyRoomSkeleton } from '@/components/lobby/lobby-room-skeleton';
+import { LobbyErrorBoundary } from '@/components/lobby/lobby-error-boundary';
 import { getCurrentSession } from '@/lib/server/auth/session';
 import { prisma } from '@/lib/server/db';
+
 interface LobbyPageProps {
   params: Promise<{
     id: string;
@@ -14,7 +13,6 @@ interface LobbyPageProps {
 
 export default async function LobbyPage({ params }: LobbyPageProps) {
   const { user } = await getCurrentSession();
-
 
   const sessionId = user ? user.id : 'anonymous_' + Math.random().toString(36).substring(2, 15);
 
@@ -50,13 +48,13 @@ export default async function LobbyPage({ params }: LobbyPageProps) {
 
   return (
     <div className="min-h-screen bg-background">
-      <Suspense fallback={<LobbyRoomSkeleton />}>
+      <LobbyErrorBoundary>
         <LobbyRoom
           lobby={lobby}
           user={user}
           sessionId={sessionId}
         />
-      </Suspense>
+      </LobbyErrorBoundary>
     </div>
   );
 }

@@ -1,35 +1,21 @@
 "use client";
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { socket } from '@/lib/socket';
 import { toast } from 'sonner';
 import { useWebSocket } from './use-websocket';
 import { useLobbyState } from './use-lobby-state';
 import { useGameTimer } from './use-game-timer';
 import { useChatMessages } from './use-chat-messages';
-
-interface Guess {
-  player: string;
-  year: number;
-  points: number;
-  speedBonus: number;
-  accuracy: number;
-}
-
-interface RoundData {
-  roundNumber: number;
-  image: {
-    url: string;
-    description?: string;
-  };
-  timer: number;
-  hintsEnabled: boolean;
-}
+import type { RoundData, Guess, Player } from '@/lib/types/lobby';
+import { validateSocketData, socketSchemas } from '@/lib/socket-validation';
+import { telemetry } from '@/lib/telemetry';
+import { rateLimiter } from '@/lib/rate-limiter';
 
 interface UseMultiplayerLobbyProps {
   lobbyId: string;
-  userId?: string;
-  sessionId?: string;
+  userId: string | null;
+  sessionId: string | null;
   username: string;
   avatar?: string;
   enabled?: boolean;
@@ -51,19 +37,41 @@ export function useMultiplayerLobby({
   } | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  // Use smaller, focused hooks
+  const hasJoinedRef = useRef(false);
+
   const { isConnected, connect, disconnect } = useWebSocket({
     onConnect: () => setError(null),
-    onError: (message) => {
-      setError(message);
-    }
+    onError: (message) => setError(message)
   });
 
   const lobbyState = useLobbyState();
   const timer = useGameTimer();
   const chat = useChatMessages();
 
-  // Connection management
+  // Stabilize actions with refs to prevent effect re-runs
+  const actionsRef = useRef(lobbyState.actions);
+  const chatActionsRef = useRef(chat);
+  const timerActionsRef = useRef(timer);
+
+  useEffect(() => {
+    actionsRef.current = lobbyState.actions;
+    chatActionsRef.current = chat;
+    timerActionsRef.current = timer;
+  });
+
+  // Set telemetry context
+  useEffect(() => {
+    telemetry.setContext({
+      userId: userId || undefined,
+      lobbyId,
+      sessionId: sessionId || undefined
+    });
+
+    return () => {
+      telemetry.clearContext();
+    };
+  }, [userId, lobbyId, sessionId]);
+
   const joinLobby = useCallback(() => {
     connect();
     socket.emit('join_lobby', {
@@ -81,7 +89,6 @@ export function useMultiplayerLobby({
     disconnect();
   }, [disconnect, timer]);
 
-  // Game actions
   const toggleReady = useCallback((isReady: boolean) => {
     socket.emit('player_ready', { isReady });
   }, []);
@@ -96,6 +103,12 @@ export function useMultiplayerLobby({
   }, []);
 
   const sendMessage = useCallback((message: string, type: 'CHAT' | 'QUICK_PHRASE' = 'CHAT') => {
+    // Rate limit: max 5 messages per 10 seconds
+    if (!rateLimiter.canExecute('chat', 5, 10000)) {
+      toast.error('You are sending messages too fast');
+      return;
+    }
+
     socket.emit('send_message', { message, type });
   }, []);
 
@@ -120,121 +133,160 @@ export function useMultiplayerLobby({
     socket.emit('restart_game');
   }, []);
 
-  const updateLobbySettings = useCallback((settings: any) => {
+  const updateLobbySettings = useCallback((settings: unknown) => {
     socket.emit('update_lobby_settings', settings);
   }, []);
 
-  // Socket event handlers
+  // Socket event handlers using refs
   useEffect(() => {
-    const handleLobbyJoined = (lobby: any) => {
-      lobbyState.actions.updateLobby(lobby);
+    function handleLobbyJoined(data: unknown) {
+      const lobby = validateSocketData(socketSchemas.lobby, data, 'lobby_joined');
+      if (!lobby) return;
+
+      actionsRef.current.updateLobby(lobby);
       if (lobby.chatMessages) {
-        lobby.chatMessages.forEach((msg: any) => chat.addMessage(msg));
+        lobby.chatMessages.forEach((msg) => {
+          const validMsg = validateSocketData(socketSchemas.chatMessage, msg, 'chat_message');
+          if (validMsg) chatActionsRef.current.addMessage(validMsg);
+        });
       }
-    };
 
-    const handlePlayerJoined = ({ player }: { player: any }) => {
-      lobbyState.actions.addPlayer(player);
-      toast.success(`${player.username} joined the lobby`);
-    };
+      telemetry.info('Lobby joined', { lobbyId: lobby.id });
+    }
 
-    const handlePlayerLeft = ({ username }: { username: string }) => {
-      lobbyState.actions.removePlayer(username);
+    function handlePlayerJoined({ player }: { player: unknown }) {
+      const validPlayer = validateSocketData(socketSchemas.player, player, 'player_joined');
+      if (!validPlayer) return;
+
+      actionsRef.current.addPlayer(validPlayer);
+      toast.success(`${validPlayer.username} joined the lobby`);
+      telemetry.trackEvent('player_joined', { playerId: validPlayer.id });
+    }
+
+    function handlePlayerLeft({ username }: { username: string }) {
+      actionsRef.current.removePlayer(username);
       toast.info(`${username} left the lobby`);
-    };
+    }
 
-    const handlePlayerReadyChanged = ({ playerId, isReady }: { playerId: string; isReady: boolean }) => {
-      lobbyState.actions.updatePlayerReady(playerId, isReady);
-    };
+    function handlePlayerReadyChanged({
+      playerId,
+      isReady
+    }: {
+      playerId: string;
+      isReady: boolean;
+    }) {
+      actionsRef.current.updatePlayerReady(playerId, isReady);
+    }
 
-    const handleGameStarting = ({ countdown }: { countdown: number }) => {
-      lobbyState.actions.updateGameState('STARTING');
-      timer.startCountdown(countdown);
-    };
+    function handleGameStarting({ countdown }: { countdown: number }) {
+      actionsRef.current.updateGameState('STARTING');
+      timerActionsRef.current.startCountdown(countdown);
+    }
 
-    const handleGameStarted = () => {
-      lobbyState.actions.updateGameState('PLAYING');
+    function handleGameStarted() {
+      actionsRef.current.updateGameState('PLAYING');
       toast.success('Game started!');
-    };
+      telemetry.trackEvent('game_started', { lobbyId });
+    }
 
-    const handleRoundStarted = (roundData: RoundData) => {
-      timer.clearAllTimers();
-      lobbyState.actions.updateGameState('PLAYING');
+    function handleRoundStarted(data: unknown) {
+      const roundData = validateSocketData(socketSchemas.roundData, data, 'round_started');
+      if (!roundData) return;
+
+      timerActionsRef.current.clearAllTimers();
+      actionsRef.current.updateGameState('PLAYING');
       setCurrentRound(roundData);
       setHasSubmittedGuess(false);
       setLastRoundResults(null);
-      timer.startTimer(roundData.timer);
-    };
+      timerActionsRef.current.startTimer(roundData.timer);
+      telemetry.trackEvent('round_started', { roundNumber: roundData.roundNumber });
+    }
 
-    const handleRoundEnded = (results: {
+    function handleRoundEnded(results: {
       correctYear: number;
       guesses: Guess[];
-      leaderboard: any[];
+      leaderboard: Player[];
       nextRoundCountdown?: number;
-    }) => {
-      lobbyState.actions.updateGameState('ROUND_RESULTS');
-      lobbyState.actions.updateLeaderboard(results.leaderboard);
+    }) {
+      actionsRef.current.updateGameState('ROUND_RESULTS');
+      actionsRef.current.updateLeaderboard(results.leaderboard);
       setLastRoundResults({
         correctYear: results.correctYear,
         guesses: results.guesses
       });
 
       if (results.nextRoundCountdown) {
-        timer.startNextRoundCountdown(results.nextRoundCountdown);
+        timerActionsRef.current.startNextRoundCountdown(results.nextRoundCountdown);
       }
-    };
+    }
 
-    const handleGameEnded = ({ finalLeaderboard }: { finalLeaderboard: any[] }) => {
-      lobbyState.actions.updateGameState('FINISHED');
-      lobbyState.actions.updateLeaderboard(finalLeaderboard);
+    function handleGameEnded({ finalLeaderboard }: { finalLeaderboard: Player[] }) {
+      actionsRef.current.updateGameState('FINISHED');
+      actionsRef.current.updateLeaderboard(finalLeaderboard);
       toast.success('Game finished!');
-    };
+    }
 
-    const handleGuessSubmitted = () => {
+    function handleGuessSubmitted() {
       toast.success('Guess submitted!');
-    };
+    }
 
-    const handleNewMessage = (message: any) => {
-      chat.addMessage(message);
-    };
+    function handleNewMessage(message: unknown) {
+      const validMsg = validateSocketData(socketSchemas.chatMessage, message, 'new_message');
+      if (validMsg) chatActionsRef.current.addMessage(validMsg);
+    }
 
-    const handleNewReaction = (reaction: any) => {
+    function handleNewReaction(reaction: { emoji: string }) {
       toast(`${reaction.emoji}`, { duration: 1000 });
-    };
+    }
 
-    const handleHintAvailable = ({ hint }: { hint: any }) => {
+    function handleHintAvailable({ hint }: { hint: string }) {
       toast.info(`Hint: ${hint}`);
-    };
+    }
 
-    const handleHostTransferred = ({ newHostUserId }: { newHostUserId: string }) => {
-      lobbyState.actions.updateHost(newHostUserId);
+    function handleHostTransferred({ newHostUserId }: { newHostUserId: string }) {
+      actionsRef.current.updateHost(newHostUserId);
       toast.success('Host has been transferred');
-    };
+    }
 
-    const handleGameRestarted = ({ lobby, players, chatMessages }: { lobby: any; players: any[]; chatMessages: any[] }) => {
-      lobbyState.actions.updateLobby(lobby);
-      lobbyState.actions.setPlayers(players);
+    function handleGameRestarted({
+      lobby,
+      players,
+      chatMessages
+    }: {
+      lobby: unknown;
+      players: Player[];
+      chatMessages: unknown[];
+    }) {
+      actionsRef.current.updateLobby(lobby);
+      actionsRef.current.setPlayers(players);
       setCurrentRound(null);
       setHasSubmittedGuess(false);
       setLastRoundResults(null);
-      timer.clearAllTimers();
-      chat.clearMessages();
-      chatMessages.forEach((msg: any) => chat.addMessage(msg));
+      timerActionsRef.current.clearAllTimers();
+      chatActionsRef.current.clearMessages();
+      chatMessages.forEach((msg) => {
+        const validMsg = validateSocketData(socketSchemas.chatMessage, msg, 'chat_message');
+        if (validMsg) chatActionsRef.current.addMessage(validMsg);
+      });
       toast.success('Game has been restarted!');
-    };
+    }
 
-    const handleLobbyUpdated = ({ lobby }: { lobby: any }) => {
-      lobbyState.actions.updateLobby(lobby);
+    function handleLobbyUpdated({ lobby }: { lobby: unknown }) {
+      actionsRef.current.updateLobby(lobby);
       toast.success('Game settings updated!');
-    };
+    }
 
-    const handleLobbyFinished = ({ lobbyId, reason }: { lobbyId: string; reason: string }) => {
+    function handleLobbyFinished({
+      lobbyId: finishedLobbyId,
+      reason
+    }: {
+      lobbyId: string;
+      reason: string;
+    }) {
       toast.error(`Lobby ended: ${reason}`);
-      // Redirect to lobby browser
       window.location.href = '/lobby';
-    };
+    }
 
-    // Register event listeners
     socket.on('lobby_joined', handleLobbyJoined);
     socket.on('player_joined', handlePlayerJoined);
     socket.on('player_left', handlePlayerLeft);
@@ -272,13 +324,14 @@ export function useMultiplayerLobby({
       socket.off('lobby_updated', handleLobbyUpdated);
       socket.off('lobby_finished', handleLobbyFinished);
     };
-  }, [lobbyState.actions, chat, timer]);
+  }, []); // Empty deps - all handlers use refs
 
-  // Auto-connect on mount - only run once per lobby and when enabled
+  // Join lobby once when enabled
   useEffect(() => {
-    if (!enabled) return;
+    if (!enabled || hasJoinedRef.current) return;
 
-    // Direct connection without using the connect callback to avoid dependencies
+    hasJoinedRef.current = true;
+
     if (!socket.connected) {
       socket.connect();
     }
@@ -292,76 +345,57 @@ export function useMultiplayerLobby({
     });
 
     return () => {
+      hasJoinedRef.current = false;
       socket.emit('leave_lobby');
-      timer.clearAllTimers();
-      // Don't disconnect socket here, just leave the lobby
+      timerActionsRef.current.clearAllTimers();
     };
-  }, [lobbyId, enabled, userId, sessionId, username, avatar]); // Re-run if any identification parameters change
+  }, [lobbyId, enabled]); // Only re-run if lobby changes
 
-  // Return disabled state when not enabled
   if (!enabled) {
     return {
-      // Lobby state
       lobby: null,
       players: [],
       gameState: 'WAITING',
       leaderboard: [],
-
-      // Connection state
       isConnected: false,
       error: null,
-
-      // Game state
       currentRound: null,
       timeRemaining: 0,
       countdown: null,
       nextRoundCountdown: null,
       hasSubmittedGuess: false,
       lastRoundResults: null,
-
-      // Chat
       chatMessages: [],
-
-      // Actions
       actions: {
-        connect: () => {},
-        disconnect: () => {},
-        toggleReady: () => {},
-        startGame: () => {},
-        submitGuess: () => {},
-        sendMessage: () => {},
-        sendReaction: () => {},
-        kickPlayer: () => {},
-        transferHost: () => {},
-        restartGame: () => {},
-        updateLobbySettings: () => {}
+        connect: () => { },
+        disconnect: () => { },
+        toggleReady: () => { },
+        startGame: () => { },
+        submitGuess: () => { },
+        sendMessage: () => { },
+        sendReaction: () => { },
+        kickPlayer: () => { },
+        transferHost: () => { },
+        restartGame: () => { },
+        updateLobbySettings: () => { }
       }
     };
   }
 
   return {
-    // Lobby state
     lobby: lobbyState.lobby,
     players: lobbyState.players,
     gameState: lobbyState.gameState,
     leaderboard: lobbyState.leaderboard,
-
-    // Connection state
     isConnected,
     error,
-
-    // Game state
     currentRound,
     timeRemaining: timer.timeRemaining,
     countdown: timer.countdown,
     nextRoundCountdown: timer.nextRoundCountdown,
     hasSubmittedGuess,
     lastRoundResults,
-
-    // Chat
     chatMessages: chat.messages,
-
-    // Actions
     actions: {
       connect: joinLobby,
       disconnect: leaveLobby,

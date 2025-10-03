@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useMultiplayerLobby } from '@/hooks/use-multiplayer-lobby';
+import { useOptimisticState } from '@/hooks/use-optimistic-state';
 import { useScopedI18n } from '@/locales/client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -17,6 +18,7 @@ import { PlayerList } from './player-list';
 import { GameView } from './game-view';
 import { ResultsView } from './results-view';
 import { ShareDrawer } from '../shared/share-drawer';
+import { ConnectionIndicator } from './connection-indicator';
 import { toast } from 'sonner';
 import { updateLobby } from '@/app/[locale]/(game)/lobby/actions';
 import { updateUserProfile } from '@/app/[locale]/actions';
@@ -177,7 +179,8 @@ function WaitingRoom({
   onSendMessage,
   username,
   isConnected,
-  actions
+  actions,
+  optimisticReady
 }: {
   lobby: any;
   players: any[];
@@ -191,6 +194,7 @@ function WaitingRoom({
   username: string;
   isConnected: boolean;
   actions: any;
+  optimisticReady: boolean;
 }) {
   const t = useScopedI18n('lobby');
   const inviteUrl = typeof window !== 'undefined' ? window.location.href : '';
@@ -199,12 +203,15 @@ function WaitingRoom({
     <div className="space-y-8">
       <div className="text-center space-y-4">
         <div className="flex items-center justify-between">
-          <Status status={isConnected ? 'online' : 'offline'}>
-            <StatusIndicator />
-            <StatusLabel>
-              {isConnected ? t('room.connected') : t('room.disconnected')}
-            </StatusLabel>
-          </Status>
+          <div className="flex items-center gap-3">
+            <Status status={isConnected ? 'online' : 'offline'}>
+              <StatusIndicator />
+              <StatusLabel>
+                {isConnected ? t('room.connected') : t('room.disconnected')}
+              </StatusLabel>
+            </Status>
+            <ConnectionIndicator />
+          </div>
           <div className="flex items-center gap-2">
             {isHost && (
               <GameSettingsDrawer
@@ -258,9 +265,9 @@ function WaitingRoom({
         isHost={isHost}
         onKickPlayer={actions.kickPlayer}
         onTransferHost={actions.transferHost}
+        optimisticReady={optimisticReady}
       />
 
-      {/* Game Starting Modal */}
       {gameState === 'STARTING' && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
           <div className="text-center">
@@ -527,8 +534,8 @@ export function LobbyRoom({ lobby, user: initialUser, sessionId }: LobbyRoomProp
     actions
   } = useMultiplayerLobby({
     lobbyId: lobby.id,
-    userId: user?.id,
-    sessionId,
+    userId: user?.id ?? null,
+    sessionId: sessionId ?? null,
     username,
     avatar: anonymousProfile.avatar || username.charAt(0).toUpperCase(),
     enabled: isProfileSet // Only connect when profile is set
@@ -539,15 +546,33 @@ export function LobbyRoom({ lobby, user: initialUser, sessionId }: LobbyRoomProp
     (user && p.userId === user.id) || (!user && p.sessionId === sessionId)
   );
 
+  // Optimistic ready state
+  const {
+    value: optimisticReady,
+    setOptimistic: setOptimisticReady,
+    confirmOptimistic: confirmOptimisticReady,
+    setServer: setServerReady
+  } = useOptimisticState(currentPlayer?.isReady ?? false);
+
   useEffect(() => {
     if (currentRound && gameState === 'PLAYING' && !hasSubmittedGuess) {
       setGuess('');
     }
   }, [currentRound?.roundNumber, gameState, hasSubmittedGuess]);
 
+  // Update optimistic state when actual state changes
+  useEffect(() => {
+    if (currentPlayer?.isReady !== undefined) {
+      setServerReady(currentPlayer.isReady);
+    }
+  }, [currentPlayer?.isReady, setServerReady]);
+
   const handleReady = () => {
     if (currentPlayer) {
-      actions.toggleReady(!currentPlayer.isReady);
+      const newReadyState = !optimisticReady;
+      const updateId = `ready_${currentPlayer.id}_${Date.now()}`;
+      setOptimisticReady(updateId, newReadyState);
+      actions.toggleReady(newReadyState);
     }
   };
 
@@ -644,6 +669,7 @@ export function LobbyRoom({ lobby, user: initialUser, sessionId }: LobbyRoomProp
               username={username}
               isConnected={isConnected}
               actions={actions}
+              optimisticReady={optimisticReady}
             />
           )}
 

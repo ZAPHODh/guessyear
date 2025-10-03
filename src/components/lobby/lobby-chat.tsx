@@ -11,6 +11,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Send, Smile } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
+import { useDebouncedCallback } from '@/hooks/use-debounced-callback';
 
 interface ChatMessage {
   id: string;
@@ -61,12 +62,12 @@ export function LobbyChat({ messages, onSendMessage, currentUsername, compact = 
     }
   }, [uniqueMessages]);
 
-  const handleSendMessage = () => {
+  const handleSendMessage = useDebouncedCallback(() => {
     if (!message.trim()) return;
 
     onSendMessage(message.trim());
     setMessage('');
-  };
+  }, 300);
 
   const handleSendQuickPhrase = (phrase: string) => {
     onSendMessage(phrase, 'QUICK_PHRASE');

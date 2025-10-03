@@ -12,6 +12,7 @@ import lobby from './components/lobby/en';
 import cookieConsent from './components/cookie-consent/en';
 import howToPlay from './components/how-to-play/en';
 import admin from './components/admin/en';
+import settings from './components/settings/en';
 
 export default {
     header,
@@ -28,6 +29,7 @@ export default {
     cookieConsent,
     howToPlay,
     admin,
+    settings,
     metadata: {
         keywords: [
             "Loqano",

@@ -88,14 +88,14 @@ export function useSmartRange({ correctYear, guesses, attempts }: UseSmartRangeP
       return {
         minYear,
         maxYear,
-        confidence: Math.min(confidence)
+        confidence: Math.min(confidence, 95)
       }
     }
 
     return {
       minYear: currentMin,
       maxYear: currentMax,
-      confidence: Math.min(confidence) // max 95%
+      confidence: Math.min(confidence, 95)
     }
   }, [correctYear, guesses, attempts])
 }

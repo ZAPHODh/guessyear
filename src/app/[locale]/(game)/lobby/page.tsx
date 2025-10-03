@@ -18,10 +18,12 @@ export default async function LobbyPage() {
   }
 
   const lobbiesResult = await getLobbies({});
-  const lobbies = (lobbiesResult?.data?.lobbies || []).map(lobby => ({
-    ...lobby,
-    createdAt: lobby.createdAt.toISOString()
-  }));
+  const lobbies = Array.isArray(lobbiesResult?.data?.lobbies)
+    ? lobbiesResult.data.lobbies.map(lobby => ({
+        ...lobby,
+        createdAt: lobby.createdAt.toISOString()
+      }))
+    : [];
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-6xl">

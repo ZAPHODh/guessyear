@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
 import { io } from "socket.io-client";
 
-const socketURL = process.env.NEXT_PUBLIC_WS_SERVER || 'http://localhost:3001';
+const socketURL = process.env.NEXT_PUBLIC_WS_SERVER || 'ws://localhost:3001';
 
 export const socket = io(socketURL, {
   autoConnect: false,
@@ -16,3 +16,4 @@ export const socket = io(socketURL, {
   reconnectionDelay: 1000,
   reconnectionAttempts: 5
 });
+

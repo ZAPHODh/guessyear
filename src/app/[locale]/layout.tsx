@@ -112,11 +112,13 @@ export default async function RootLayout({
   children,
   loginDialog,
   howToPlayDialog,
+  settingsDialog,
   params,
 }: {
   children: React.ReactNode;
   loginDialog: React.ReactNode;
   howToPlayDialog: React.ReactNode;
+  settingsDialog: React.ReactNode;
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
@@ -141,6 +143,7 @@ export default async function RootLayout({
                 {children}
                 {loginDialog}
                 {howToPlayDialog}
+                {settingsDialog}
               </main>
               <FooterSection />
               <CookieConsentBanner initialConsent={cookieConsent} />
