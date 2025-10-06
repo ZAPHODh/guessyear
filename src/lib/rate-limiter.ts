@@ -5,7 +5,6 @@ class RateLimiter {
     const now = Date.now();
     const calls = this.timestamps.get(key) || [];
 
-    // Remove old calls
     const recentCalls = calls.filter(time => now - time < windowMs);
 
     if (recentCalls.length >= maxCalls) {
