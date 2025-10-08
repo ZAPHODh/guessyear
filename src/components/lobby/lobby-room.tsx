@@ -184,10 +184,6 @@ interface WaitingRoomProps {
   optimisticReady: boolean;
   gameFinished?: boolean;
   leaderboard?: Player[];
-  lastRoundResults?: {
-    correctYear: number;
-    guesses: Guess[];
-  } | null;
 }
 
 function WaitingRoom({
@@ -205,8 +201,7 @@ function WaitingRoom({
   actions,
   optimisticReady,
   gameFinished = false,
-  leaderboard = [],
-  lastRoundResults = null
+  leaderboard = []
 }: WaitingRoomProps) {
   const t = useScopedI18n('lobby');
   const inviteUrl = typeof window !== 'undefined' ? window.location.href : '';
@@ -334,6 +329,10 @@ interface GameInProgressProps {
   gameState: string;
   isHost: boolean;
   actions: LobbyActions;
+  lastRoundResults?: {
+    correctYear: number;
+    guesses: Guess[];
+  } | null;
 }
 
 function GameInProgress({
@@ -352,7 +351,8 @@ function GameInProgress({
   username,
   gameState,
   isHost,
-  actions
+  actions,
+  lastRoundResults
 }: GameInProgressProps) {
   const t = useScopedI18n('lobby');
   return (
@@ -698,7 +698,6 @@ export function LobbyRoom({ lobby, user: initialUser, sessionId }: LobbyRoomProp
               isConnected={isConnected}
               actions={actions}
               optimisticReady={optimisticReady}
-              lastRoundResults={lastRoundResults}
             />
           )}
 
@@ -720,6 +719,7 @@ export function LobbyRoom({ lobby, user: initialUser, sessionId }: LobbyRoomProp
               gameState={gameState}
               isHost={isHost}
               actions={actions}
+              lastRoundResults={lastRoundResults}
             />
           )}
 

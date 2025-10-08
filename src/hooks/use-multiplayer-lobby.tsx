@@ -190,6 +190,7 @@ export function useMultiplayerLobby({
 
     function handleGameStarted() {
       actionsRef.current.updateGameState('PLAYING');
+      setLastRoundResults(null); // Clear results when game starts
       toast.success('Game started!');
       telemetry.trackEvent('game_started', { lobbyId });
     }

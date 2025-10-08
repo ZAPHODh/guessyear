@@ -232,6 +232,9 @@ export default {
     quick: "Rápida",
     systemMessage: "Sistema",
     scrollPaused: "Rolagem pausada",
+    lastRoundResultsTitle: "Resultados da Última Rodada",
+    noResultsYet: "Os resultados da rodada anterior aparecerão aqui",
+    noResultsDescription: "Complete a rodada atual para ver pontuações e palpites",
     quickPhrasesList: [
       "Boa!",
       "Quase!",

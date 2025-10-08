@@ -239,6 +239,9 @@ export default {
     quick: "Quick",
     systemMessage: "System",
     scrollPaused: "Scroll paused",
+    lastRoundResultsTitle: "Last Round Results",
+    noResultsYet: "Results from the previous round will appear here",
+    noResultsDescription: "Complete the current round to see scores and guesses",
     quickPhrasesList: [
       "Nice!",
       "Close!",
