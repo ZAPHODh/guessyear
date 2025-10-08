@@ -46,80 +46,80 @@ export function PlayerList({
   const t = useScopedI18n('lobby');
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-2 lg:space-y-3">
       {title && (
-        <h3 className="text-lg font-semibold">
+        <h3 className={`${compact ? 'text-sm' : 'text-base lg:text-lg'} font-semibold text-foreground/90`}>
           {title} ({players.length})
         </h3>
       )}
 
-      <div className={`space-y-${compact ? '2' : '3'}`}>
+      <div className={`space-y-${compact ? '1.5' : '2 lg:space-y-3'}`}>
         {players.map((player, index) => (
           <div
             key={player.id}
-            className={`flex items-center justify-between p-${compact ? '2' : '3'} rounded-lg border ${
+            className={`flex items-center justify-between p-${compact ? '2' : '2.5 lg:p-3'} rounded-lg border transition-colors ${
               player.id === currentPlayer?.id
                 ? 'border-primary bg-primary/5'
-                : 'border-border bg-background'
+                : 'border-border bg-background hover:bg-muted/50'
             } ${player.isEliminated ? 'opacity-50' : ''}`}
           >
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 lg:gap-3 min-w-0 flex-1">
               {/* Position number for leaderboard */}
               {showScores && (
-                <div className="flex items-center justify-center w-8 h-8 rounded-full bg-muted font-bold text-sm">
+                <div className={`flex items-center justify-center ${compact ? 'w-7 h-7' : 'w-8 h-8'} rounded-full bg-muted font-bold ${compact ? 'text-xs' : 'text-sm'} flex-shrink-0`}>
                   {index + 1}
                 </div>
               )}
 
-              <div className="relative">
-                <Avatar className={compact ? "h-8 w-8" : "h-10 w-10"}>
-                  <AvatarFallback className="text-lg">
+              <div className="relative flex-shrink-0">
+                <Avatar className={compact ? "h-7 w-7 lg:h-8 lg:w-8" : "h-9 w-9 lg:h-10 lg:w-10"}>
+                  <AvatarFallback className={compact ? "text-sm" : "text-base lg:text-lg"}>
                     {player.avatar || player.username.charAt(0).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
 
                 {/* Ready indicator */}
                 {player.isReady && !showScores && (
-                  <div className="absolute -top-1 -right-1 bg-green-500 rounded-full p-1">
-                    <Check className="h-3 w-3 text-white" />
+                  <div className="absolute -top-0.5 -right-0.5 bg-green-500 rounded-full p-0.5">
+                    <Check className="h-2.5 w-2.5 lg:h-3 lg:w-3 text-white" />
                   </div>
                 )}
 
                 {/* Elimination indicator */}
                 {player.isEliminated && (
-                  <div className="absolute -top-1 -right-1 bg-red-500 rounded-full p-1">
+                  <div className="absolute -top-0.5 -right-0.5 bg-red-500 rounded-full p-0.5">
                     <span className="text-white text-xs">X</span>
                   </div>
                 )}
               </div>
 
               <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-2">
-                  <p className={`font-medium truncate ${compact ? 'text-sm' : ''}`}>
+                <div className="flex items-center gap-1.5 lg:gap-2">
+                  <p className={`font-medium truncate ${compact ? 'text-xs lg:text-sm' : 'text-sm'}`}>
                     {player.username}
                   </p>
 
                   {player.id === currentPlayer?.id && (
-                    <Badge variant="outline" className="text-xs">{t('players.you')}</Badge>
+                    <Badge variant="outline" className="text-xs px-1 py-0">{t('players.you')}</Badge>
                   )}
 
                   {/* Host indicator */}
                   {index === 0 && (
-                    <Crown className="h-4 w-4 text-yellow-500" />
+                    <Crown className="h-3 w-3 lg:h-4 lg:w-4 text-yellow-500 flex-shrink-0" />
                   )}
                 </div>
 
                 {/* Status indicators */}
-                <div className="flex items-center gap-2 mt-1">
+                <div className="flex items-center gap-2 mt-0.5 lg:mt-1">
                   {showScores ? (
-                    <div className="flex items-center gap-3">
-                      <span className={`font-bold ${compact ? 'text-sm' : ''}`}>
+                    <div className="flex items-center gap-2 lg:gap-3">
+                      <span className={`font-bold ${compact ? 'text-xs lg:text-sm' : 'text-sm'}`}>
                         {player.score} {t('players.points', { points: '' }).replace(' ', '')}
                       </span>
 
                       {player.streak > 1 && (
-                        <div className="flex items-center gap-1">
-                          <Zap className="h-3 w-3 text-yellow-500" />
+                        <div className="flex items-center gap-0.5 lg:gap-1">
+                          <Zap className="h-2.5 w-2.5 lg:h-3 lg:w-3 text-yellow-500" />
                           <span className="text-xs text-yellow-600">
                             {player.streak}x
                           </span>
@@ -127,20 +127,20 @@ export function PlayerList({
                       )}
                     </div>
                   ) : (
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5 lg:gap-2">
                       {player.isReady ? (
-                        <Badge variant="secondary" className="text-xs">
+                        <Badge variant="secondary" className="text-xs px-1.5 py-0">
                           {t('players.ready')}
                         </Badge>
                       ) : (
-                        <Badge variant="outline" className="text-xs">
-                          <Clock className="h-3 w-3 mr-1" />
+                        <Badge variant="outline" className="text-xs px-1.5 py-0">
+                          <Clock className="h-2.5 w-2.5 lg:h-3 lg:w-3 mr-1" />
                           {t('players.waiting')}
                         </Badge>
                       )}
 
                       {player.isEliminated && (
-                        <Badge variant="destructive" className="text-xs">
+                        <Badge variant="destructive" className="text-xs px-1.5 py-0">
                           {t('players.eliminated')}
                         </Badge>
                       )}

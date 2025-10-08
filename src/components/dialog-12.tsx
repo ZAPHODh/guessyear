@@ -42,6 +42,7 @@ interface Dialog12Props {
   defaultPicture?: string;
   title?: string;
   showTrigger?: boolean;
+  hideAvatarUpload?: boolean; // New prop to hide avatar upload for anonymous users
 }
 
 export default function Dialog12({
@@ -51,9 +52,11 @@ export default function Dialog12({
   defaultName = "",
   defaultPicture = "",
   title = "Update Profile",
-  showTrigger = true
+  showTrigger = true,
+  hideAvatarUpload = false
 }: Dialog12Props) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const form = useForm<ProfileFormValues>({
@@ -66,20 +69,45 @@ export default function Dialog12({
 
   const watchedPicture = form.watch("picture");
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      if (file.size > 1048576) {
-        toast.error("File size exceeds 1MB limit");
-        return;
+    if (!file) return;
+
+    // Validate file size (2MB)
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error("File size exceeds 2MB limit");
+      return;
+    }
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast.error("Only image files are allowed");
+      return;
+    }
+
+    setIsUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await fetch('/api/upload-avatar', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Upload failed');
       }
 
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const result = event.target?.result as string;
-        form.setValue("picture", result);
-      };
-      reader.readAsDataURL(file);
+      form.setValue("picture", data.url);
+      toast.success("Image uploaded successfully!");
+    } catch (error) {
+      console.error('Upload error:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to upload image');
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -124,7 +152,8 @@ export default function Dialog12({
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-1 md:grid-cols-5 px-6 pt-4 pb-6">
+          <form onSubmit={form.handleSubmit(onSubmit)} className={`grid grid-cols-1 px-6 pt-4 pb-6 ${hideAvatarUpload ? '' : 'md:grid-cols-5'}`}>
+            {!hideAvatarUpload && (
             <div className="flex flex-col items-center justify-center md:col-span-2">
               <div className="relative mb-2">
                 <Avatar className="h-24 w-24 border-2 border-muted">
@@ -166,7 +195,7 @@ export default function Dialog12({
 
             <p className="text-center font-medium">Upload Image</p>
             <p className="text-center text-sm text-muted-foreground">
-              Max file size: 1MB
+              Max file size: 2MB
             </p>
               <Button
                 type="button"
@@ -174,8 +203,9 @@ export default function Dialog12({
                 size="sm"
                 className="mt-2"
                 onClick={triggerFileInput}
+                disabled={isUploading}
               >
-                Add Image
+                {isUploading ? "Uploading..." : "Add Image"}
               </Button>
               <input
                 type="file"
@@ -185,8 +215,9 @@ export default function Dialog12({
                 className="hidden"
               />
             </div>
+            )}
 
-            <div className="flex flex-col justify-between md:col-span-3">
+            <div className={`flex flex-col justify-between ${hideAvatarUpload ? '' : 'md:col-span-3'}`}>
               <div className="space-y-4">
                 <FormField
                   control={form.control}
@@ -217,9 +248,9 @@ export default function Dialog12({
                 <Button
                   type="submit"
                   className="bg-foreground text-background hover:bg-foreground/90"
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || isUploading}
                 >
-                  {isSubmitting ? "Saving..." : "Save Changes"}
+                  {isSubmitting ? "Saving..." : isUploading ? "Uploading..." : "Save Changes"}
                 </Button>
               </div>
             </div>

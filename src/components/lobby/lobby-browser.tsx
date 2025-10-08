@@ -11,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
 import { getLobbies } from '@/app/[locale]/(game)/lobby/actions';
 import { format } from 'date-fns';
+import type { User } from '@/lib/types/lobby';
 import {
   Users,
   Clock,
@@ -47,7 +48,7 @@ interface Lobby {
 }
 
 interface LobbyBrowserProps {
-  user: any;
+  user: User | null;
   initialLobbies: Lobby[];
 }
 

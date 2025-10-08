@@ -31,6 +31,7 @@ export function AnonymousProfileDialog({
       defaultName={defaultName === 'Anonymous' ? '' : defaultName}
       title="Set Your Profile"
       showTrigger={false}
+      hideAvatarUpload={true} // Anonymous users can only set name, not avatar
     />
   );
 }

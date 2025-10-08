@@ -238,6 +238,7 @@ export default {
     emojis: "Emojis",
     quick: "Quick",
     systemMessage: "System",
+    scrollPaused: "Scroll paused",
     quickPhrasesList: [
       "Nice!",
       "Close!",

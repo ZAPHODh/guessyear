@@ -144,6 +144,11 @@ export function useMultiplayerLobby({
       if (!lobby) return;
 
       actionsRef.current.updateLobby(lobby);
+
+      // Clear existing messages before adding lobby chat history
+      // This prevents duplicates when reconnecting
+      chatActionsRef.current.clearMessages();
+
       if (lobby.chatMessages) {
         lobby.chatMessages.forEach((msg) => {
           const validMsg = validateSocketData(socketSchemas.chatMessage, msg, 'chat_message');
@@ -159,13 +164,13 @@ export function useMultiplayerLobby({
       if (!validPlayer) return;
 
       actionsRef.current.addPlayer(validPlayer);
-      toast.success(`${validPlayer.username} joined the lobby`);
+      // Only show toast, system message already sent by server
       telemetry.trackEvent('player_joined', { playerId: validPlayer.id });
     }
 
     function handlePlayerLeft({ username }: { username: string }) {
       actionsRef.current.removePlayer(username);
-      toast.info(`${username} left the lobby`);
+      // Don't show toast, system message already sent by server
     }
 
     function handlePlayerReadyChanged({
@@ -259,6 +264,8 @@ export function useMultiplayerLobby({
     }) {
       actionsRef.current.updateLobby(lobby);
       actionsRef.current.setPlayers(players);
+      actionsRef.current.updateGameState('WAITING');
+      actionsRef.current.updateLeaderboard([]);
       setCurrentRound(null);
       setHasSubmittedGuess(false);
       setLastRoundResults(null);
@@ -269,6 +276,7 @@ export function useMultiplayerLobby({
         if (validMsg) chatActionsRef.current.addMessage(validMsg);
       });
       toast.success('Game has been restarted!');
+      telemetry.trackEvent('game_restarted', { lobbyId });
     }
 
     function handleLobbyUpdated({ lobby }: { lobby: unknown }) {

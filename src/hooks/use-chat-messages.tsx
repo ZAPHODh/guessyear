@@ -14,7 +14,14 @@ export function useChatMessages(initialMessages: ChatMessage[] = []) {
   const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
 
   const addMessage = useCallback((message: ChatMessage) => {
-    setMessages(prev => [...prev, message]);
+    setMessages(prev => {
+      // Check if message already exists to prevent duplicates
+      const exists = prev.some(msg => msg.id === message.id);
+      if (exists) {
+        return prev;
+      }
+      return [...prev, message];
+    });
   }, []);
 
   const clearMessages = useCallback(() => {

@@ -27,17 +27,18 @@ import {
   Clock,
   Settings
 } from 'lucide-react';
+import type { Lobby, User, LobbyUpdateSettings, LobbyActions, Player, RoundData, ChatMessage, Guess } from '@/lib/types/lobby';
 
 interface LobbyRoomProps {
-  lobby: any;
-  user: any;
+  lobby: Lobby;
+  user: User | null;
   sessionId?: string;
 }
 
-function GameSettingsDrawer({ lobby, onUpdateSettings }: { lobby: any; onUpdateSettings: (settings: any) => void }) {
+function GameSettingsDrawer({ lobby, onUpdateSettings }: { lobby: Lobby; onUpdateSettings: (settings: LobbyUpdateSettings) => void }) {
   const t = useScopedI18n('lobby');
   const [open, setOpen] = useState(false);
-  const [gameMode, setGameMode] = useState(lobby.gameMode);
+  const [gameMode, setGameMode] = useState<'CLASSIC' | 'ELIMINATION' | 'MARATHON'>(lobby.gameMode);
   const [roundTimer, setRoundTimer] = useState(lobby.roundTimer.toString());
   const [rounds, setRounds] = useState(lobby.rounds.toString());
   const [hintsEnabled, setHintsEnabled] = useState(lobby.hintsEnabled);
@@ -167,6 +168,28 @@ function GameSettingsDrawer({ lobby, onUpdateSettings }: { lobby: any; onUpdateS
   );
 }
 
+interface WaitingRoomProps {
+  lobby: Lobby;
+  players: Player[];
+  currentPlayer: Player | undefined;
+  gameState: string;
+  countdown: number | null;
+  isHost: boolean;
+  onReady: () => void;
+  chatMessages: ChatMessage[];
+  onSendMessage: (message: string, type?: 'CHAT' | 'QUICK_PHRASE') => void;
+  username: string;
+  isConnected: boolean;
+  actions: LobbyActions;
+  optimisticReady: boolean;
+  gameFinished?: boolean;
+  leaderboard?: Player[];
+  lastRoundResults?: {
+    correctYear: number;
+    guesses: Guess[];
+  } | null;
+}
+
 function WaitingRoom({
   lobby,
   players,
@@ -180,22 +203,11 @@ function WaitingRoom({
   username,
   isConnected,
   actions,
-  optimisticReady
-}: {
-  lobby: any;
-  players: any[];
-  currentPlayer: any;
-  gameState: string;
-  countdown: number | null;
-  isHost: boolean;
-  onReady: () => void;
-  chatMessages: any[];
-  onSendMessage: (message: string, type?: 'CHAT' | 'QUICK_PHRASE') => void;
-  username: string;
-  isConnected: boolean;
-  actions: any;
-  optimisticReady: boolean;
-}) {
+  optimisticReady,
+  gameFinished = false,
+  leaderboard = [],
+  lastRoundResults = null
+}: WaitingRoomProps) {
   const t = useScopedI18n('lobby');
   const inviteUrl = typeof window !== 'undefined' ? window.location.href : '';
 
@@ -256,6 +268,18 @@ function WaitingRoom({
         </div>
       </div>
 
+      {gameFinished && isHost && (
+        <div className="flex justify-center mb-6">
+          <Button
+            onClick={actions.restartGame}
+            size="lg"
+            className="gap-2 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-semibold shadow-lg"
+          >
+            🎮 {t('room.playAgain')}
+          </Button>
+        </div>
+      )}
+
       <PlayerSpots
         players={players}
         maxPlayers={lobby.maxPlayers}
@@ -285,10 +309,31 @@ function WaitingRoom({
           onSendMessage={onSendMessage}
           currentUsername={username}
           compact
+          gameFinished={gameFinished}
+          leaderboard={leaderboard}
         />
       </div>
     </div>
   );
+}
+
+interface GameInProgressProps {
+  currentRound: RoundData | null;
+  timeRemaining: number;
+  guess: string;
+  onGuessChange: (value: string) => void;
+  onSubmitGuess: () => void;
+  hasSubmittedGuess: boolean;
+  lobbyTimer: number;
+  players: Player[];
+  leaderboard: Player[];
+  currentPlayer: Player | undefined;
+  chatMessages: ChatMessage[];
+  onSendMessage: (message: string, type?: 'CHAT' | 'QUICK_PHRASE') => void;
+  username: string;
+  gameState: string;
+  isHost: boolean;
+  actions: LobbyActions;
 }
 
 function GameInProgress({
@@ -308,28 +353,11 @@ function GameInProgress({
   gameState,
   isHost,
   actions
-}: {
-  currentRound: any;
-  timeRemaining: number;
-  guess: string;
-  onGuessChange: (value: string) => void;
-  onSubmitGuess: () => void;
-  hasSubmittedGuess: boolean;
-  lobbyTimer: number;
-  players: any[];
-  leaderboard: any[];
-  currentPlayer: any;
-  chatMessages: any[];
-  onSendMessage: (message: string, type?: 'CHAT' | 'QUICK_PHRASE') => void;
-  username: string;
-  gameState: string;
-  isHost: boolean;
-  actions: any;
-}) {
+}: GameInProgressProps) {
   const t = useScopedI18n('lobby');
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-      <div className="lg:col-span-3">
+    <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] xl:grid-cols-[1fr_360px] gap-4 lg:gap-6">
+      <div className="min-w-0">
         {currentRound && (
           <GameView
             round={currentRound}
@@ -339,10 +367,12 @@ function GameInProgress({
             onSubmitGuess={onSubmitGuess}
             hasSubmittedGuess={hasSubmittedGuess}
             lobbyTimer={lobbyTimer}
+            players={leaderboard.length > 0 ? leaderboard : players}
+            currentPlayer={currentPlayer}
           />
         )}
       </div>
-      <div className="hidden lg:flex lg:flex-col space-y-4">
+      <div className="hidden lg:flex lg:flex-col space-y-4 min-w-0">
         <PlayerList
           players={leaderboard.length > 0 ? leaderboard : players}
           currentPlayer={currentPlayer}
@@ -359,29 +389,37 @@ function GameInProgress({
           onSendMessage={onSendMessage}
           currentUsername={username}
           compact
+          lastRoundResults={lastRoundResults}
         />
       </div>
-      <div className="lg:hidden space-y-4">
+      <div className="lg:hidden space-y-3">
         <LobbyChat
           messages={chatMessages}
           onSendMessage={onSendMessage}
           currentUsername={username}
           compact
-        />
-        <PlayerList
-          players={leaderboard.length > 0 ? leaderboard : players}
-          currentPlayer={currentPlayer}
-          gameState={gameState}
-          showScores
-          isHost={isHost}
-          onKickPlayer={actions.kickPlayer}
-          onTransferHost={actions.transferHost}
-          title={t('players.title')}
-          compact
+          lastRoundResults={lastRoundResults}
         />
       </div>
     </div>
   );
+}
+
+interface RoundResultsProps {
+  lastRoundResults: {
+    correctYear: number;
+    guesses: Guess[];
+  } | null;
+  leaderboard: Player[];
+  onSendReaction: (emoji: string, targetType: string, targetId?: string, roundId?: string) => void;
+  currentPlayer: Player | undefined;
+  chatMessages: ChatMessage[];
+  onSendMessage: (message: string, type?: 'CHAT' | 'QUICK_PHRASE') => void;
+  username: string;
+  nextRoundCountdown?: number | null;
+  gameState: string;
+  isHost: boolean;
+  actions: LobbyActions;
 }
 
 function RoundResults({
@@ -396,19 +434,7 @@ function RoundResults({
   gameState,
   isHost,
   actions
-}: {
-  lastRoundResults: any;
-  leaderboard: any[];
-  onSendReaction: (emoji: string, targetType: string, targetId?: string, roundId?: string) => void;
-  currentPlayer: any;
-  chatMessages: any[];
-  onSendMessage: (message: string, type?: 'CHAT' | 'QUICK_PHRASE') => void;
-  username: string;
-  nextRoundCountdown?: number | null;
-  gameState: string;
-  isHost: boolean;
-  actions: any;
-}) {
+}: RoundResultsProps) {
   const t = useScopedI18n('lobby');
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -445,15 +471,17 @@ function RoundResults({
   );
 }
 
+interface GameFinishedProps {
+  leaderboard: Player[];
+  isHost: boolean;
+  onRestartGame: () => void;
+}
+
 function GameFinished({
   leaderboard,
   isHost,
   onRestartGame
-}: {
-  leaderboard: any[];
-  isHost: boolean;
-  onRestartGame: () => void;
-}) {
+}: GameFinishedProps) {
   const t = useScopedI18n('lobby');
   return (
     <div className="space-y-6">
@@ -639,7 +667,7 @@ export function LobbyRoom({ lobby, user: initialUser, sessionId }: LobbyRoomProp
   }, [error, router, t]);
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-6xl">
+    <div className="container mx-auto px-3 py-4 lg:px-4 lg:py-8 max-w-7xl">
       {/* Show loading state when profile dialog is open */}
       {showProfileDialog && (
         <div className="flex flex-col items-center justify-center min-h-[50vh] space-y-4">
@@ -670,6 +698,7 @@ export function LobbyRoom({ lobby, user: initialUser, sessionId }: LobbyRoomProp
               isConnected={isConnected}
               actions={actions}
               optimisticReady={optimisticReady}
+              lastRoundResults={lastRoundResults}
             />
           )}
 
@@ -711,10 +740,22 @@ export function LobbyRoom({ lobby, user: initialUser, sessionId }: LobbyRoomProp
           )}
 
           {gameState === 'FINISHED' && (
-            <GameFinished
-              leaderboard={leaderboard}
+            <WaitingRoom
+              lobby={lobby}
+              players={players}
+              currentPlayer={currentPlayer}
+              gameState={gameState}
+              countdown={countdown}
               isHost={isHost}
-              onRestartGame={actions.restartGame}
+              onReady={handleReady}
+              chatMessages={chatMessages}
+              onSendMessage={actions.sendMessage}
+              username={username}
+              isConnected={isConnected}
+              actions={actions}
+              optimisticReady={optimisticReady}
+              gameFinished={true}
+              leaderboard={leaderboard}
             />
           )}
         </>

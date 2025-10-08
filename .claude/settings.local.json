@@ -47,7 +47,11 @@
       "Bash(cp:*)",
       "Bash(pnpm prisma generate:*)",
       "Bash(echo $NEXT_PUBLIC_WS_SERVER)",
-      "Bash(pnpm add:*)"
+      "Bash(pnpm add:*)",
+      "Bash(pnpm run:*)",
+      "Bash(echo $DB_PRISMA_URL)",
+      "Bash(cat:*)",
+      "Bash(psql:*)"
     ]
   },
   "enableAllProjectMcpServers": true,

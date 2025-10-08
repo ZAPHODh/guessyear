@@ -231,6 +231,7 @@ export default {
     emojis: "Emojis",
     quick: "Rápida",
     systemMessage: "Sistema",
+    scrollPaused: "Rolagem pausada",
     quickPhrasesList: [
       "Boa!",
       "Quase!",

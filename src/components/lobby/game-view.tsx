@@ -11,16 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Clock, Send, Image as ImageIcon } from 'lucide-react';
 import { ImageZoom } from '@/components/ui/kibo-ui/image-zoom';
 import { toast } from 'sonner';
-
-interface RoundData {
-  roundNumber: number;
-  image: {
-    url: string;
-    description?: string;
-  };
-  timer: number;
-  hintsEnabled: boolean;
-}
+import type { RoundData, Player } from '@/lib/types/lobby';
 
 interface GameViewProps {
   round: RoundData;
@@ -30,6 +21,8 @@ interface GameViewProps {
   onSubmitGuess: () => void;
   hasSubmittedGuess: boolean;
   lobbyTimer: number;
+  players?: Player[];
+  currentPlayer?: Player;
 }
 
 export function GameView({
@@ -39,7 +32,9 @@ export function GameView({
   onGuessChange,
   onSubmitGuess,
   hasSubmittedGuess,
-  lobbyTimer
+  lobbyTimer,
+  players = [],
+  currentPlayer
 }: GameViewProps) {
   const t = useScopedI18n('lobby');
   const [imageLoaded, setImageLoaded] = useState(false);
@@ -66,27 +61,44 @@ export function GameView({
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <ImageIcon className="h-5 w-5" />
-          <h2 className="text-xl font-semibold">{t('game.roundTitle', { number: round.roundNumber })}</h2>
-        </div>
-        <div className="flex items-center gap-4">
-          {round.hintsEnabled && (
-            <Badge variant="outline">{t('lobby.hintsEnabled')}</Badge>
-          )}
-          <div className={`flex items-center gap-2 ${isUrgent ? 'text-red-500' : ''}`}>
-            <Clock className="h-4 w-4" />
-            <span className="font-mono font-bold text-lg">
-              {formatTime(timeRemaining)}
-            </span>
-          </div>
-        </div>
+    <div className="space-y-4 lg:space-y-6">
+      {/* Header - Round Title */}
+      <div className="flex items-center gap-2">
+        <ImageIcon className="h-4 w-4 lg:h-5 lg:w-5" />
+        <h2 className="text-lg lg:text-xl font-semibold">{t('game.roundTitle', { number: round.roundNumber })}</h2>
+        {round.hintsEnabled && (
+          <Badge variant="outline" className="ml-auto">{t('lobby.hintsEnabled')}</Badge>
+        )}
       </div>
 
+      {/* Game Image */}
       <div className="relative">
-        <div className="relative aspect-video w-full overflow-hidden rounded-xl shadow-lg bg-muted">
+        <div className="relative aspect-video w-full overflow-hidden rounded-lg lg:rounded-xl shadow-lg bg-muted">
+          {/* Timer overlay - top right corner */}
+          <div className="absolute top-3 right-3 z-10">
+            <div className={`flex items-center gap-2 px-3 py-2 rounded-lg backdrop-blur-sm ${
+              isUrgent
+                ? 'bg-red-500/80 text-white'
+                : 'bg-black/50 text-white'
+            }`}>
+              <Clock className="h-4 w-4 lg:h-5 lg:w-5" />
+              <span className="font-mono font-bold text-lg lg:text-xl">
+                {formatTime(timeRemaining)}
+              </span>
+            </div>
+          </div>
+
+          {/* Progress bar overlay - top of image */}
+          <div className="absolute top-0 left-0 right-0 z-10">
+            <Progress
+              value={progressPercentage}
+              className={`h-2 lg:h-2.5 rounded-none ${isUrgent ? '[&>div]:bg-red-500' : '[&>div]:bg-primary'}`}
+              style={{
+                background: 'rgba(0, 0, 0, 0.3)',
+              }}
+            />
+          </div>
+
           {!imageLoaded && !imageError && (
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
@@ -112,24 +124,37 @@ export function GameView({
             </ImageZoom>
           )}
         </div>
-
-        <div className="mt-3">
-          <Progress
-            value={progressPercentage}
-            className={`h-2 ${isUrgent ? 'bg-red-100' : ''}`}
-          />
-        </div>
       </div>
 
-      <div className="space-y-4">
+      {/* Player scores - horizontal display for mobile */}
+      {players.length > 0 && (
+        <div className="lg:hidden flex items-center justify-center gap-2 overflow-x-auto pb-2 scrollbar-hide">
+          {players.map((player) => (
+            <Badge
+              key={player.id}
+              variant={player.id === currentPlayer?.id ? "default" : "secondary"}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 text-sm font-medium whitespace-nowrap"
+            >
+              <div className="w-5 h-5 rounded-full bg-background/20 flex items-center justify-center text-xs font-semibold">
+                {player.avatar || player.username.charAt(0).toUpperCase()}
+              </div>
+              <span>{player.username}</span>
+              <span className="font-bold">{player.score}</span>
+            </Badge>
+          ))}
+        </div>
+      )}
+
+      {/* Guess Input Section */}
+      <div className="space-y-3 lg:space-y-4">
         <div className="text-center">
-          <h3 className="text-lg font-medium mb-4">{t('game.prompt')}</h3>
-          <p className="text-sm text-muted-foreground mb-4">
+          <h3 className="text-base lg:text-lg font-medium mb-2 lg:mb-3">{t('game.prompt')}</h3>
+          <p className="text-xs lg:text-sm text-muted-foreground mb-3 lg:mb-4">
             {t('game.promptDescription')}
           </p>
         </div>
 
-        <div className="max-w-md mx-auto space-y-4">
+        <div className="max-w-md mx-auto">
           {!hasSubmittedGuess ? (
             <YearInput
               value={guess}
@@ -144,11 +169,11 @@ export function GameView({
               submitButtonText={t('game.submit')}
             />
           ) : (
-            <div className="text-center py-4">
-              <Badge variant="secondary" className="text-lg px-4 py-2">
+            <div className="text-center py-3 lg:py-4">
+              <Badge variant="secondary" className="text-base lg:text-lg px-3 lg:px-4 py-1.5 lg:py-2">
                 {t('game.submitted', { year: guess })}
               </Badge>
-              <p className="text-sm text-muted-foreground mt-2">
+              <p className="text-xs lg:text-sm text-muted-foreground mt-2">
                 {t('game.waitingForOthers')}
               </p>
             </div>
