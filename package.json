@@ -4,8 +4,6 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "dev:ws": "node ws-server.js",
-    "dev:full": "concurrently \"npm run dev\" \"npm run dev:ws\"",
     "build": "next build --turbopack",
     "start": "next start",
     "postinstall": "prisma generate"
