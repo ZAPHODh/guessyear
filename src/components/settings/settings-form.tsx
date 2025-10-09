@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { z } from "zod"
-import { User } from "@prisma/client"
+import { User } from "@/types"
 import { useTransition, useMemo, useRef, useState } from "react"
 
 import { Button } from "@/components/ui/button"

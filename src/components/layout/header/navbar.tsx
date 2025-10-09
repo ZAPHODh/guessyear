@@ -14,7 +14,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
-import { User } from "@prisma/client"
+import { User } from "@/types"
 import { getInitials } from "@/lib/utils"
 import { logout } from "@/app/[locale]/actions"
 import { useCurrentLocale } from "@/locales/client"

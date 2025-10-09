@@ -2,7 +2,7 @@
 
 import { usePathname } from 'next/navigation';
 import Navbar from "./navbar";
-import { User } from '@prisma/client';
+import { User } from '@/types';
 
 interface HeaderWrapperProps {
     headerText: {

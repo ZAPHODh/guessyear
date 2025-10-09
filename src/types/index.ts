@@ -1,5 +1,22 @@
-import { type User } from "@prisma/client";
 import { z } from "zod";
+
+// User type without importing from Prisma (safe for client-side)
+export type User = {
+    id: string;
+    name: string | null;
+    email: string | null;
+    emailVerified: boolean | null;
+    picture: string | null;
+    githubId: number | null;
+    googleId: string | null;
+    role: "USER" | "ADMIN";
+    stripeCustomerId: string | null;
+    stripeSubscriptionId: string | null;
+    stripePriceId: string | null;
+    stripeCurrentPeriodEnd: Date | null;
+    createdAt: Date;
+    updatedAt: Date;
+};
 
 export type CurrentUser = {
     id: string;

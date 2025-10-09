@@ -9,7 +9,7 @@ import {
     DialogDescription,
 } from "@/components/ui/dialog";
 import SettingsForm from "./settings-form";
-import { User } from "@prisma/client";
+import { User } from "@/types";
 import { useScopedI18n } from "@/locales/client";
 
 export default function SettingsModal({ user }: { user: User }) {
