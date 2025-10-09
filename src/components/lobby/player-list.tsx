@@ -5,18 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Crown, Check, Clock, Zap, X } from 'lucide-react';
-
-interface Player {
-  id: string;
-  username: string;
-  avatar?: string;
-  score: number;
-  isReady: boolean;
-  isEliminated: boolean;
-  streak: number;
-  userId?: string;
-  sessionId?: string;
-}
+import type { Player } from '@/lib/types/lobby';
 
 interface PlayerListProps {
   players: Player[];

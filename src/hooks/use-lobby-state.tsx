@@ -1,18 +1,7 @@
 "use client";
 
 import { useState, useCallback } from 'react';
-
-interface Player {
-  id: string;
-  username: string;
-  avatar: string;
-  score: number;
-  isReady: boolean;
-  isEliminated: boolean;
-  streak: number;
-  userId?: string;
-  sessionId?: string;
-}
+import type { Player } from '@/lib/types/lobby';
 
 interface LobbyState {
   lobby: any;

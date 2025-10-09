@@ -82,7 +82,7 @@ function GameSettingsDrawer({ lobby, onUpdateSettings }: { lobby: Lobby; onUpdat
             <div className="flex-col gap-6 mb-6">
               <div>
                 <label className="text-sm font-medium">{t('room.gameSettings.gameMode')}</label>
-                <Select value={gameMode} onValueChange={setGameMode}>
+                <Select value={gameMode} onValueChange={(value) => setGameMode(value as 'CLASSIC' | 'ELIMINATION' | 'MARATHON')}>
                   <SelectTrigger className='w-full'>
                     <SelectValue />
                   </SelectTrigger>
@@ -569,7 +569,7 @@ export function LobbyRoom({ lobby, user: initialUser, sessionId }: LobbyRoomProp
     enabled: isProfileSet // Only connect when profile is set
   });
 
-  const isHost = user && lobby.hostUserId === user.id;
+  const isHost = !!(user && lobby.hostUserId === user.id);
   const currentPlayer = players.find(p =>
     (user && p.userId === user.id) || (!user && p.sessionId === sessionId)
   );
@@ -629,7 +629,7 @@ export function LobbyRoom({ lobby, user: initialUser, sessionId }: LobbyRoomProp
           setUser({
             ...user,
             name: profile.name,
-            picture: profile.avatar
+            picture: profile.avatar || null
           });
 
           // Update local state with the saved profile

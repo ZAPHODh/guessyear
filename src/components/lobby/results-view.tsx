@@ -8,23 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer';
 import { Trophy, Target, Zap, Medal, Users, Clock } from 'lucide-react';
-
-
-interface Guess {
-  player: string;
-  year: number;
-  points: number;
-  speedBonus: number;
-  accuracy: number;
-}
-
-interface Player {
-  id: string;
-  username: string;
-  score: number;
-  streak: number;
-  isEliminated?: boolean;
-}
+import type { Player, Guess } from '@/lib/types/lobby';
 
 interface ResultsViewProps {
   results: {

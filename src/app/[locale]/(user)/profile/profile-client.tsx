@@ -43,31 +43,31 @@ export default function ProfileClient({ user, stats }: ProfileClientProps) {
 
   const statsData = [
     {
-      title: 'Total Games',
-      value: stats.totalGames.toString(),
+      name: 'Total Games',
+      stat: stats.totalGames.toString(),
       change: stats.totalGames > 0 ? '+' + stats.totalGames : '0',
-      trend: 'up' as const,
+      changeType: 'positive' as const,
       icon: Gamepad2,
     },
     {
-      title: 'Lobby Games',
-      value: stats.totalLobbyGames.toString(),
+      name: 'Lobby Games',
+      stat: stats.totalLobbyGames.toString(),
       change: stats.totalLobbyGames > 0 ? '+' + stats.totalLobbyGames : '0',
-      trend: 'up' as const,
+      changeType: 'positive' as const,
       icon: Trophy,
     },
     {
-      title: 'Daily Challenges',
-      value: stats.totalDailyGames.toString(),
+      name: 'Daily Challenges',
+      stat: stats.totalDailyGames.toString(),
       change: stats.totalDailyGames > 0 ? '+' + stats.totalDailyGames : '0',
-      trend: 'up' as const,
+      changeType: 'positive' as const,
       icon: Calendar,
     },
     {
-      title: 'Completed Daily Games',
-      value: stats.completedDailyGames.toString(),
+      name: 'Completed Daily Games',
+      stat: stats.completedDailyGames.toString(),
       change: stats.completedDailyGames > 0 ? stats.completedDailyGames + ' won' : '0',
-      trend: 'up' as const,
+      changeType: 'positive' as const,
       icon: Award,
     },
   ]

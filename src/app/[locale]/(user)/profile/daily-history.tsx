@@ -19,14 +19,16 @@ import { formatDistanceToNow } from 'date-fns'
 
 type DailyGame = {
   id: string
-  score: number
-  completedAt: Date | null
+  attempts: number
+  completed: boolean
+  won: boolean
+  winAttempt: number | null
   createdAt: Date
-  dailyImage: {
+  image: {
     id: string
     date: Date
     year: number
-    title: string
+    description: string | null
   }
 }
 
@@ -50,20 +52,26 @@ export default function DailyHistory() {
       return
     }
 
-    setGames(result.games as DailyGame[])
+    setGames(result.games)
     setTotalPages(result.pagination.totalPages)
     setLoading(false)
   }
 
-  const getScoreBadge = (score: number) => {
-    if (score >= 80) {
-      return <Badge className="bg-green-500">Excellent</Badge>
-    } else if (score >= 60) {
-      return <Badge className="bg-blue-500">Good</Badge>
-    } else if (score >= 40) {
-      return <Badge className="bg-yellow-500">Average</Badge>
+  const getPerformanceBadge = (game: DailyGame) => {
+    if (game.won && game.winAttempt) {
+      if (game.winAttempt === 1) {
+        return <Badge className="bg-green-500">Perfect!</Badge>
+      } else if (game.winAttempt <= 2) {
+        return <Badge className="bg-blue-500">Great</Badge>
+      } else if (game.winAttempt <= 3) {
+        return <Badge className="bg-yellow-500">Good</Badge>
+      } else {
+        return <Badge variant="secondary">Complete</Badge>
+      }
+    } else if (game.completed) {
+      return <Badge variant="destructive">Failed</Badge>
     } else {
-      return <Badge variant="secondary">Below Average</Badge>
+      return <Badge variant="outline">In Progress</Badge>
     }
   }
 
@@ -101,10 +109,10 @@ export default function DailyHistory() {
           <TableHeader>
             <TableRow>
               <TableHead>Date</TableHead>
-              <TableHead>Image</TableHead>
+              <TableHead>Description</TableHead>
               <TableHead>Year</TableHead>
-              <TableHead>Score</TableHead>
-              <TableHead>Performance</TableHead>
+              <TableHead>Attempts</TableHead>
+              <TableHead>Result</TableHead>
               <TableHead>Played</TableHead>
             </TableRow>
           </TableHeader>
@@ -112,18 +120,23 @@ export default function DailyHistory() {
             {games.map((game) => (
               <TableRow key={game.id}>
                 <TableCell className="font-medium">
-                  {new Date(game.dailyImage.date).toLocaleDateString()}
+                  {new Date(game.image.date).toLocaleDateString()}
                 </TableCell>
                 <TableCell className="max-w-[200px] truncate">
-                  {game.dailyImage.title}
+                  {game.image.description || 'No description'}
                 </TableCell>
                 <TableCell>
-                  <Badge variant="outline">{game.dailyImage.year}</Badge>
+                  <Badge variant="outline">{game.image.year}</Badge>
                 </TableCell>
                 <TableCell>
-                  <span className="font-semibold">{game.score}</span> pts
+                  <span className="font-semibold">{game.attempts}</span> / 5
+                  {game.won && game.winAttempt && (
+                    <span className="text-xs text-muted-foreground ml-1">
+                      (Won on {game.winAttempt})
+                    </span>
+                  )}
                 </TableCell>
-                <TableCell>{getScoreBadge(game.score)}</TableCell>
+                <TableCell>{getPerformanceBadge(game)}</TableCell>
                 <TableCell className="text-muted-foreground">
                   {formatDistanceToNow(new Date(game.createdAt), { addSuffix: true })}
                 </TableCell>
