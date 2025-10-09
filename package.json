@@ -7,9 +7,7 @@
     "dev:ws": "node ws-server.js",
     "dev:full": "concurrently \"npm run dev\" \"npm run dev:ws\"",
     "build": "next build --turbopack",
-    "start": "NODE_ENV=production node server.js",
-    "start:next": "next start",
-    "start:ws": "node ws-server.js",
+    "start": "next start",
     "postinstall": "prisma generate"
   },
   "dependencies": {

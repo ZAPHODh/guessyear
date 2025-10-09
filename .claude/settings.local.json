@@ -51,7 +51,8 @@
       "Bash(pnpm run:*)",
       "Bash(echo $DB_PRISMA_URL)",
       "Bash(cat:*)",
-      "Bash(psql:*)"
+      "Bash(psql:*)",
+      "Bash(pnpm start:*)"
     ]
   },
   "enableAllProjectMcpServers": true,
