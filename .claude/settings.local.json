@@ -52,7 +52,14 @@
       "Bash(echo $DB_PRISMA_URL)",
       "Bash(cat:*)",
       "Bash(psql:*)",
-      "Bash(pnpm start:*)"
+      "Bash(pnpm start:*)",
+      "Bash(next build:*)",
+      "Bash(npx next build:*)",
+      "Bash(for port in 21 22 80 443 3000 3001 5432 8080 27017 6379)",
+      "Bash(do timeout 2 bash -c \"cat < /dev/null > /dev/tcp/72.60.240.238/$port\")",
+      "Bash(echo:*)",
+      "Bash(done)",
+      "Bash(curl:*)"
     ]
   },
   "enableAllProjectMcpServers": true,
