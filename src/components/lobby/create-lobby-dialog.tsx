@@ -63,7 +63,6 @@ export function CreateLobbyDialog({ children, open, onOpenChange }: CreateLobbyD
       const result = await createLobby(data);
       if (result?.data?.success && result?.data?.lobby) {
         toast.success(t('create.success'));
-        onOpenChange?.(false);
         router.push(`/lobby/${result.data.lobby.id}`);
       } else {
         toast.error(t('create.failed'));
@@ -371,5 +370,12 @@ export function CreateLobbyDialog({ children, open, onOpenChange }: CreateLobbyD
     );
   }
 
-  return content;
+  // Modal mode without trigger
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        {content}
+      </DialogContent>
+    </Dialog>
+  );
 }

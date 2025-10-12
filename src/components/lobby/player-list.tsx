@@ -46,14 +46,12 @@ export function PlayerList({
         {players.map((player, index) => (
           <div
             key={player.id}
-            className={`flex items-center justify-between p-${compact ? '2' : '2.5 lg:p-3'} rounded-lg border transition-colors ${
-              player.id === currentPlayer?.id
-                ? 'border-primary bg-primary/5'
-                : 'border-border bg-background hover:bg-muted/50'
-            } ${player.isEliminated ? 'opacity-50' : ''}`}
+            className={`flex items-center justify-between p-${compact ? '2' : '2.5 lg:p-3'} rounded-lg border transition-colors ${player.id === currentPlayer?.id
+              ? 'border-primary bg-primary/5'
+              : 'border-border bg-background hover:bg-muted/50'
+              } ${player.isEliminated ? 'opacity-50' : ''}`}
           >
             <div className="flex items-center gap-2 lg:gap-3 min-w-0 flex-1">
-              {/* Position number for leaderboard */}
               {showScores && (
                 <div className={`flex items-center justify-center ${compact ? 'w-7 h-7' : 'w-8 h-8'} rounded-full bg-muted font-bold ${compact ? 'text-xs' : 'text-sm'} flex-shrink-0`}>
                   {index + 1}
@@ -67,14 +65,12 @@ export function PlayerList({
                   </AvatarFallback>
                 </Avatar>
 
-                {/* Ready indicator */}
                 {player.isReady && !showScores && (
                   <div className="absolute -top-0.5 -right-0.5 bg-green-500 rounded-full p-0.5">
                     <Check className="h-2.5 w-2.5 lg:h-3 lg:w-3 text-white" />
                   </div>
                 )}
 
-                {/* Elimination indicator */}
                 {player.isEliminated && (
                   <div className="absolute -top-0.5 -right-0.5 bg-red-500 rounded-full p-0.5">
                     <span className="text-white text-xs">X</span>
@@ -92,13 +88,11 @@ export function PlayerList({
                     <Badge variant="outline" className="text-xs px-1 py-0">{t('players.you')}</Badge>
                   )}
 
-                  {/* Host indicator */}
                   {index === 0 && (
                     <Crown className="h-3 w-3 lg:h-4 lg:w-4 text-yellow-500 flex-shrink-0" />
                   )}
                 </div>
 
-                {/* Status indicators */}
                 <div className="flex items-center gap-2 mt-0.5 lg:mt-1">
                   {showScores ? (
                     <div className="flex items-center gap-2 lg:gap-3">

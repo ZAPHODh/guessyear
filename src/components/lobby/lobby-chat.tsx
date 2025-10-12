@@ -24,8 +24,9 @@ interface LobbyChatProps {
     correctYear: number;
     guesses: Guess[];
   } | null;
-  gameFinished?: boolean;
-  leaderboard?: Player[];
+  players?: Player[];
+  currentPlayer?: Player;
+  showPlayerScores?: boolean;
 }
 
 const EMOJIS = [
@@ -34,7 +35,7 @@ const EMOJIS = [
   '🤷‍♂️', '🤦‍♂️', '😤', '🥳', '🤯', '😴', '🙄', '🤨'
 ];
 
-export function LobbyChat({ messages, onSendMessage, currentUsername, compact = false, lastRoundResults, gameFinished = false, leaderboard = [] }: LobbyChatProps) {
+export function LobbyChat({ messages, onSendMessage, currentUsername, compact = false, lastRoundResults, players = [], currentPlayer, showPlayerScores = false }: LobbyChatProps) {
   const t = useScopedI18n('lobby');
   const [message, setMessage] = useState('');
   const [showEmojiPopover, setShowEmojiPopover] = useState(false);
@@ -142,36 +143,92 @@ export function LobbyChat({ messages, onSendMessage, currentUsername, compact = 
   };
 
   return (
-    <div className={`${compact ? 'h-[400px]' : 'h-[500px]'} flex flex-col bg-background border rounded-lg overflow-hidden relative`}>
-      <div className="pb-2 px-3 pt-2 border-b bg-muted/30">
-        <h3 className="text-xs font-semibold text-foreground/70 uppercase tracking-wide">
+    <div className={`${compact ? 'h-[280px] sm:h-[320px] md:h-[380px] lg:h-[450px]' : 'h-[350px] sm:h-[400px] lg:h-[500px]'} flex flex-col bg-background border rounded-lg overflow-hidden relative`}>
+      <div className="pb-1.5 px-2.5 pt-1.5 sm:pb-2 sm:px-3 sm:pt-2 border-b bg-muted/30">
+        <h3 className="text-[10px] sm:text-xs font-semibold text-foreground/70 uppercase tracking-wide">
           {t('chat.title')}
         </h3>
       </div>
 
       <div className="flex-1 flex flex-col relative overflow-hidden">
-        {/* Game Finished Results - Fixed at top */}
-        {gameFinished && leaderboard.length > 0 && (
-          <div className="absolute top-0 left-0 right-0 z-20 bg-gradient-to-br from-yellow-500/10 to-orange-500/10 border-b backdrop-blur-sm">
-            <Accordion type="single" collapsible defaultValue="game-results">
-              <AccordionItem value="game-results" className="border-none">
+        {/* Player Scores / Past Guesses Accordion Banner - Fixed at top, always visible during game */}
+        <div className="absolute top-0 left-0 right-0 z-20 bg-background/95 border-b backdrop-blur-sm">
+          <Accordion type="single" collapsible defaultValue={showPlayerScores && players.length > 0 ? "player-scores" : undefined}>
+            <AccordionItem value="guesses" className="border-none">
+              <AccordionTrigger className="px-3 py-2 hover:no-underline text-xs font-semibold">
+                <div className="flex items-center gap-2">
+                  <Trophy className="h-3.5 w-3.5 text-yellow-500" />
+                  <span>{t('chat.lastRoundResultsTitle')}</span>
+                  {lastRoundResults && lastRoundResults.guesses && lastRoundResults.guesses.length > 0 && (
+                    <Badge variant="secondary" className="ml-auto text-[10px] px-1.5 py-0">
+                      {lastRoundResults.guesses.length}
+                    </Badge>
+                  )}
+                </div>
+              </AccordionTrigger>
+              <AccordionContent className="px-3 pb-2 max-h-[200px] overflow-y-auto">
+                {lastRoundResults && lastRoundResults.guesses && lastRoundResults.guesses.length > 0 ? (
+                  <div className="space-y-1.5">
+                    <div className="text-xs text-muted-foreground mb-2">
+                      Correct year: <span className="font-bold text-foreground">{lastRoundResults.correctYear}</span>
+                    </div>
+                    {lastRoundResults.guesses
+                      .sort((a, b) => b.points - a.points)
+                      .map((guess, index) => (
+                        <div
+                          key={`${guess.player}-${index}`}
+                          className="flex items-center justify-between text-xs py-1.5 px-2 rounded bg-muted/40"
+                        >
+                          <div className="flex items-center gap-2 flex-1 min-w-0">
+                            <span className="font-medium truncate">{guess.player}</span>
+                            <Badge variant="outline" className="text-[10px] px-1 py-0">
+                              {guess.year}
+                            </Badge>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-[10px] text-muted-foreground">
+                              {Math.abs(guess.year - lastRoundResults.correctYear)} off
+                            </span>
+                            <span className="font-bold text-primary">
+                              +{guess.points}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                ) : (
+                  <div className="text-xs text-muted-foreground text-center py-3">
+                    <p className="mb-1">{t('chat.noResultsYet')}</p>
+                    <p className="text-[10px]">{t('chat.noResultsDescription')}</p>
+                  </div>
+                )}
+              </AccordionContent>
+            </AccordionItem>
+
+            {/* Player Scores Accordion */}
+            {showPlayerScores && players.length > 0 && (
+              <AccordionItem value="player-scores" className="border-none">
                 <AccordionTrigger className="px-3 py-2 hover:no-underline text-xs font-semibold">
                   <div className="flex items-center gap-2">
                     <Trophy className="h-4 w-4 text-yellow-500" />
-                    <span className="text-yellow-700 dark:text-yellow-400">🎉 Game Finished!</span>
+                    <span className="text-yellow-700 dark:text-yellow-400">
+                      {t('players.title')}
+                    </span>
                     <Badge variant="default" className="ml-auto text-[10px] px-1.5 py-0 bg-yellow-500">
-                      Winner
+                      {players.length}
                     </Badge>
                   </div>
                 </AccordionTrigger>
                 <AccordionContent className="px-3 pb-3 max-h-[200px] overflow-y-auto">
                   <div className="space-y-2">
-                    {leaderboard.map((player, index) => (
+                    {players.map((player, index) => (
                       <div
                         key={player.id}
                         className={`flex items-center justify-between text-xs py-2 px-2.5 rounded ${
                           index === 0
                             ? 'bg-yellow-500/20 border border-yellow-500/30'
+                            : player.id === currentPlayer?.id
+                            ? 'bg-primary/10 border border-primary/30'
                             : 'bg-muted/40'
                         }`}
                       >
@@ -182,6 +239,7 @@ export function LobbyChat({ messages, onSendMessage, currentUsername, compact = 
                           <span className={`font-medium truncate ${index === 0 ? 'font-bold' : ''}`}>
                             {player.username}
                             {index === 0 && ' 👑'}
+                            {player.id === currentPlayer?.id && ' (você)'}
                           </span>
                         </div>
                         <div className="flex items-center gap-2">
@@ -199,67 +257,9 @@ export function LobbyChat({ messages, onSendMessage, currentUsername, compact = 
                   </div>
                 </AccordionContent>
               </AccordionItem>
-            </Accordion>
-          </div>
-        )}
-
-        {/* Past Guesses Accordion Banner - Fixed at top, always visible during game */}
-        {!gameFinished && (
-          <div className="absolute top-0 left-0 right-0 z-20 bg-background/95 border-b backdrop-blur-sm">
-            <Accordion type="single" collapsible>
-              <AccordionItem value="guesses" className="border-none">
-                <AccordionTrigger className="px-3 py-2 hover:no-underline text-xs font-semibold">
-                  <div className="flex items-center gap-2">
-                    <Trophy className="h-3.5 w-3.5 text-yellow-500" />
-                    <span>{t('chat.lastRoundResultsTitle')}</span>
-                    {lastRoundResults && lastRoundResults.guesses && lastRoundResults.guesses.length > 0 && (
-                      <Badge variant="secondary" className="ml-auto text-[10px] px-1.5 py-0">
-                        {lastRoundResults.guesses.length}
-                      </Badge>
-                    )}
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent className="px-3 pb-2 max-h-[200px] overflow-y-auto">
-                  {lastRoundResults && lastRoundResults.guesses && lastRoundResults.guesses.length > 0 ? (
-                    <div className="space-y-1.5">
-                      <div className="text-xs text-muted-foreground mb-2">
-                        Correct year: <span className="font-bold text-foreground">{lastRoundResults.correctYear}</span>
-                      </div>
-                      {lastRoundResults.guesses
-                        .sort((a, b) => b.points - a.points)
-                        .map((guess, index) => (
-                          <div
-                            key={`${guess.player}-${index}`}
-                            className="flex items-center justify-between text-xs py-1.5 px-2 rounded bg-muted/40"
-                          >
-                            <div className="flex items-center gap-2 flex-1 min-w-0">
-                              <span className="font-medium truncate">{guess.player}</span>
-                              <Badge variant="outline" className="text-[10px] px-1 py-0">
-                                {guess.year}
-                              </Badge>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <span className="text-[10px] text-muted-foreground">
-                                {Math.abs(guess.year - lastRoundResults.correctYear)} off
-                              </span>
-                              <span className="font-bold text-primary">
-                                +{guess.points}
-                              </span>
-                            </div>
-                          </div>
-                        ))}
-                    </div>
-                  ) : (
-                    <div className="text-xs text-muted-foreground text-center py-3">
-                      <p className="mb-1">{t('chat.noResultsYet')}</p>
-                      <p className="text-[10px]">{t('chat.noResultsDescription')}</p>
-                    </div>
-                  )}
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
-          </div>
-        )}
+            )}
+          </Accordion>
+        </div>
 
         {/* Messages Area */}
         <ScrollArea className="flex-1 min-h-0" ref={scrollAreaRef}>
@@ -334,7 +334,7 @@ export function LobbyChat({ messages, onSendMessage, currentUsername, compact = 
         )}
 
         {/* Input Area */}
-        <div className="flex items-center gap-1.5 px-2 py-2 border-t bg-muted/20">
+        <div className="flex items-center gap-1 px-1.5 py-1.5 lg:gap-1.5 lg:px-2 lg:py-2 border-t bg-muted/20">
           <Popover open={showEmojiPopover} onOpenChange={setShowEmojiPopover}>
             <PopoverTrigger asChild>
               <Button

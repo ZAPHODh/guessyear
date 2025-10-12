@@ -66,40 +66,40 @@ export function ResultsView({ results, leaderboard, onSendReaction, nextRoundCou
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-3 sm:space-y-4 lg:space-y-6">
       {/* Round Results Header */}
       <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Trophy className="h-5 w-5" />
+        <CardHeader className="pb-3 sm:pb-4 lg:pb-6">
+          <CardTitle className="flex items-center gap-2 text-base sm:text-lg lg:text-xl">
+            <Trophy className="h-4 w-4 sm:h-5 sm:w-5" />
             {t('results.title')}
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="text-center space-y-6">
+        <CardContent className="pt-0">
+          <div className="text-center space-y-3 sm:space-y-4 lg:space-y-6">
             <div>
-              <p className="text-sm text-muted-foreground mb-2">{t('results.correctYear')}</p>
-              <p className="text-5xl font-bold text-primary">{results.correctYear}</p>
+              <p className="text-xs sm:text-sm text-muted-foreground mb-1 sm:mb-2">{t('results.correctYear')}</p>
+              <p className="text-3xl sm:text-4xl lg:text-5xl font-bold text-primary">{results.correctYear}</p>
             </div>
 
             {bestGuess && (
-              <div className="p-4 border rounded-lg space-y-3 bg-muted/50">
+              <div className="p-3 sm:p-4 border rounded-lg space-y-2 sm:space-y-3 bg-muted/50">
                 <div className="flex items-center justify-center gap-2">
                   <div className="text-2xl">🏆</div>
                   <p className="text-sm font-medium">{t('results.bestGuess')}</p>
                 </div>
 
                 <div className="text-center">
-                  <p className="text-xl font-bold">{bestGuess.player}</p>
-                  <p className="text-sm mt-1">
+                  <p className="text-lg sm:text-xl font-bold">{bestGuess.player}</p>
+                  <p className="text-xs sm:text-sm mt-1">
                     {t('results.guessedYear', { year: bestGuess.year })}
                   </p>
-                  <p className={`text-sm font-medium ${getAccuracyColor(bestGuess.accuracy)}`}>
+                  <p className={`text-xs sm:text-sm font-medium ${getAccuracyColor(bestGuess.accuracy)}`}>
                     {getAccuracyText(bestGuess.accuracy)}
                   </p>
                 </div>
 
-                <div className="flex items-center justify-center gap-4 text-sm">
+                <div className="flex items-center justify-center gap-3 sm:gap-4 text-xs sm:text-sm">
                   <div className="flex items-center gap-1">
                     <Medal className="h-4 w-4" />
                     <span>{bestGuess.points} pts</span>
@@ -116,13 +116,13 @@ export function ResultsView({ results, leaderboard, onSendReaction, nextRoundCou
 
             {/* Next Round Countdown */}
             {nextRoundCountdown && nextRoundCountdown > 0 && (
-              <div className="p-4 border rounded-lg bg-muted/50">
-                <div className="text-center space-y-2">
-                  <div className="flex items-center justify-center gap-2">
-                    <Clock className="h-5 w-5" />
-                    <p className="text-sm font-medium">{t('results.nextRoundStarting')}</p>
+              <div className="p-3 sm:p-4 border rounded-lg bg-muted/50">
+                <div className="text-center space-y-1 sm:space-y-2">
+                  <div className="flex items-center justify-center gap-1.5 sm:gap-2">
+                    <Clock className="h-4 w-4 sm:h-5 sm:w-5" />
+                    <p className="text-xs sm:text-sm font-medium">{t('results.nextRoundStarting')}</p>
                   </div>
-                  <p className="text-3xl font-bold">{nextRoundCountdown}s</p>
+                  <p className="text-2xl sm:text-3xl font-bold">{nextRoundCountdown}s</p>
                 </div>
               </div>
             )}

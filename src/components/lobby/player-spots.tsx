@@ -55,10 +55,10 @@ export function PlayerSpots({
   const statusMessage = getStatusMessage();
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-2 sm:space-y-3 lg:space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold">{t('players.title')}</h3>
-        <div className="flex items-center gap-3">
+        <h3 className="text-base sm:text-lg font-semibold">{t('players.title')}</h3>
+        <div className="flex items-center gap-2 sm:gap-3">
           {statusMessage && (
             <Badge variant={statusMessage.includes(t('players.allPlayersReady')) ? "default" : "secondary"} className="text-xs">
               {statusMessage}
@@ -70,7 +70,7 @@ export function PlayerSpots({
         </div>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3 lg:gap-4">
         {spots.map(({ index, player, isEmpty, isOwner }) => (
           <Card
             key={index}

@@ -207,8 +207,8 @@ function WaitingRoom({
   const inviteUrl = typeof window !== 'undefined' ? window.location.href : '';
 
   return (
-    <div className="space-y-8">
-      <div className="text-center space-y-4">
+    <div className="space-y-3 sm:space-y-4 lg:space-y-6">
+      <div className="text-center space-y-2 sm:space-y-3 lg:space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Status status={isConnected ? 'online' : 'offline'}>
@@ -239,13 +239,13 @@ function WaitingRoom({
         </div>
 
         <div>
-          <h1 className="text-3xl font-bold mb-2">{lobby.name}</h1>
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-1 sm:mb-2">{lobby.name}</h1>
           {lobby.description && (
-            <p className="text-lg text-muted-foreground">{lobby.description}</p>
+            <p className="text-sm sm:text-base lg:text-lg text-muted-foreground">{lobby.description}</p>
           )}
         </div>
 
-        <div className="flex justify-center gap-6 text-sm text-muted-foreground">
+        <div className="flex justify-center gap-3 sm:gap-4 lg:gap-6 text-xs sm:text-sm text-muted-foreground">
           <div className="flex items-center gap-2">
             <Users className="h-4 w-4" />
             <span>{t('lobby.playersCount', { current: players.length, max: lobby.maxPlayers })}</span>
@@ -264,7 +264,7 @@ function WaitingRoom({
       </div>
 
       {gameFinished && isHost && (
-        <div className="flex justify-center mb-6">
+        <div className="flex justify-center mb-3 sm:mb-4 lg:mb-6">
           <Button
             onClick={actions.restartGame}
             size="lg"
@@ -298,14 +298,15 @@ function WaitingRoom({
         </div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 lg:gap-6">
         <LobbyChat
           messages={chatMessages}
           onSendMessage={onSendMessage}
           currentUsername={username}
           compact
-          gameFinished={gameFinished}
-          leaderboard={leaderboard}
+          players={leaderboard.length > 0 ? leaderboard : players}
+          currentPlayer={currentPlayer}
+          showPlayerScores={leaderboard.length > 0}
         />
       </div>
     </div>
@@ -356,8 +357,8 @@ function GameInProgress({
 }: GameInProgressProps) {
   const t = useScopedI18n('lobby');
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] xl:grid-cols-[1fr_360px] gap-4 lg:gap-6">
-      <div className="min-w-0">
+    <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] xl:grid-cols-[1fr_360px] gap-3 sm:gap-4 lg:gap-6">
+      <div className="min-w-0 overflow-hidden">
         {currentRound && (
           <GameView
             round={currentRound}
@@ -372,33 +373,16 @@ function GameInProgress({
           />
         )}
       </div>
-      <div className="hidden lg:flex lg:flex-col space-y-4 min-w-0">
-        <PlayerList
+      <div className="space-y-4 min-w-0">
+        <LobbyChat
+          messages={chatMessages}
+          onSendMessage={onSendMessage}
+          currentUsername={username}
+          compact
+          lastRoundResults={lastRoundResults}
           players={leaderboard.length > 0 ? leaderboard : players}
           currentPlayer={currentPlayer}
-          gameState={gameState}
-          showScores
-          isHost={isHost}
-          onKickPlayer={actions.kickPlayer}
-          onTransferHost={actions.transferHost}
-          title={t('players.title')}
-          compact
-        />
-        <LobbyChat
-          messages={chatMessages}
-          onSendMessage={onSendMessage}
-          currentUsername={username}
-          compact
-          lastRoundResults={lastRoundResults}
-        />
-      </div>
-      <div className="lg:hidden space-y-3">
-        <LobbyChat
-          messages={chatMessages}
-          onSendMessage={onSendMessage}
-          currentUsername={username}
-          compact
-          lastRoundResults={lastRoundResults}
+          showPlayerScores={true}
         />
       </div>
     </div>
@@ -437,7 +421,7 @@ function RoundResults({
 }: RoundResultsProps) {
   const t = useScopedI18n('lobby');
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
       <div className="lg:col-span-2">
         {lastRoundResults && (
           <ResultsView
@@ -450,84 +434,15 @@ function RoundResults({
       </div>
 
       <div className="space-y-4">
-        <PlayerList
-          players={leaderboard}
-          currentPlayer={currentPlayer}
-          gameState={gameState}
-          showScores
-          isHost={isHost}
-          onKickPlayer={actions.kickPlayer}
-          onTransferHost={actions.transferHost}
-          title={t('players.leaderboard')}
-          compact
-        />
         <LobbyChat
           messages={chatMessages}
           onSendMessage={onSendMessage}
           currentUsername={username}
+          lastRoundResults={lastRoundResults}
+          players={leaderboard}
+          currentPlayer={currentPlayer}
+          showPlayerScores={true}
         />
-      </div>
-    </div>
-  );
-}
-
-interface GameFinishedProps {
-  leaderboard: Player[];
-  isHost: boolean;
-  onRestartGame: () => void;
-}
-
-function GameFinished({
-  leaderboard,
-  isHost,
-  onRestartGame
-}: GameFinishedProps) {
-  const t = useScopedI18n('lobby');
-  return (
-    <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-center">{t('game.finished.title')}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-center">{t('game.finished.finalResults')}</h3>
-            <div className="space-y-2">
-              {leaderboard.map((player, index) => (
-                <div
-                  key={player.id}
-                  className="flex items-center justify-between p-3 rounded-lg bg-muted"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="text-lg font-bold">
-                      {t('game.finished.position', { position: index + 1 })}
-                    </div>
-                    <div>
-                      <div className="font-medium">{player.username}</div>
-                      <div className="text-sm text-muted-foreground">
-                        {t('game.finished.streak', { streak: player.streak })}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="text-lg font-bold">
-                    {t('game.finished.score', { score: player.score })}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      <div className="flex justify-center gap-4">
-        {isHost && (
-          <Button onClick={onRestartGame} className="gap-2">
-            {t('room.playAgain')}
-          </Button>
-        )}
-        <Button variant="outline" onClick={() => window.location.href = '/lobby'}>
-          {t('backToLobbies')}
-        </Button>
       </div>
     </div>
   );
@@ -667,7 +582,7 @@ export function LobbyRoom({ lobby, user: initialUser, sessionId }: LobbyRoomProp
   }, [error, router, t]);
 
   return (
-    <div className="container mx-auto px-3 py-4 lg:px-4 lg:py-8 max-w-7xl">
+    <div className="container mx-auto px-2 py-2 sm:px-3 sm:py-3 lg:px-4 lg:py-6 max-w-7xl min-h-[calc(100dvh-4rem)] sm:min-h-0">
       {/* Show loading state when profile dialog is open */}
       {showProfileDialog && (
         <div className="flex flex-col items-center justify-center min-h-[50vh] space-y-4">

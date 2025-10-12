@@ -61,28 +61,28 @@ export function GameView({
   };
 
   return (
-    <div className="space-y-4 lg:space-y-6">
+    <div className="space-y-2 sm:space-y-3 lg:space-y-4">
       {/* Header - Round Title */}
-      <div className="flex items-center gap-2">
-        <ImageIcon className="h-4 w-4 lg:h-5 lg:w-5" />
-        <h2 className="text-lg lg:text-xl font-semibold">{t('game.roundTitle', { number: round.roundNumber })}</h2>
+      <div className="flex items-center gap-1.5 sm:gap-2">
+        <ImageIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-5 lg:w-5" />
+        <h2 className="text-base sm:text-lg lg:text-xl font-semibold">{t('game.roundTitle', { number: round.roundNumber })}</h2>
         {round.hintsEnabled && (
-          <Badge variant="outline" className="ml-auto">{t('lobby.hintsEnabled')}</Badge>
+          <Badge variant="outline" className="ml-auto text-xs">{t('lobby.hintsEnabled')}</Badge>
         )}
       </div>
 
       {/* Game Image */}
       <div className="relative">
-        <div className="relative aspect-video w-full overflow-hidden rounded-lg lg:rounded-xl shadow-lg bg-muted">
+        <div className="relative aspect-video w-full overflow-hidden rounded-md sm:rounded-lg lg:rounded-xl shadow-lg bg-muted">
           {/* Timer overlay - top right corner */}
-          <div className="absolute top-3 right-3 z-10">
-            <div className={`flex items-center gap-2 px-3 py-2 rounded-lg backdrop-blur-sm ${
+          <div className="absolute top-1.5 right-1.5 sm:top-2 sm:right-2 lg:top-3 lg:right-3 z-10">
+            <div className={`flex items-center gap-1 px-2 py-1 sm:gap-1.5 sm:px-2.5 sm:py-1.5 lg:gap-2 lg:px-3 lg:py-2 rounded-md lg:rounded-lg backdrop-blur-sm ${
               isUrgent
                 ? 'bg-red-500/80 text-white'
                 : 'bg-black/50 text-white'
             }`}>
-              <Clock className="h-4 w-4 lg:h-5 lg:w-5" />
-              <span className="font-mono font-bold text-lg lg:text-xl">
+              <Clock className="h-3 w-3 sm:h-3.5 sm:w-3.5 lg:h-4 lg:w-4" />
+              <span className="font-mono font-bold text-sm sm:text-base lg:text-lg">
                 {formatTime(timeRemaining)}
               </span>
             </div>
@@ -126,30 +126,11 @@ export function GameView({
         </div>
       </div>
 
-      {/* Player scores - horizontal display for mobile */}
-      {players.length > 0 && (
-        <div className="lg:hidden flex items-center justify-center gap-2 overflow-x-auto pb-2 scrollbar-hide">
-          {players.map((player) => (
-            <Badge
-              key={player.id}
-              variant={player.id === currentPlayer?.id ? "default" : "secondary"}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 text-sm font-medium whitespace-nowrap"
-            >
-              <div className="w-5 h-5 rounded-full bg-background/20 flex items-center justify-center text-xs font-semibold">
-                {player.avatar || player.username.charAt(0).toUpperCase()}
-              </div>
-              <span>{player.username}</span>
-              <span className="font-bold">{player.score}</span>
-            </Badge>
-          ))}
-        </div>
-      )}
-
       {/* Guess Input Section */}
-      <div className="space-y-3 lg:space-y-4">
+      <div className="space-y-2 sm:space-y-3">
         <div className="text-center">
-          <h3 className="text-base lg:text-lg font-medium mb-2 lg:mb-3">{t('game.prompt')}</h3>
-          <p className="text-xs lg:text-sm text-muted-foreground mb-3 lg:mb-4">
+          <h3 className="text-sm sm:text-base lg:text-lg font-medium mb-1 sm:mb-2">{t('game.prompt')}</h3>
+          <p className="text-[10px] sm:text-xs lg:text-sm text-muted-foreground mb-2 sm:mb-3">
             {t('game.promptDescription')}
           </p>
         </div>
@@ -169,18 +150,17 @@ export function GameView({
               submitButtonText={t('game.submit')}
             />
           ) : (
-            <div className="text-center py-3 lg:py-4">
-              <Badge variant="secondary" className="text-base lg:text-lg px-3 lg:px-4 py-1.5 lg:py-2">
+            <div className="text-center py-2 sm:py-3 lg:py-4">
+              <Badge variant="secondary" className="text-sm sm:text-base lg:text-lg px-2.5 sm:px-3 lg:px-4 py-1 sm:py-1.5 lg:py-2">
                 {t('game.submitted', { year: guess })}
               </Badge>
-              <p className="text-xs lg:text-sm text-muted-foreground mt-2">
+              <p className="text-[10px] sm:text-xs lg:text-sm text-muted-foreground mt-1.5 sm:mt-2">
                 {t('game.waitingForOthers')}
               </p>
             </div>
           )}
         </div>
       </div>
-
     </div>
   );
 }

@@ -17,4 +17,3 @@ export const socket = io(socketURL, {
   reconnectionDelay: 1000,
   reconnectionAttempts: 5
 });
-
