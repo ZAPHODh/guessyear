@@ -287,7 +287,6 @@ export function CreateLobbyDialog({ children, open, onOpenChange }: CreateLobbyD
             )}
           </div>
 
-          {/* Advanced Options */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">{t('create.advancedOptions')}</h3>
 
@@ -334,7 +333,6 @@ export function CreateLobbyDialog({ children, open, onOpenChange }: CreateLobbyD
             />
           </div>
 
-          {/* Action Buttons */}
           <div className="flex flex-col-reverse sm:flex-row gap-3 pt-4">
             <Button
               type="button"
@@ -370,7 +368,6 @@ export function CreateLobbyDialog({ children, open, onOpenChange }: CreateLobbyD
     );
   }
 
-  // Modal mode without trigger
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">

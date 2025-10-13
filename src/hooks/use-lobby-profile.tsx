@@ -21,7 +21,6 @@ export function useLobbyProfile(initialUser: User | null) {
 
   const handleSaveProfile = async (profile: ProfileData) => {
     try {
-      // For logged-in users, update their profile in the database
       if (user) {
         const result = await updateUserProfile({
           name: profile.name,
@@ -29,14 +28,12 @@ export function useLobbyProfile(initialUser: User | null) {
         });
 
         if (result?.data?.success) {
-          // Update local user state
           setUser({
             ...user,
             name: profile.name,
             picture: profile.avatar || null
           });
 
-          // Update local state with the saved profile
           setAnonymousProfile({
             name: profile.name,
             avatar: profile.avatar || ''
@@ -47,7 +44,6 @@ export function useLobbyProfile(initialUser: User | null) {
           return;
         }
       } else {
-        // For anonymous users, just update local state
         setAnonymousProfile({
           name: profile.name,
           avatar: profile.avatar || ''

@@ -54,6 +54,7 @@
     "react": "19.1.1",
     "react-aria-components": "^1.12.2",
     "react-dom": "19.1.1",
+    "react-error-boundary": "^6.0.0",
     "react-hook-form": "^7.62.0",
     "react-medium-image-zoom": "^5.4.0",
     "recharts": "2.15.4",

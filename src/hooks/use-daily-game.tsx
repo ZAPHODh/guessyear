@@ -20,12 +20,10 @@ export function useDailyGame(initialGameState: GameState) {
   const locale = useCurrentLocale()
   const userTimezone = useUserTimezone()
 
-  // Handle hydration
   useEffect(() => {
     setIsHydrated(true)
   }, [])
 
-  // Setup WebSocket connection
   useEffect(() => {
     const connectSocket = () => {
       if (!socket.connected) {
@@ -52,7 +50,6 @@ export function useDailyGame(initialGameState: GameState) {
     }
   }, [])
 
-  // Calculate smart range for year inputs (only after hydration to prevent mismatch)
   const { minYear, maxYear, confidence } = useSmartRange({
     correctYear: isHydrated ? gameState.correctYear : undefined,
     guesses: isHydrated ? (gameState.guesses || []) : [],
@@ -89,7 +86,6 @@ export function useDailyGame(initialGameState: GameState) {
       if (result?.data) {
         setGameState(result.data)
 
-        // Send game progress to WebSocket server if game completed
         if (result.data.gameCompleted && socketConnected) {
           socket.emit('daily-game-completed', {
             attempts: result.data.attempts,

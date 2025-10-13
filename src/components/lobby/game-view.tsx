@@ -62,7 +62,6 @@ export function GameView({
 
   return (
     <div className="space-y-2 sm:space-y-3 lg:space-y-4">
-      {/* Header - Round Title */}
       <div className="flex items-center gap-1.5 sm:gap-2">
         <ImageIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-5 lg:w-5" />
         <h2 className="text-base sm:text-lg lg:text-xl font-semibold">{t('game.roundTitle', { number: round.roundNumber })}</h2>
@@ -71,10 +70,8 @@ export function GameView({
         )}
       </div>
 
-      {/* Game Image */}
       <div className="relative">
         <div className="relative aspect-video w-full overflow-hidden rounded-md sm:rounded-lg lg:rounded-xl shadow-lg bg-muted">
-          {/* Timer overlay - top right corner */}
           <div className="absolute top-1.5 right-1.5 sm:top-2 sm:right-2 lg:top-3 lg:right-3 z-10">
             <div className={`flex items-center gap-1 px-2 py-1 sm:gap-1.5 sm:px-2.5 sm:py-1.5 lg:gap-2 lg:px-3 lg:py-2 rounded-md lg:rounded-lg backdrop-blur-sm ${
               isUrgent
@@ -88,7 +85,6 @@ export function GameView({
             </div>
           </div>
 
-          {/* Progress bar overlay - top of image */}
           <div className="absolute top-0 left-0 right-0 z-10">
             <Progress
               value={progressPercentage}
@@ -126,7 +122,6 @@ export function GameView({
         </div>
       </div>
 
-      {/* Guess Input Section */}
       <div className="space-y-2 sm:space-y-3">
         <div className="text-center">
           <h3 className="text-sm sm:text-base lg:text-lg font-medium mb-1 sm:mb-2">{t('game.prompt')}</h3>

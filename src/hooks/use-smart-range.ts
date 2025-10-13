@@ -19,7 +19,6 @@ interface SmartRangeResult {
 }
 function getFirstMin(correctYear: number): number {
   const maxOffset = 100
-  // Use deterministic offset based on correctYear to avoid hydration mismatches
   const seed = correctYear * 17 + 13
   const offset = (seed % (maxOffset + 1))
   return correctYear - offset
@@ -28,7 +27,6 @@ export function useSmartRange({ correctYear, guesses, attempts }: UseSmartRangeP
   return useMemo(() => {
     const currentYear = new Date().getFullYear()
 
-    // Provide consistent fallback values when correctYear is not available (during SSR)
     if (!correctYear) {
       return {
         minYear: 1800,

@@ -133,9 +133,7 @@ export function PlayerList({
               </div>
             </div>
 
-            {/* Action buttons */}
             <div className="flex items-center gap-1">
-              {/* Make Host button - only show during WAITING */}
               {isHost && onTransferHost && player.id !== currentPlayer?.id && gameState === 'WAITING' && (
                 <Button
                   onClick={() => onTransferHost(player.id)}
@@ -147,7 +145,6 @@ export function PlayerList({
                 </Button>
               )}
 
-              {/* Kick button - only show during WAITING */}
               {isHost && onKickPlayer && player.id !== currentPlayer?.id && gameState === 'WAITING' && (
                 <Button
                   onClick={() => onKickPlayer(player.id)}
@@ -159,7 +156,6 @@ export function PlayerList({
                 </Button>
               )}
 
-              {/* Ready button for current player or Position indicator for leaderboard */}
               {!showScores && player.id === currentPlayer?.id && onToggleReady && gameState === 'WAITING' && (
                 <Button
                   onClick={onToggleReady}

@@ -99,7 +99,6 @@ export function useGameTimer(): UseGameTimerReturn {
     }, 1000);
   }, []);
 
-  // Cleanup on unmount
   useEffect(() => {
     return clearAllTimers;
   }, [clearAllTimers]);

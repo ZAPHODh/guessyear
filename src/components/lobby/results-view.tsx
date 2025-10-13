@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useScopedI18n } from '@/locales/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer';
 import { Trophy, Target, Zap, Medal, Users, Clock } from 'lucide-react';
+import { useIsMobile } from '@/hooks/use-mobile';
 import type { Player, Guess } from '@/lib/types/lobby';
 
 interface ResultsViewProps {
@@ -25,16 +26,7 @@ const REACTION_EMOJIS = ['🎉', '😱', '🤯', '👏', '😂', '💪', '🔥',
 export function ResultsView({ results, leaderboard, onSendReaction, nextRoundCountdown }: ResultsViewProps) {
   const t = useScopedI18n('lobby');
   const [selectedReaction, setSelectedReaction] = useState<string | null>(null);
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const checkMobile = () => setIsMobile(window.innerWidth < 768);
-      checkMobile();
-      window.addEventListener('resize', checkMobile);
-      return () => window.removeEventListener('resize', checkMobile);
-    }
-  }, []);
+  const isMobile = useIsMobile();
 
   const sortedGuesses = results.guesses.sort((a, b) => a.accuracy - b.accuracy);
   const bestGuess = sortedGuesses[0];
@@ -60,14 +52,12 @@ export function ResultsView({ results, leaderboard, onSendReaction, nextRoundCou
   };
 
   const getAccuracyPercentage = (accuracy: number) => {
-    // Convert accuracy (year difference) to a percentage where 0 = 100% and higher differences = lower percentages
-    const maxDifference = 50; // Assume max reasonable difference is 50 years
+    const maxDifference = 50;
     return Math.max(0, 100 - (accuracy / maxDifference) * 100);
   };
 
   return (
     <div className="space-y-3 sm:space-y-4 lg:space-y-6">
-      {/* Round Results Header */}
       <Card>
         <CardHeader className="pb-3 sm:pb-4 lg:pb-6">
           <CardTitle className="flex items-center gap-2 text-base sm:text-lg lg:text-xl">
@@ -114,7 +104,6 @@ export function ResultsView({ results, leaderboard, onSendReaction, nextRoundCou
               </div>
             )}
 
-            {/* Next Round Countdown */}
             {nextRoundCountdown && nextRoundCountdown > 0 && (
               <div className="p-3 sm:p-4 border rounded-lg bg-muted/50">
                 <div className="text-center space-y-1 sm:space-y-2">
@@ -130,7 +119,6 @@ export function ResultsView({ results, leaderboard, onSendReaction, nextRoundCou
         </CardContent>
       </Card>
 
-      {/* Player Guesses Button */}
       <Drawer>
         <DrawerTrigger asChild>
           <Button variant="outline" className="w-full gap-2">
@@ -150,12 +138,10 @@ export function ResultsView({ results, leaderboard, onSendReaction, nextRoundCou
                 <Card key={`${guess.player}-${guess.year}`} className="p-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                      {/* Position */}
                       <div className="flex items-center justify-center w-8 h-8 rounded-full bg-muted font-semibold text-sm">
                         {index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : index + 1}
                       </div>
 
-                      {/* Player info */}
                       <div className="flex-1 min-w-0">
                         <p className="font-semibold text-base truncate">{guess.player}</p>
                         <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
@@ -166,7 +152,6 @@ export function ResultsView({ results, leaderboard, onSendReaction, nextRoundCou
                           </span>
                         </div>
 
-                        {/* Accuracy progress */}
                         <div className="mt-2">
                           <Progress
                             value={getAccuracyPercentage(guess.accuracy)}
@@ -176,9 +161,7 @@ export function ResultsView({ results, leaderboard, onSendReaction, nextRoundCou
                       </div>
                     </div>
 
-                    {/* Points and badges */}
                     <div className="flex flex-col items-end gap-2">
-                      {/* Badges */}
                       <div className="flex items-center gap-1 flex-wrap justify-end">
                         {guess.speedBonus > 0 && (
                           <Badge variant="outline" className="text-xs">
@@ -200,7 +183,6 @@ export function ResultsView({ results, leaderboard, onSendReaction, nextRoundCou
                         )}
                       </div>
 
-                      {/* Points */}
                       <div className="text-right">
                         <div className="flex items-center gap-1">
                           <Medal className="h-4 w-4" />

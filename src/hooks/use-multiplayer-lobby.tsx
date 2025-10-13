@@ -48,7 +48,6 @@ export function useMultiplayerLobby({
   const timer = useGameTimer();
   const chat = useChatMessages();
 
-  // Stabilize actions with refs to prevent effect re-runs
   const actionsRef = useRef(lobbyState.actions);
   const chatActionsRef = useRef(chat);
   const timerActionsRef = useRef(timer);
@@ -59,7 +58,6 @@ export function useMultiplayerLobby({
     timerActionsRef.current = timer;
   });
 
-  // Set telemetry context
   useEffect(() => {
     telemetry.setContext({
       userId: userId || undefined,
@@ -103,7 +101,6 @@ export function useMultiplayerLobby({
   }, []);
 
   const sendMessage = useCallback((message: string, type: 'CHAT' | 'QUICK_PHRASE' = 'CHAT') => {
-    // Rate limit: max 5 messages per 10 seconds
     if (!rateLimiter.canExecute('chat', 5, 10000)) {
       toast.error('You are sending messages too fast');
       return;
@@ -137,7 +134,6 @@ export function useMultiplayerLobby({
     socket.emit('update_lobby_settings', settings);
   }, []);
 
-  // Socket event handlers using refs
   useEffect(() => {
     function handleLobbyJoined(data: unknown) {
       const lobby = validateSocketData(socketSchemas.lobby, data, 'lobby_joined');
@@ -145,8 +141,6 @@ export function useMultiplayerLobby({
 
       actionsRef.current.updateLobby(lobby);
 
-      // Clear existing messages before adding lobby chat history
-      // This prevents duplicates when reconnecting
       chatActionsRef.current.clearMessages();
 
       if (lobby.chatMessages) {
@@ -164,13 +158,11 @@ export function useMultiplayerLobby({
       if (!validPlayer) return;
 
       actionsRef.current.addPlayer(validPlayer);
-      // Only show toast, system message already sent by server
       telemetry.trackEvent('player_joined', { playerId: validPlayer.id });
     }
 
     function handlePlayerLeft({ username }: { username: string }) {
       actionsRef.current.removePlayer(username);
-      // Don't show toast, system message already sent by server
     }
 
     function handlePlayerReadyChanged({
@@ -333,9 +325,8 @@ export function useMultiplayerLobby({
       socket.off('lobby_updated', handleLobbyUpdated);
       socket.off('lobby_finished', handleLobbyFinished);
     };
-  }, []); // Empty deps - all handlers use refs
+  }, []);
 
-  // Join lobby once when enabled
   useEffect(() => {
     if (!enabled || hasJoinedRef.current) return;
 

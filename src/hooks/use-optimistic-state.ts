@@ -21,7 +21,6 @@ export function useOptimisticState<T>(initialValue: T, timeout = 5000) {
       { id, value: newValue, timestamp: Date.now() }
     ]);
 
-    // Auto-revert if not confirmed in X seconds
     const timeoutId = setTimeout(() => {
       setOptimisticUpdates(prev => prev.filter(u => u.id !== id));
       timeoutRefs.current.delete(id);

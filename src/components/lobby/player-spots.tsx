@@ -89,10 +89,8 @@ export function PlayerSpots({
                 </div>
               ) : (
                 <>
-                  {/* Top row: Make Host button and Kick button with badges */}
                   <div className="flex justify-between items-start mb-1 sm:mb-2 min-h-5 sm:min-h-6">
                     <div>
-                      {/* Make Host button for current host - can transfer to anyone except themselves - only show during WAITING */}
                       {isHost && onTransferHost && player.id !== currentPlayer?.id && gameState === 'WAITING' && (
                         <Button
                           onClick={() => onTransferHost(player.id)}
@@ -105,22 +103,18 @@ export function PlayerSpots({
                       )}
                     </div>
                     <div className="flex items-start gap-1">
-                      {/* Badges */}
                       <div className="flex flex-col gap-0.5 sm:gap-1 items-end">
-                        {/* Owner badge */}
                         {index === 0 && (
                           <Badge variant="default" className="text-xs h-4 sm:h-5 px-1">
                             {t('players.owner')}
                           </Badge>
                         )}
-                        {/* Current player badge */}
                         {player.id === currentPlayer?.id && (
                           <Badge variant="outline" className="text-xs h-4 sm:h-5 px-1">
                             {t('players.you')}
                           </Badge>
                         )}
                       </div>
-                      {/* Kick button for host - can kick anyone except themselves - only show during WAITING */}
                       {isHost && onKickPlayer && player.id !== currentPlayer?.id && gameState === 'WAITING' && (
                         <Button
                           onClick={() => onKickPlayer(player.id)}
@@ -133,8 +127,6 @@ export function PlayerSpots({
                       )}
                     </div>
                   </div>
-
-                  {/* Center: Avatar and info */}
                   <div className="flex-1 flex flex-col items-center justify-center space-y-1 sm:space-y-2 min-h-0">
                     <Avatar className="h-8 w-8 sm:h-10 sm:w-10 flex-shrink-0">
                       <AvatarFallback className="text-xs sm:text-sm">
@@ -159,7 +151,6 @@ export function PlayerSpots({
                     </div>
                   </div>
 
-                  {/* Bottom: Ready Button for Current Player */}
                   {player.id === currentPlayer?.id && onToggleReady && gameState === 'WAITING' && (
                     <Button
                       onClick={onToggleReady}

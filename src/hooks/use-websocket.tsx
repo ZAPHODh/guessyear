@@ -19,7 +19,6 @@ export function useWebSocket({
   const retryTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const isConnectingRef = useRef(false);
 
-  // Stabilize callbacks with refs
   const onConnectRef = useRef(onConnect);
   const onDisconnectRef = useRef(onDisconnect);
   const onErrorRef = useRef(onError);
@@ -59,12 +58,10 @@ export function useWebSocket({
       setIsConnected(false);
       onDisconnectRef.current?.();
 
-      // Don't retry if server kicked us or manual disconnect
       if (reason === 'io server disconnect' || reason === 'io client disconnect') {
         return;
       }
 
-      // Exponential backoff: 1s, 2s, 4s, 8s, max 30s
       const delay = Math.min(1000 * Math.pow(2, retryCount), 30000);
 
       retryTimeoutRef.current = setTimeout(() => {

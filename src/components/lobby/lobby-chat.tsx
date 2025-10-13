@@ -56,12 +56,10 @@ export function LobbyChat({ messages, onSendMessage, currentUsername, compact = 
     t('chat.quickPhrasesList.7')
   ];
 
-  // Deduplicate messages to prevent React key conflicts
   const uniqueMessages = messages.filter((message, index, self) =>
     index === self.findIndex(m => m.id === message.id)
   );
 
-  // Detect user scroll
   const handleScroll = useCallback(() => {
     if (!scrollAreaRef.current) return;
 
@@ -82,7 +80,6 @@ export function LobbyChat({ messages, onSendMessage, currentUsername, compact = 
     }
   }, []);
 
-  // Attach scroll listener
   useEffect(() => {
     const scrollElement = scrollAreaRef.current?.querySelector('[data-radix-scroll-area-viewport]');
     if (scrollElement) {
@@ -91,7 +88,6 @@ export function LobbyChat({ messages, onSendMessage, currentUsername, compact = 
     }
   }, [handleScroll]);
 
-  // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
     if (scrollAreaRef.current && !isScrollPaused) {
       const scrollElement = scrollAreaRef.current.querySelector('[data-radix-scroll-area-viewport]');
@@ -101,7 +97,6 @@ export function LobbyChat({ messages, onSendMessage, currentUsername, compact = 
     }
   }, [uniqueMessages, isScrollPaused]);
 
-  // Track and restore input focus on re-renders (e.g., round changes)
   useEffect(() => {
     const input = inputRef.current;
     if (!input) return;
@@ -117,7 +112,6 @@ export function LobbyChat({ messages, onSendMessage, currentUsername, compact = 
     input.addEventListener('focus', handleFocus);
     input.addEventListener('blur', handleBlur);
 
-    // Restore focus if it was focused before re-render
     if (wasFocusedRef.current && document.activeElement !== input) {
       input.focus();
     }
@@ -128,7 +122,6 @@ export function LobbyChat({ messages, onSendMessage, currentUsername, compact = 
     };
   });
 
-  // Resume scrolling
   const resumeScrolling = useCallback(() => {
     if (!scrollAreaRef.current) return;
 
@@ -180,7 +173,6 @@ export function LobbyChat({ messages, onSendMessage, currentUsername, compact = 
       </div>
 
       <div className="flex-1 flex flex-col relative overflow-hidden">
-        {/* Player Scores / Past Guesses Accordion Banner - Fixed at top, always visible during game */}
         <div className="absolute top-0 left-0 right-0 z-20 bg-background/95 border-b backdrop-blur-sm">
           <Accordion type="single" collapsible defaultValue={showPlayerScores && players.length > 0 ? "player-scores" : undefined}>
             <AccordionItem value="guesses" className="border-none">
@@ -234,7 +226,6 @@ export function LobbyChat({ messages, onSendMessage, currentUsername, compact = 
               </AccordionContent>
             </AccordionItem>
 
-            {/* Player Scores Accordion */}
             {showPlayerScores && players.length > 0 && (
               <AccordionItem value="player-scores" className="border-none">
                 <AccordionTrigger className="px-3 py-2 hover:no-underline text-xs font-semibold">
@@ -290,7 +281,6 @@ export function LobbyChat({ messages, onSendMessage, currentUsername, compact = 
           </Accordion>
         </div>
 
-        {/* Messages Area */}
         <ScrollArea className="flex-1 min-h-0" ref={scrollAreaRef}>
           <div className="px-2 py-2 space-y-2">
             {uniqueMessages.length === 0 ? (
@@ -316,7 +306,6 @@ export function LobbyChat({ messages, onSendMessage, currentUsername, compact = 
                 return (
                   <div key={msg.id} className="group">
                     <div className="flex items-start gap-2 hover:bg-muted/30 rounded px-1.5 py-1">
-                      {/* Avatar */}
                       <div className="w-6 h-6 rounded-full bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5 border border-primary/20">
                         <span className="text-xs font-bold text-primary">
                           {msg.username.charAt(0).toUpperCase()}
@@ -324,7 +313,6 @@ export function LobbyChat({ messages, onSendMessage, currentUsername, compact = 
                       </div>
 
                       <div className="flex-1 min-w-0">
-                        {/* Username */}
                         <div className="flex items-baseline gap-1.5">
                           <p className="text-xs font-bold text-foreground">
                             {msg.username}
@@ -334,7 +322,6 @@ export function LobbyChat({ messages, onSendMessage, currentUsername, compact = 
                           )}
                         </div>
 
-                        {/* Message */}
                         <p className="text-xs text-foreground/70 break-words leading-relaxed">
                           {msg.message}
                         </p>
@@ -347,7 +334,6 @@ export function LobbyChat({ messages, onSendMessage, currentUsername, compact = 
           </div>
         </ScrollArea>
 
-        {/* Scroll Paused Button */}
         {isScrollPaused && (
           <div className="absolute bottom-16 left-1/2 -translate-x-1/2 z-10">
             <Button
@@ -362,7 +348,6 @@ export function LobbyChat({ messages, onSendMessage, currentUsername, compact = 
           </div>
         )}
 
-        {/* Input Area */}
         <div className="flex items-center gap-1.5 px-2 py-2 border-t bg-muted/20">
           <Popover open={showEmojiPopover} onOpenChange={setShowEmojiPopover}>
             <PopoverTrigger asChild>

@@ -14,7 +14,6 @@ export function useDailyGameSimple(initialGameState: GameState) {
 
   const locale = useCurrentLocale();
 
-  // Calculate smart range for year inputs
   const { minYear, maxYear, confidence } = useSmartRange({
     correctYear: gameState.correctYear,
     guesses: gameState.guesses || [],

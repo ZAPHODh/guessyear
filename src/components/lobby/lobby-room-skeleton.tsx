@@ -7,9 +7,7 @@ export function LobbyRoomSkeleton() {
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Main Content */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Lobby Header */}
           <Card>
             <CardHeader>
               <div className="flex items-start justify-between">
@@ -28,8 +26,6 @@ export function LobbyRoomSkeleton() {
               </div>
             </CardContent>
           </Card>
-
-          {/* Players List */}
           <Card>
             <CardHeader>
               <Skeleton className="h-5 w-24" />
@@ -50,7 +46,6 @@ export function LobbyRoomSkeleton() {
             </CardContent>
           </Card>
 
-          {/* Controls */}
           <Card>
             <CardContent className="pt-6">
               <div className="flex gap-3">
@@ -61,7 +56,6 @@ export function LobbyRoomSkeleton() {
           </Card>
         </div>
 
-        {/* Chat */}
         <div>
           <Card className="h-[500px]">
             <CardHeader>

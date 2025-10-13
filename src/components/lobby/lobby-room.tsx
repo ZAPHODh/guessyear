@@ -14,25 +14,18 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import type { Lobby, User } from '@/lib/types/lobby';
 
-// ============================================
-// Main LobbyRoom Compound Component
-// ============================================
-
 interface LobbyRoomProps {
   lobby: Lobby;
   user: User | null;
   sessionId?: string;
-  children: ReactNode;
 }
 
-function LobbyRoomRoot({ lobby, user: initialUser, sessionId, children }: LobbyRoomProps) {
+export function LobbyRoom({ lobby, user: initialUser, sessionId }: LobbyRoomProps) {
   const router = useRouter();
 
-  // Profile management
   const profile = useLobbyProfile(initialUser);
   const { user, isProfileSet, username, avatar } = profile;
 
-  // Multiplayer lobby state
   const multiplayerState = useMultiplayerLobby({
     lobbyId: lobby.id,
     userId: user?.id ?? null,
@@ -49,7 +42,6 @@ function LobbyRoomRoot({ lobby, user: initialUser, sessionId, children }: LobbyR
     (user && p.userId === user.id) || (!user && p.sessionId === sessionId)
   );
 
-  // Handle errors
   useEffect(() => {
     if (error) {
       toast.error(`Connection failed: ${error}`);
@@ -57,7 +49,6 @@ function LobbyRoomRoot({ lobby, user: initialUser, sessionId, children }: LobbyR
     }
   }, [error, router]);
 
-  // Context value
   const contextValue = {
     ...multiplayerState,
     lobby,
@@ -69,52 +60,43 @@ function LobbyRoomRoot({ lobby, user: initialUser, sessionId, children }: LobbyR
     profile
   };
 
+  // Render ProfileSetup or GameState
+  const renderContent = () => {
+    if (profile.showProfileDialog) {
+      return (
+        <>
+          <div className="flex flex-col items-center justify-center min-h-[50vh] space-y-4">
+            <div className="text-center">
+              <h2 className="text-2xl font-semibold mb-2">{useScopedI18n('lobby')('room.setProfile')}</h2>
+              <p className="text-muted-foreground">
+                {user ? useScopedI18n('lobby')('room.setProfileLoggedIn') : useScopedI18n('lobby')('room.setProfileAnonymous')}
+              </p>
+            </div>
+          </div>
+
+          <AnonymousProfileDialog
+            open={profile.showProfileDialog}
+            onSave={profile.handleSaveProfile}
+            defaultName={username}
+          />
+        </>
+      );
+    }
+
+    return <GameStateContent contextValue={contextValue} />;
+  };
+
   return (
     <LobbyProvider value={contextValue}>
       <div className="container mx-auto px-2 py-2 sm:px-3 sm:py-3 lg:px-4 lg:py-6 max-w-7xl min-h-[calc(100dvh-4rem)] sm:min-h-0">
-        {children}
+        {renderContent()}
       </div>
     </LobbyProvider>
   );
 }
 
-// ============================================
-// ProfileSetup Sub-component
-// ============================================
-
-function ProfileSetup() {
-  const { profile, user } = useLobby();
-  const t = useScopedI18n('lobby');
-  const { showProfileDialog, username, handleSaveProfile } = profile;
-
-  if (!showProfileDialog) return null;
-
-  return (
-    <>
-      <div className="flex flex-col items-center justify-center min-h-[50vh] space-y-4">
-        <div className="text-center">
-          <h2 className="text-2xl font-semibold mb-2">{t('room.setProfile')}</h2>
-          <p className="text-muted-foreground">
-            {user ? t('room.setProfileLoggedIn') : t('room.setProfileAnonymous')}
-          </p>
-        </div>
-      </div>
-
-      <AnonymousProfileDialog
-        open={showProfileDialog}
-        onSave={handleSaveProfile}
-        defaultName={username}
-      />
-    </>
-  );
-}
-
-// ============================================
-// GameState Sub-component
-// ============================================
-
-function GameState() {
-  const context = useLobby();
+function GameStateContent({ contextValue }: { contextValue: any }) {
+  const context = contextValue;
   const [guess, setGuess] = useState('');
   const t = useScopedI18n('lobby');
 
@@ -138,28 +120,24 @@ function GameState() {
     profile
   } = context;
 
-  // Optimistic ready state
   const {
     value: optimisticReady,
     setOptimistic: setOptimisticReady,
     setServer: setServerReady
   } = useOptimisticState(currentPlayer?.isReady ?? false);
 
-  // Clear guess when round changes
   useEffect(() => {
     if (currentRound && gameState === 'PLAYING' && !hasSubmittedGuess) {
       setGuess('');
     }
   }, [currentRound?.roundNumber, gameState, hasSubmittedGuess]);
 
-  // Update optimistic state
   useEffect(() => {
     if (currentPlayer?.isReady !== undefined) {
       setServerReady(currentPlayer.isReady);
     }
   }, [currentPlayer?.isReady, setServerReady]);
 
-  // Handlers
   const handleReady = () => {
     if (currentPlayer) {
       const newReadyState = !optimisticReady;
@@ -181,10 +159,9 @@ function GameState() {
     setGuess('');
   };
 
-  // Don't render if profile is not set
+
   if (profile.showProfileDialog) return null;
 
-  // Base props
   const baseProps = {
     lobby,
     players,
@@ -199,7 +176,6 @@ function GameState() {
     leaderboard
   };
 
-  // State-specific props
   const stateSpecificProps = {
     countdown,
     onReady: handleReady,
@@ -216,24 +192,10 @@ function GameState() {
     nextRoundCountdown
   };
 
-  // Render using state machine
   const StateComponent = getGameStateComponent(gameState as GameState);
   const props = buildStateProps(gameState as GameState, baseProps, stateSpecificProps);
 
   return <StateComponent {...props as any} />;
 }
 
-// ============================================
-// Exports - Compound Component API
-// ============================================
 
-export const LobbyRoom = Object.assign(LobbyRoomRoot, {
-  ProfileSetup,
-  GameState
-});
-
-// Usage:
-// <LobbyRoom lobby={lobby} user={user} sessionId={sessionId}>
-//   <LobbyRoom.ProfileSetup />
-//   <LobbyRoom.GameState />
-// </LobbyRoom>
