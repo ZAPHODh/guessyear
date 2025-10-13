@@ -33,7 +33,6 @@ export default async function LobbyPage({ params }: LobbyPageProps) {
     notFound();
   }
 
-  // Check if lobby is private and user has access
   if (!lobby.isOpen && !lobby.inviteCode) {
     // Private lobby without invite code - only host and existing players can access
     const hasAccess = user && (

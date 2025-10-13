@@ -42,6 +42,8 @@ export function LobbyChat({ messages, onSendMessage, currentUsername, compact = 
   const [isScrollPaused, setIsScrollPaused] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const isUserScrollingRef = useRef(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const wasFocusedRef = useRef(false);
 
   const QUICK_PHRASES = [
     t('chat.quickPhrasesList.0'),
@@ -99,6 +101,33 @@ export function LobbyChat({ messages, onSendMessage, currentUsername, compact = 
     }
   }, [uniqueMessages, isScrollPaused]);
 
+  // Track and restore input focus on re-renders (e.g., round changes)
+  useEffect(() => {
+    const input = inputRef.current;
+    if (!input) return;
+
+    const handleFocus = () => {
+      wasFocusedRef.current = true;
+    };
+
+    const handleBlur = () => {
+      wasFocusedRef.current = false;
+    };
+
+    input.addEventListener('focus', handleFocus);
+    input.addEventListener('blur', handleBlur);
+
+    // Restore focus if it was focused before re-render
+    if (wasFocusedRef.current && document.activeElement !== input) {
+      input.focus();
+    }
+
+    return () => {
+      input.removeEventListener('focus', handleFocus);
+      input.removeEventListener('blur', handleBlur);
+    };
+  });
+
   // Resume scrolling
   const resumeScrolling = useCallback(() => {
     if (!scrollAreaRef.current) return;
@@ -143,9 +172,9 @@ export function LobbyChat({ messages, onSendMessage, currentUsername, compact = 
   };
 
   return (
-    <div className={`${compact ? 'h-[280px] sm:h-[320px] md:h-[380px] lg:h-[450px]' : 'h-[350px] sm:h-[400px] lg:h-[500px]'} flex flex-col bg-background border rounded-lg overflow-hidden relative`}>
-      <div className="pb-1.5 px-2.5 pt-1.5 sm:pb-2 sm:px-3 sm:pt-2 border-b bg-muted/30">
-        <h3 className="text-[10px] sm:text-xs font-semibold text-foreground/70 uppercase tracking-wide">
+    <div className={`${compact ? 'h-[400px]' : 'h-[500px]'} flex flex-col bg-background border rounded-lg overflow-hidden relative`}>
+      <div className="pb-2 px-3 pt-2 border-b bg-muted/30">
+        <h3 className="text-xs font-semibold text-foreground/70 uppercase tracking-wide">
           {t('chat.title')}
         </h3>
       </div>
@@ -334,7 +363,7 @@ export function LobbyChat({ messages, onSendMessage, currentUsername, compact = 
         )}
 
         {/* Input Area */}
-        <div className="flex items-center gap-1 px-1.5 py-1.5 lg:gap-1.5 lg:px-2 lg:py-2 border-t bg-muted/20">
+        <div className="flex items-center gap-1.5 px-2 py-2 border-t bg-muted/20">
           <Popover open={showEmojiPopover} onOpenChange={setShowEmojiPopover}>
             <PopoverTrigger asChild>
               <Button
@@ -385,6 +414,7 @@ export function LobbyChat({ messages, onSendMessage, currentUsername, compact = 
           </Popover>
 
           <Input
+            ref={inputRef}
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             onKeyDown={(e) => {
