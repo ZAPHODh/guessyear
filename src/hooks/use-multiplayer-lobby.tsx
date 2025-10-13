@@ -364,7 +364,7 @@ export function useMultiplayerLobby({
     return {
       lobby: null,
       players: [],
-      gameState: 'WAITING',
+      gameState: 'WAITING' as const,
       leaderboard: [],
       isConnected: false,
       error: null,

@@ -3,6 +3,19 @@
 import { createContext, useContext, ReactNode } from 'react';
 import type { Lobby, User, Player, LobbyActions, RoundData, ChatMessage, Guess } from '@/lib/types/lobby';
 
+interface ProfileData {
+  user: User | null;
+  showProfileDialog: boolean;
+  anonymousProfile: {
+    name: string;
+    avatar?: string;
+  };
+  isProfileSet: boolean;
+  username: string;
+  avatar: string;
+  handleSaveProfile: (profile: { name: string; avatar?: string }) => Promise<void>;
+}
+
 interface LobbyContextValue {
   // Lobby data
   lobby: Lobby;
@@ -30,6 +43,9 @@ interface LobbyContextValue {
   isHost: boolean;
   currentPlayer: Player | undefined;
   username: string;
+
+  // Profile state
+  profile: ProfileData;
 
   // Actions
   actions: LobbyActions;

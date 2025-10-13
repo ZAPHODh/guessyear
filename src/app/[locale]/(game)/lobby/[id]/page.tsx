@@ -48,11 +48,10 @@ export default async function LobbyPage({ params }: LobbyPageProps) {
   return (
     <div className="min-h-screen bg-background">
       <LobbyErrorBoundary>
-        <LobbyRoom
-          lobby={lobby}
-          user={user}
-          sessionId={sessionId}
-        />
+        <LobbyRoom lobby={lobby} user={user} sessionId={sessionId}>
+          <LobbyRoom.ProfileSetup />
+          <LobbyRoom.GameState />
+        </LobbyRoom>
       </LobbyErrorBoundary>
     </div>
   );
