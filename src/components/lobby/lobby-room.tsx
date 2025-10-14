@@ -1,18 +1,21 @@
 "use client";
 
-import { ReactNode } from 'react';
-import { LobbyProvider, useLobby } from '@/contexts/lobby-context';
+import { LobbyProvider } from '@/contexts/lobby-context';
+import type { LobbyContextValue } from '@/contexts/lobby-context';
 import { useLobbyProfile } from '@/hooks/use-lobby-profile';
 import { useMultiplayerLobby } from '@/hooks/use-multiplayer-lobby';
 import { useOptimisticState } from '@/hooks/use-optimistic-state';
 import { useScopedI18n } from '@/locales/client';
 import { AnonymousProfileDialog } from './anonymous-profile-dialog';
-import { getGameStateComponent, buildStateProps, type GameState } from '@/lib/lobby-state-machine';
+import { buildStateProps, getGameStateComponent } from '@/lib/lobby-state-machine';
 import { validateGuess } from '@/lib/validations/guess';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import type { Lobby, User } from '@/lib/types/lobby';
+
+const MIN_HEIGHT_MOBILE = 'calc(100dvh-4rem)';
+const MIN_HEIGHT_DESKTOP = '0';
 
 interface LobbyRoomProps {
   lobby: Lobby;
@@ -60,45 +63,49 @@ export function LobbyRoom({ lobby, user: initialUser, sessionId }: LobbyRoomProp
     profile
   };
 
-  // Render ProfileSetup or GameState
-  const renderContent = () => {
-    if (profile.showProfileDialog) {
-      return (
-        <>
-          <div className="flex flex-col items-center justify-center min-h-[50vh] space-y-4">
-            <div className="text-center">
-              <h2 className="text-2xl font-semibold mb-2">{useScopedI18n('lobby')('room.setProfile')}</h2>
-              <p className="text-muted-foreground">
-                {user ? useScopedI18n('lobby')('room.setProfileLoggedIn') : useScopedI18n('lobby')('room.setProfileAnonymous')}
-              </p>
-            </div>
-          </div>
-
-          <AnonymousProfileDialog
-            open={profile.showProfileDialog}
-            onSave={profile.handleSaveProfile}
-            defaultName={username}
-          />
-        </>
-      );
-    }
-
-    return <GameStateContent contextValue={contextValue} />;
-  };
+  const t = useScopedI18n('lobby');
 
   return (
     <LobbyProvider value={contextValue}>
-      <div className="container mx-auto px-2 py-2 sm:px-3 sm:py-3 lg:px-4 lg:py-6 max-w-7xl min-h-[calc(100dvh-4rem)] sm:min-h-0">
-        {renderContent()}
+      <div
+        className="container mx-auto px-2 py-2 sm:px-3 sm:py-3 lg:px-4 lg:py-6 max-w-7xl"
+        style={{ minHeight: `min(${MIN_HEIGHT_MOBILE}, ${MIN_HEIGHT_DESKTOP})` }}
+      >
+        {profile.showProfileDialog ? (
+          <>
+            <div className="flex flex-col items-center justify-center min-h-[50vh] space-y-4">
+              <div className="text-center">
+                <h2 className="text-2xl font-semibold mb-2">{t('room.setProfile')}</h2>
+                <p className="text-muted-foreground">
+                  {user ? t('room.setProfileLoggedIn') : t('room.setProfileAnonymous')}
+                </p>
+              </div>
+            </div>
+
+            <AnonymousProfileDialog
+              open={profile.showProfileDialog}
+              onSave={profile.handleSaveProfile}
+              defaultName={username}
+            />
+          </>
+        ) : (
+          <GameStateContent contextValue={contextValue} />
+        )}
       </div>
     </LobbyProvider>
   );
 }
 
-function GameStateContent({ contextValue }: { contextValue: any }) {
-  const context = contextValue;
-  const [guess, setGuess] = useState('');
+interface GameStateContentProps {
+  contextValue: LobbyContextValue;
+}
+
+function GameStateContent({ contextValue }: GameStateContentProps) {
   const t = useScopedI18n('lobby');
+
+  if (contextValue.profile.showProfileDialog) {
+    return null;
+  }
 
   const {
     lobby,
@@ -116,9 +123,10 @@ function GameStateContent({ contextValue }: { contextValue: any }) {
     nextRoundCountdown,
     lastRoundResults,
     username,
-    isConnected,
-    profile
-  } = context;
+    isConnected
+  } = contextValue;
+
+  const [guess, setGuess] = useState('');
 
   const {
     value: optimisticReady,
@@ -130,7 +138,7 @@ function GameStateContent({ contextValue }: { contextValue: any }) {
     if (currentRound && gameState === 'PLAYING' && !hasSubmittedGuess) {
       setGuess('');
     }
-  }, [currentRound?.roundNumber, gameState, hasSubmittedGuess]);
+  }, [currentRound, gameState, hasSubmittedGuess]);
 
   useEffect(() => {
     if (currentPlayer?.isReady !== undefined) {
@@ -138,16 +146,16 @@ function GameStateContent({ contextValue }: { contextValue: any }) {
     }
   }, [currentPlayer?.isReady, setServerReady]);
 
-  const handleReady = () => {
+  const handleReady = useCallback(() => {
     if (currentPlayer) {
       const newReadyState = !optimisticReady;
       const updateId = `ready_${currentPlayer.id}_${Date.now()}`;
       setOptimisticReady(updateId, newReadyState);
       actions.toggleReady(newReadyState);
     }
-  };
+  }, [currentPlayer, optimisticReady, setOptimisticReady, actions]);
 
-  const handleSubmitGuess = () => {
+  const handleSubmitGuess = useCallback(() => {
     const validation = validateGuess(guess);
 
     if (!validation.valid) {
@@ -157,12 +165,9 @@ function GameStateContent({ contextValue }: { contextValue: any }) {
 
     actions.submitGuess(validation.year!);
     setGuess('');
-  };
+  }, [guess, actions, t]);
 
-
-  if (profile.showProfileDialog) return null;
-
-  const baseProps = {
+  const baseProps = useMemo(() => ({
     lobby,
     players,
     currentPlayer,
@@ -174,9 +179,20 @@ function GameStateContent({ contextValue }: { contextValue: any }) {
     isConnected,
     actions,
     leaderboard
-  };
+  }), [
+    lobby,
+    players,
+    currentPlayer,
+    gameState,
+    isHost,
+    chatMessages,
+    actions,
+    username,
+    isConnected,
+    leaderboard
+  ]);
 
-  const stateSpecificProps = {
+  const stateSpecificProps = useMemo(() => ({
     countdown,
     onReady: handleReady,
     optimisticReady,
@@ -190,12 +206,25 @@ function GameStateContent({ contextValue }: { contextValue: any }) {
     lastRoundResults,
     onSendReaction: actions.sendReaction,
     nextRoundCountdown
-  };
+  }), [
+    countdown,
+    handleReady,
+    optimisticReady,
+    currentRound,
+    timeRemaining,
+    guess,
+    handleSubmitGuess,
+    hasSubmittedGuess,
+    lobby.roundTimer,
+    lastRoundResults,
+    actions.sendReaction,
+    nextRoundCountdown
+  ]);
 
-  const StateComponent = getGameStateComponent(gameState as GameState);
-  const props = buildStateProps(gameState as GameState, baseProps, stateSpecificProps);
+  const StateComponent = getGameStateComponent(gameState);
+  const props = buildStateProps(gameState, baseProps, stateSpecificProps);
 
-  return <StateComponent {...props as any} />;
+  return <StateComponent {...props} />;
 }
 
 

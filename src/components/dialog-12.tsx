@@ -73,13 +73,11 @@ export default function Dialog12({
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Validate file size (2MB)
     if (file.size > 2 * 1024 * 1024) {
       toast.error("File size exceeds 2MB limit");
       return;
     }
 
-    // Validate file type
     if (!file.type.startsWith('image/')) {
       toast.error("Only image files are allowed");
       return;
@@ -119,10 +117,8 @@ export default function Dialog12({
     setIsSubmitting(true);
     try {
       if (onSave) {
-        // Use custom onSave callback if provided
         await onSave(data);
       } else {
-        // Default to calling the server action directly
         const result = await updateUserProfile(data);
         if (result?.data?.success) {
           toast.success("Profile updated successfully!");
@@ -154,67 +150,67 @@ export default function Dialog12({
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className={`grid grid-cols-1 px-6 pt-4 pb-6 ${hideAvatarUpload ? '' : 'md:grid-cols-5'}`}>
             {!hideAvatarUpload && (
-            <div className="flex flex-col items-center justify-center md:col-span-2">
-              <div className="relative mb-2">
-                <Avatar className="h-24 w-24 border-2 border-muted">
-                  <AvatarImage src={watchedPicture || undefined} alt="Profile" />
-                  <AvatarFallback>
-                    <UserRoundIcon
-                      size={52}
-                      className="text-muted-foreground"
-                      aria-hidden="true"
-                    />
-                  </AvatarFallback>
-                </Avatar>
+              <div className="flex flex-col items-center justify-center md:col-span-2">
+                <div className="relative mb-2">
+                  <Avatar className="h-24 w-24 border-2 border-muted">
+                    <AvatarImage src={watchedPicture || undefined} alt="Profile" />
+                    <AvatarFallback>
+                      <UserRoundIcon
+                        size={52}
+                        className="text-muted-foreground"
+                        aria-hidden="true"
+                      />
+                    </AvatarFallback>
+                  </Avatar>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="absolute -top-0.5 -right-0.5 bg-accent rounded-full border-[3px] border-background h-8 w-8 hover:bg-accent"
+                    onClick={() => {
+                      if (watchedPicture) {
+                        form.setValue("picture", "");
+                        if (fileInputRef.current) {
+                          fileInputRef.current.value = "";
+                        }
+                      } else {
+                        triggerFileInput();
+                      }
+                    }}
+                  >
+                    {watchedPicture ? (
+                      <X className="h-4 w-4 text-muted-foreground" />
+                    ) : (
+                      <Plus className="h-3 w-3 text-muted-foreground" />
+                    )}
+                    <span className="sr-only">
+                      {watchedPicture ? "Remove image" : "Upload image"}
+                    </span>
+                  </Button>
+                </div>
+
+                <p className="text-center font-medium">Upload Image</p>
+                <p className="text-center text-sm text-muted-foreground">
+                  Max file size: 2MB
+                </p>
                 <Button
                   type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="absolute -top-0.5 -right-0.5 bg-accent rounded-full border-[3px] border-background h-8 w-8 hover:bg-accent"
-                  onClick={() => {
-                    if (watchedPicture) {
-                      form.setValue("picture", "");
-                      if (fileInputRef.current) {
-                        fileInputRef.current.value = "";
-                      }
-                    } else {
-                      triggerFileInput();
-                    }
-                  }}
+                  variant="outline"
+                  size="sm"
+                  className="mt-2"
+                  onClick={triggerFileInput}
+                  disabled={isUploading}
                 >
-                  {watchedPicture ? (
-                    <X className="h-4 w-4 text-muted-foreground" />
-                  ) : (
-                    <Plus className="h-3 w-3 text-muted-foreground" />
-                  )}
-                  <span className="sr-only">
-                    {watchedPicture ? "Remove image" : "Upload image"}
-                  </span>
+                  {isUploading ? "Uploading..." : "Add Image"}
                 </Button>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleFileChange}
+                  accept="image/*"
+                  className="hidden"
+                />
               </div>
-
-            <p className="text-center font-medium">Upload Image</p>
-            <p className="text-center text-sm text-muted-foreground">
-              Max file size: 2MB
-            </p>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="mt-2"
-                onClick={triggerFileInput}
-                disabled={isUploading}
-              >
-                {isUploading ? "Uploading..." : "Add Image"}
-              </Button>
-              <input
-                type="file"
-                ref={fileInputRef}
-                onChange={handleFileChange}
-                accept="image/*"
-                className="hidden"
-              />
-            </div>
             )}
 
             <div className={`flex flex-col justify-between ${hideAvatarUpload ? '' : 'md:col-span-3'}`}>

@@ -1,10 +1,13 @@
-import { ComponentType } from 'react';
+import { ComponentType, ComponentProps } from 'react';
 import { WaitingRoom } from '@/components/lobby/waiting-room';
 import { GameInProgress } from '@/components/lobby/game-in-progress';
 import { RoundResults } from '@/components/lobby/round-results';
 import type { Lobby, Player, ChatMessage, Guess, LobbyActions, RoundData } from '@/lib/types/lobby';
 
 type GameState = 'WAITING' | 'STARTING' | 'PLAYING' | 'ROUND_RESULTS' | 'FINISHED';
+
+// Helper type to get component props
+type ComponentPropsType<T extends ComponentType<any>> = T extends ComponentType<infer P> ? P : never;
 
 interface BaseGameStateProps {
   lobby: Lobby;
@@ -50,23 +53,26 @@ interface ResultsStateProps extends BaseGameStateProps {
   nextRoundCountdown?: number | null;
 }
 
-type GameStateComponentMap = {
-  WAITING: ComponentType<WaitingStateProps>;
-  STARTING: ComponentType<WaitingStateProps>;
-  PLAYING: ComponentType<PlayingStateProps>;
-  ROUND_RESULTS: ComponentType<ResultsStateProps>;
-  FINISHED: ComponentType<WaitingStateProps>;
-};
-
-export const GAME_STATE_COMPONENTS: GameStateComponentMap = {
+export const GAME_STATE_COMPONENTS = {
   WAITING: WaitingRoom,
   STARTING: WaitingRoom,
   PLAYING: GameInProgress,
   ROUND_RESULTS: RoundResults,
   FINISHED: WaitingRoom
+} as const;
+
+type GameStateComponentMap = typeof GAME_STATE_COMPONENTS;
+
+// Type mapping for state to props using ComponentProps
+type StatePropsMap = {
+  WAITING: ComponentProps<typeof WaitingRoom>;
+  STARTING: ComponentProps<typeof WaitingRoom>;
+  PLAYING: ComponentProps<typeof GameInProgress>;
+  ROUND_RESULTS: ComponentProps<typeof RoundResults>;
+  FINISHED: ComponentProps<typeof WaitingRoom>;
 };
 
-// State-specific props builders
+// State-specific props builder - returns union type
 export function buildStateProps(
   state: GameState,
   baseProps: BaseGameStateProps,
@@ -81,7 +87,7 @@ export function buildStateProps(
         onReady: additionalProps.onReady,
         optimisticReady: additionalProps.optimisticReady,
         gameFinished: false
-      } as WaitingStateProps;
+      };
 
     case 'PLAYING':
       return {
@@ -94,7 +100,7 @@ export function buildStateProps(
         hasSubmittedGuess: additionalProps.hasSubmittedGuess,
         lobbyTimer: additionalProps.lobbyTimer,
         lastRoundResults: additionalProps.lastRoundResults
-      } as PlayingStateProps;
+      };
 
     case 'ROUND_RESULTS':
       return {
@@ -102,7 +108,7 @@ export function buildStateProps(
         lastRoundResults: additionalProps.lastRoundResults,
         onSendReaction: additionalProps.onSendReaction,
         nextRoundCountdown: additionalProps.nextRoundCountdown
-      } as ResultsStateProps;
+      };
 
     case 'FINISHED':
       return {
@@ -111,14 +117,16 @@ export function buildStateProps(
         onReady: additionalProps.onReady,
         optimisticReady: additionalProps.optimisticReady,
         gameFinished: true
-      } as WaitingStateProps;
+      };
 
     default:
       throw new Error(`Unknown game state: ${state}`);
   }
 }
 
-export function getGameStateComponent(state: GameState) {
+export function getGameStateComponent(
+  state: GameState
+): ComponentType<any> {
   return GAME_STATE_COMPONENTS[state];
 }
 

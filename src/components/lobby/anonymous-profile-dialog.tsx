@@ -26,12 +26,12 @@ export function AnonymousProfileDialog({
   return (
     <Dialog12
       open={open}
-      onOpenChange={() => {}} // Prevent closing - user must set profile
+      onOpenChange={() => { }}
       onSave={handleSave}
       defaultName={defaultName === 'Anonymous' ? '' : defaultName}
       title="Set Your Profile"
       showTrigger={false}
-      hideAvatarUpload={true} // Anonymous users can only set name, not avatar
+      hideAvatarUpload={true}
     />
   );
 }

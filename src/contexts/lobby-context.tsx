@@ -73,3 +73,5 @@ export function useLobby() {
   }
   return context;
 }
+
+export type { LobbyContextValue, ProfileData };
