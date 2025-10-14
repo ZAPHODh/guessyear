@@ -1,11 +1,11 @@
 "use client";
 
-import Dialog12 from "@/components/dialog-12";
+import ProfileDialog from "@/components/dialog-12";
 import { useScopedI18n } from '@/locales/client';
 
 interface AnonymousProfileDialogProps {
   open: boolean;
-  onSave: (profile: { name: string; avatar?: string }) => void;
+  onSave: (profile: { name: string; avatar?: string }) => Promise<void>;
   defaultName?: string;
 }
 
@@ -14,24 +14,23 @@ export function AnonymousProfileDialog({
   onSave,
   defaultName = 'Anonymous'
 }: AnonymousProfileDialogProps) {
-  const t = useScopedI18n('lobby');
+  const lobbyT = useScopedI18n('lobby');
+  const profileT = useScopedI18n('profileDialog');
 
-  const handleSave = async (data: { name: string; picture?: string }) => {
+  const handleSave = async (data: { name: string }) => {
     await onSave({
       name: data.name,
-      avatar: data.picture
     });
   };
 
   return (
-    <Dialog12
+    <ProfileDialog
       open={open}
       onOpenChange={() => { }}
       onSave={handleSave}
       defaultName={defaultName === 'Anonymous' ? '' : defaultName}
-      title="Set Your Profile"
+      title={lobbyT('room.setProfile')}
       showTrigger={false}
-      hideAvatarUpload={true}
     />
   );
 }
