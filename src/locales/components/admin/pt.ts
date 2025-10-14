@@ -167,5 +167,78 @@ export default {
     delete: "Deletar",
     schedule: "Agendar",
     confirmDelete: "Tem certeza de que deseja deletar esta imagem?"
+  },
+  lobbies: {
+    title: "Gerenciamento de Lobbies",
+    subtitle: "Gerencie lobbies multiplayer e visualize pontuações dos jogadores",
+    loading: "Carregando lobbies...",
+    noLobbies: "Nenhum lobby ativo",
+    noFinishedLobbies: "Nenhum lobby finalizado",
+    tabs: {
+      active: "Ativos",
+      finished: "Finalizados",
+      cleanup: "Limpeza"
+    },
+    active: {
+      title: "Lobbies Ativos",
+      subtitle: "Lobbies atualmente ativos e aguardando"
+    },
+    finished: {
+      title: "Lobbies Finalizados",
+      subtitle: "Lobbies de jogos concluídos"
+    },
+    table: {
+      name: "Nome",
+      host: "Host",
+      status: "Status",
+      mode: "Modo",
+      players: "Jogadores",
+      rounds: "Rodadas",
+      created: "Criado",
+      finished: "Finalizado",
+      winner: "Vencedor",
+      actions: "Ações"
+    },
+    status: {
+      waiting: "Aguardando",
+      playing: "Jogando",
+      finished: "Finalizado"
+    },
+    gameMode: {
+      classic: "Clássico",
+      elimination: "Eliminação",
+      marathon: "Maratona"
+    },
+    cleanup: {
+      title: "Ações de Limpeza",
+      subtitle: "Deletar lobbies em massa",
+      deleteFinished: "Deletar Todos os Lobbies Finalizados",
+      deleteFinishedDesc: "Remover todos os lobbies que foram concluídos",
+      deleteFinishedButton: "Deletar Todos Finalizados",
+      deleteOld: "Deletar Lobbies Antigos",
+      deleteOldDesc: "Remover lobbies com mais dias que o especificado",
+      days: "Dias de idade",
+      deleteOldButton: "Deletar Lobbies Antigos"
+    },
+    details: {
+      subtitle: "Detalhes e estatísticas do lobby",
+      host: "Host",
+      status: "Status",
+      mode: "Modo de Jogo",
+      rounds: "Rodadas",
+      leaderboard: "Placar",
+      rank: "Posição",
+      player: "Jogador",
+      score: "Pontuação",
+      eliminated: "Eliminado",
+      ready: "Pronto",
+      round: "Rodada",
+      correctYear: "Ano Correto",
+      guesses: "Palpites",
+      chat: "Mensagens do Chat"
+    },
+    confirmDeleteFinished: "Tem certeza de que deseja deletar todos os lobbies finalizados?",
+    confirmDeleteOld: "Tem certeza de que deseja deletar lobbies com mais de {days} dias?",
+    deleteSuccess: "{count} lobbies deletados com sucesso"
   }
 } as const

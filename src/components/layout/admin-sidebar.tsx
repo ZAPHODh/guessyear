@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Calendar, Upload, LayoutDashboard } from "lucide-react"
+import { Calendar, Upload, LayoutDashboard, Users } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useScopedI18n } from "@/locales/client"
@@ -17,7 +17,8 @@ import {
 } from "@/components/ui/sidebar"
 
 export function AdminSidebar() {
-  const t = useScopedI18n("admin.dashboard")
+  const tDashboard = useScopedI18n("admin.dashboard")
+  const tLobbies = useScopedI18n("admin.lobbies")
   const pathname = usePathname()
 
   const menuItems = [
@@ -27,14 +28,19 @@ export function AdminSidebar() {
       icon: LayoutDashboard,
     },
     {
-      title: t("quickActions.uploadNew"),
+      title: tDashboard("quickActions.uploadNew"),
       url: "/admin/images/new",
       icon: Upload,
     },
     {
-      title: t("quickActions.scheduleImages"),
+      title: tDashboard("quickActions.scheduleImages"),
       url: "/admin/images",
       icon: Calendar,
+    },
+    {
+      title: tLobbies("title"),
+      url: "/admin/lobbies",
+      icon: Users,
     },
   ]
 
@@ -42,7 +48,7 @@ export function AdminSidebar() {
     <Sidebar>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>{t("quickActions.title")}</SidebarGroupLabel>
+          <SidebarGroupLabel>{tDashboard("quickActions.title")}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {menuItems.map((item) => (

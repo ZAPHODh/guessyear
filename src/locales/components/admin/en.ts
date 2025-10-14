@@ -167,5 +167,78 @@ export default {
     delete: "Delete",
     schedule: "Schedule",
     confirmDelete: "Are you sure you want to delete this image?"
+  },
+  lobbies: {
+    title: "Lobby Management",
+    subtitle: "Manage multiplayer game lobbies and view player scores",
+    loading: "Loading lobbies...",
+    noLobbies: "No active lobbies",
+    noFinishedLobbies: "No finished lobbies",
+    tabs: {
+      active: "Active",
+      finished: "Finished",
+      cleanup: "Cleanup"
+    },
+    active: {
+      title: "Active Lobbies",
+      subtitle: "Currently active and waiting lobbies"
+    },
+    finished: {
+      title: "Finished Lobbies",
+      subtitle: "Completed game lobbies"
+    },
+    table: {
+      name: "Name",
+      host: "Host",
+      status: "Status",
+      mode: "Mode",
+      players: "Players",
+      rounds: "Rounds",
+      created: "Created",
+      finished: "Finished",
+      winner: "Winner",
+      actions: "Actions"
+    },
+    status: {
+      waiting: "Waiting",
+      playing: "Playing",
+      finished: "Finished"
+    },
+    gameMode: {
+      classic: "Classic",
+      elimination: "Elimination",
+      marathon: "Marathon"
+    },
+    cleanup: {
+      title: "Cleanup Actions",
+      subtitle: "Bulk delete lobbies",
+      deleteFinished: "Delete All Finished Lobbies",
+      deleteFinishedDesc: "Remove all lobbies that have completed",
+      deleteFinishedButton: "Delete All Finished",
+      deleteOld: "Delete Old Lobbies",
+      deleteOldDesc: "Remove lobbies older than specified days",
+      days: "Days old",
+      deleteOldButton: "Delete Old Lobbies"
+    },
+    details: {
+      subtitle: "Lobby details and statistics",
+      host: "Host",
+      status: "Status",
+      mode: "Game Mode",
+      rounds: "Rounds",
+      leaderboard: "Leaderboard",
+      rank: "Rank",
+      player: "Player",
+      score: "Score",
+      eliminated: "Eliminated",
+      ready: "Ready",
+      round: "Round",
+      correctYear: "Correct Year",
+      guesses: "Guesses",
+      chat: "Chat Messages"
+    },
+    confirmDeleteFinished: "Are you sure you want to delete all finished lobbies?",
+    confirmDeleteOld: "Are you sure you want to delete lobbies older than {days} days?",
+    deleteSuccess: "{count} lobbies deleted successfully"
   }
 } as const
