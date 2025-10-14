@@ -73,6 +73,11 @@ export default {
     startGame: "Iniciar Juego",
     playAgain: "🔄 Jugar de Nuevo",
 
+    // Profile setup
+    setProfile: "Configura Tu Perfil",
+    setProfileLoggedIn: "Por favor, establece tu nombre para mostrar para unirte al lobby",
+    setProfileAnonymous: "Por favor, establece tu nombre para mostrar para unirte al lobby",
+
     // Game settings
     gameSettings: {
       title: "Configuración del Juego",

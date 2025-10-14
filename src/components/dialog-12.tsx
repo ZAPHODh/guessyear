@@ -102,7 +102,6 @@ export default function ProfileDialog({
                   <FormItem>
                     <FormLabel className="flex items-center gap-1">
                       {t('nameLabel')}
-                      <span className="text-primary">*</span>
                     </FormLabel>
                     <FormControl>
                       <Input

@@ -76,7 +76,7 @@ export default {
     // Profile setup
     setProfile: "Set Your Profile",
     setProfileLoggedIn: "Please set your display name to join the lobby",
-    setProfileAnonymous: "Please set your display name and avatar to join the lobby",
+    setProfileAnonymous: "Please set your display name to join the lobby",
 
     // Game settings
     gameSettings: {
