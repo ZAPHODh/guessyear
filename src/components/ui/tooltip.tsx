@@ -1,61 +1,100 @@
 "use client"
 
-import * as React from "react"
-import * as TooltipPrimitive from "@radix-ui/react-tooltip"
+import type { TooltipProps as TooltipPrimitiveProps } from "react-aria-components"
+import {
+  Button,
+  composeRenderProps,
+  OverlayArrow,
+  Tooltip as TooltipPrimitive,
+  TooltipTrigger as TooltipTriggerPrimitive,
+} from "react-aria-components"
+import { twJoin } from "tailwind-merge"
+import type { VariantProps } from "tailwind-variants"
+import { tv } from "tailwind-variants"
 
-import { cn } from "@/lib/utils"
+const tooltipStyles = tv({
+  base: [
+    "group origin-(--trigger-anchor-point) rounded-lg border px-2.5 py-1.5 text-sm/6 will-change-transform dark:shadow-none *:[strong]:font-medium",
+  ],
+  variants: {
+    inverse: {
+      true: [
+        "border-transparent bg-fg text-bg [.text-muted-fg]:text-secondary",
+        "*:[.text-muted-fg]:text-secondary",
+      ],
+      false: "bg-overlay text-overlay-fg",
+    },
+    isEntering: {
+      true: [
+        "fade-in animate-in",
+        "placement-left:slide-in-from-right-1 placement-right:slide-in-from-left-1 placement-top:slide-in-from-bottom-1 placement-bottom:slide-in-from-top-1",
+      ],
+    },
+    isExiting: {
+      true: [
+        "fade-in direction-reverse animate-in",
+        "placement-left:slide-out-to-right-1 placement-right:slide-out-to-left-1 placement-top:slide-out-to-bottom-1 placement-bottom:slide-out-to-top-1",
+      ],
+    },
+  },
+  defaultVariants: {
+    inverse: false,
+  },
+})
 
-function TooltipProvider({
-  delayDuration = 0,
-  ...props
-}: React.ComponentProps<typeof TooltipPrimitive.Provider>) {
-  return (
-    <TooltipPrimitive.Provider
-      data-slot="tooltip-provider"
-      delayDuration={delayDuration}
-      {...props}
-    />
-  )
+type TooltipProps = React.ComponentProps<typeof TooltipTriggerPrimitive>
+const Tooltip = (props: TooltipProps) => <TooltipTriggerPrimitive {...props} />
+
+interface TooltipContentProps
+  extends Omit<TooltipPrimitiveProps, "children">,
+    VariantProps<typeof tooltipStyles> {
+  showArrow?: boolean
+  children?: React.ReactNode
 }
 
-function Tooltip({
-  ...props
-}: React.ComponentProps<typeof TooltipPrimitive.Root>) {
-  return (
-    <TooltipProvider>
-      <TooltipPrimitive.Root data-slot="tooltip" {...props} />
-    </TooltipProvider>
-  )
-}
-
-function TooltipTrigger({
-  ...props
-}: React.ComponentProps<typeof TooltipPrimitive.Trigger>) {
-  return <TooltipPrimitive.Trigger data-slot="tooltip-trigger" {...props} />
-}
-
-function TooltipContent({
-  className,
-  sideOffset = 0,
+const TooltipContent = ({
+  offset = 10,
+  showArrow = true,
+  inverse,
   children,
   ...props
-}: React.ComponentProps<typeof TooltipPrimitive.Content>) {
+}: TooltipContentProps) => {
   return (
-    <TooltipPrimitive.Portal>
-      <TooltipPrimitive.Content
-        data-slot="tooltip-content"
-        sideOffset={sideOffset}
-        className={cn(
-          "bg-primary text-primary-foreground animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 w-fit origin-(--radix-tooltip-content-transform-origin) rounded-md px-3 py-1.5 text-xs text-balance",
-          className
-        )}
-        {...props}
-      >
-        {children}
-        <TooltipPrimitive.Arrow className="bg-primary fill-primary z-50 size-2.5 translate-y-[calc(-50%_-_2px)] rotate-45 rounded-[2px]" />
-      </TooltipPrimitive.Content>
-    </TooltipPrimitive.Portal>
+    <TooltipPrimitive
+      {...props}
+      offset={offset}
+      className={composeRenderProps(props.className, (className, renderProps) =>
+        tooltipStyles({
+          ...renderProps,
+          inverse,
+          className,
+        }),
+      )}
+    >
+      {showArrow && (
+        <OverlayArrow className="group">
+          <svg
+            width={12}
+            height={12}
+            viewBox="0 0 12 12"
+            // inverse
+            className={twJoin(
+              "group-placement-left:-rotate-90 block group-placement-bottom:rotate-180 group-placement-right:rotate-90 forced-colors:fill-[Canvas] forced-colors:stroke-[ButtonBorder]",
+              inverse ? "fill-fg stroke-transparent" : "fill-overlay stroke-border",
+            )}
+          >
+            <path d="M0 0 L6 6 L12 0" />
+          </svg>
+        </OverlayArrow>
+      )}
+      {children}
+    </TooltipPrimitive>
   )
 }
 
-export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider }
+Tooltip.Trigger = Button
+Tooltip.Content = TooltipContent
+const TooltipTrigger = Tooltip.Trigger
+
+export type { TooltipProps, TooltipContentProps }
+export { Tooltip, TooltipTrigger, TooltipContent }

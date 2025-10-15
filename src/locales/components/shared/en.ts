@@ -15,5 +15,11 @@ export default {
     toggleTheme: 'Toggle Theme',
     light: 'Light',
     dark: 'Dark',
-    settings: 'Settings'
+    settings: 'Settings',
+    sidebar: {
+        dashboard: 'Dashboard',
+        security: 'Security',
+        profile: 'Profile',
+        adminPanel: 'Admin Panel'
+    }
 } as const

@@ -1,12 +1,13 @@
 import { getAllImages } from "./admin/actions"
 import { ImagesProvider } from "@/components/images-context"
 import { requireAdmin } from "@/lib/server/dto"
-import { AdminSidebar } from "@/components/layout/admin-sidebar"
+import { getCurrentSession } from "@/lib/server/auth/session"
+import AppSidebar from "@/components/app-sidebar"
+import AppSidebarNav from "@/components/app-sidebar-nav"
 import {
   SidebarInset,
   SidebarProvider
 } from "@/components/ui/sidebar"
-import { getCurrentSession } from "@/lib/server/auth/session"
 
 export default async function AdminLayout({
   children,
@@ -18,21 +19,21 @@ export default async function AdminLayout({
   await requireAdmin()
 
   const images = await getAllImages()
+  const { user } = await getCurrentSession()
 
   return (
-    <ImagesProvider 
+    <ImagesProvider
       initialImages={images}
       refreshImages={getAllImages}
     >
       <SidebarProvider>
-        <div className="flex flex-1">
-          <AdminSidebar />
-          <SidebarInset>
-            <div className="flex flex-1 flex-col p-6">
-              {children}
-            </div>
-          </SidebarInset>
-        </div>
+        <AppSidebar collapsible="dock" user={user} />
+        <SidebarInset>
+          <AppSidebarNav user={user} />
+          <div className="p-4 lg:p-6">
+            {children}
+          </div>
+        </SidebarInset>
         {imageModal}
       </SidebarProvider>
     </ImagesProvider>

@@ -15,5 +15,11 @@ export default {
     toggleTheme: 'Alternar Tema',
     light: 'Claro',
     dark: 'Escuro',
-    settings: 'Configurações'
+    settings: 'Configurações',
+    sidebar: {
+        dashboard: 'Painel',
+        security: 'Segurança',
+        profile: 'Perfil',
+        adminPanel: 'Painel Admin'
+    }
 } as const
