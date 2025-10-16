@@ -27,7 +27,7 @@ export default async function AuthButton({
   const scopedT = await getScopedI18n("shared");
   if (!user) {
     return (
-      <Button asChild size={'icon'}>
+      <Button asChild size={'sm'}>
         <Link
           href={`/${locale}/login`}
           className={cn(
