@@ -15,6 +15,7 @@ import { cn } from "@/lib/utils";
 import LocaleSelector from "./locale-selector";
 import { getCurrentLocale, getScopedI18n } from "@/locales/server";
 import { logout } from "@/app/[locale]/actions";
+import { Button } from "../ui/button";
 
 export default async function AuthButton({
   className
@@ -26,16 +27,18 @@ export default async function AuthButton({
   const scopedT = await getScopedI18n("shared");
   if (!user) {
     return (
-      <Link
-        href={`/${locale}/login`}
-        className={cn(
-          "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input bg-transparent shadow-sm hover:bg-accent hover:text-accent-foreground h-9 w-9",
-          className
-        )}
-        aria-label="Login"
-      >
-        {scopedT('login')}
-      </Link>
+      <Button asChild size={'icon'}>
+        <Link
+          href={`/${locale}/login`}
+          className={cn(
+            "inline-flex items-center ",
+            className
+          )}
+          aria-label="Login"
+        >
+          {scopedT('login')}
+        </Link>
+      </Button>
     );
   }
 
