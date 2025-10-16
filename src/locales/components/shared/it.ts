@@ -14,6 +14,7 @@ export default {
     nextImage: 'Prossima Immagine',
     timeRemaining: 'Tempo rimanente',
     logout: 'Disconnetti',
+    login: 'Accedi',
     toggleTheme: 'Cambia Tema',
     light: 'Chiaro',
     dark: 'Scuro',

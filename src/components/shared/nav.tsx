@@ -1,6 +1,4 @@
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import ModeToggle from "../mode-toggle";
+
 import AuthButton from "./auth-button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { siteConfig } from "@/config/site";
@@ -13,7 +11,7 @@ export default function Nav({ locale }: { locale: string }) {
     return (
         <NavClient locale={locale} configName={config.name}>
             <Suspense fallback={<Skeleton className="h-9 w-9 rounded-md" />}>
-                <AuthButton locale={locale} />
+                <AuthButton />
             </Suspense>
         </NavClient>
     )

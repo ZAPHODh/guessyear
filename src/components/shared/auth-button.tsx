@@ -13,16 +13,17 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import LocaleSelector from "./locale-selector";
+import { getCurrentLocale, getScopedI18n } from "@/locales/server";
+import { logout } from "@/app/[locale]/actions";
 
 export default async function AuthButton({
-  locale,
   className
 }: {
-  locale: string;
   className?: string;
 }) {
   const { user } = await getCurrentSession();
-
+  const locale = await getCurrentLocale()
+  const scopedT = await getScopedI18n("shared");
   if (!user) {
     return (
       <Link
@@ -33,8 +34,7 @@ export default async function AuthButton({
         )}
         aria-label="Login"
       >
-        <LogIn className="h-[1.2rem] w-[1.2rem]" />
-        <span className="sr-only">Login</span>
+        {scopedT('login')}
       </Link>
     );
   }
@@ -77,12 +77,12 @@ export default async function AuthButton({
         <DropdownMenuGroup>
           <DropdownMenuItem asChild>
             <Link href={`/${locale}/profile`}>
-              Profile
+              {scopedT('sidebar.profile')}
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
             <Link href={`/${locale}/settings`}>
-              Settings
+              {scopedT('settings')}
             </Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>
@@ -90,12 +90,12 @@ export default async function AuthButton({
         <LocaleSelector currentLocale={locale} />
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
-          <form action="/api/auth/logout" method="POST">
-            <button type="submit" className="w-full flex items-center">
-              <LogOut className="mr-2 h-4 w-4" />
-              Log out
-            </button>
-          </form>
+
+          <button onClick={() => logout()} className="w-full flex items-center">
+            <LogOut className="mr-2 h-4 w-4" />
+            {scopedT('logout')}
+          </button>
+
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

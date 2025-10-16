@@ -12,6 +12,7 @@ export default {
     nextImage: 'Next Image',
     timeRemaining: 'Time remaining',
     logout: 'Log out',
+    login: 'Log in',
     toggleTheme: 'Toggle Theme',
     light: 'Light',
     dark: 'Dark',

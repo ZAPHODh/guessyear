@@ -14,6 +14,7 @@ export default {
     nextImage: 'Nächstes Bild',
     timeRemaining: 'Verbleibende Zeit',
     logout: 'Abmelden',
+    login: 'Anmelden',
     toggleTheme: 'Design wechseln',
     light: 'Hell',
     dark: 'Dunkel',

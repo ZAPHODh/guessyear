@@ -14,6 +14,7 @@ export default {
     nextImage: 'Prochaine Image',
     timeRemaining: 'Temps restant',
     logout: 'Se déconnecter',
+    login: 'Se connecter',
     toggleTheme: 'Changer le thème',
     light: 'Clair',
     dark: 'Sombre',

@@ -12,6 +12,7 @@ export default {
     nextImage: 'Próxima Imagem',
     timeRemaining: 'Tempo restante',
     logout: 'Sair',
+    login: 'Entrar',
     toggleTheme: 'Alternar Tema',
     light: 'Claro',
     dark: 'Escuro',
