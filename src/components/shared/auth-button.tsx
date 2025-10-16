@@ -1,6 +1,7 @@
+'use client'
+
 import Link from "next/link";
-import { LogIn, LogOut } from "lucide-react";
-import { getCurrentSession } from "@/lib/server/auth/session";
+import { LogOut } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,21 +11,30 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import LocaleSelector from "./locale-selector";
-import { getCurrentLocale, getScopedI18n } from "@/locales/server";
+import { useScopedI18n } from "@/locales/client";
 import { logout } from "@/app/[locale]/actions";
 import { Button } from "../ui/button";
 
-export default async function AuthButton({
-  className
-}: {
+interface User {
+  id: string;
+  email: string | null;
+  name: string | null;
+  picture: string | null;
+  emailVerified: boolean | null;
+}
+
+interface AuthButtonProps {
+  user: User | null;
+  locale: string;
   className?: string;
-}) {
-  const { user } = await getCurrentSession();
-  const locale = await getCurrentLocale()
-  const scopedT = await getScopedI18n("shared");
+}
+
+export default function AuthButton({ user, locale, className }: AuthButtonProps) {
+  const scopedT = useScopedI18n("shared");
+
   if (!user) {
     return (
       <Button asChild size={'sm'}>
@@ -93,12 +103,10 @@ export default async function AuthButton({
         <LocaleSelector currentLocale={locale} />
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
-
           <button onClick={() => logout()} className="w-full flex items-center">
             <LogOut className="mr-2 h-4 w-4" />
             {scopedT('logout')}
           </button>
-
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

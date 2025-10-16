@@ -1,18 +1,17 @@
-
 import AuthButton from "./auth-button";
-import { Skeleton } from "@/components/ui/skeleton";
 import { siteConfig } from "@/config/site";
-import { Suspense } from "react";
 import NavClient from "./nav-client";
+import { getCurrentSession } from "@/lib/server/auth/session";
+import { getCurrentLocale } from "@/locales/server";
 
-export default function Nav({ locale }: { locale: string }) {
+export default async function Nav({ locale }: { locale: string }) {
     const config = siteConfig(locale);
+    const { user } = await getCurrentSession();
+    const currentLocale = await getCurrentLocale();
 
     return (
         <NavClient locale={locale} configName={config.name}>
-            <Suspense fallback={<Skeleton className="h-9 w-9 rounded-md" />}>
-                <AuthButton />
-            </Suspense>
+            <AuthButton user={user} locale={currentLocale} />
         </NavClient>
     )
 }
