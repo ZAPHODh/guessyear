@@ -13,6 +13,7 @@ import cookieConsent from './components/cookie-consent/fr';
 import howToPlay from './components/how-to-play/fr';
 import settings from './components/settings/fr';
 import profileDialog from './components/profile-dialog/fr';
+import profile from './components/profile/fr';
 
 export default {
     header,
@@ -30,6 +31,7 @@ export default {
     howToPlay,
     settings,
     profileDialog,
+    profile,
     metadata: {
         keywords: [
             "Loqano",

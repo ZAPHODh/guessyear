@@ -14,6 +14,7 @@ import howToPlay from './components/how-to-play/de';
 import admin from './components/admin/de';
 import settings from './components/settings/de';
 import profileDialog from './components/profile-dialog/de';
+import profile from './components/profile/de';
 
 export default {
     header,
@@ -32,6 +33,7 @@ export default {
     admin,
     settings,
     profileDialog,
+    profile,
     metadata: {
         keywords: [
             "Loqano",
