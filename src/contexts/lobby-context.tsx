@@ -2,6 +2,7 @@
 
 import { createContext, useContext, ReactNode } from 'react';
 import type { Lobby, User, Player, LobbyActions, RoundData, ChatMessage, Guess } from '@/lib/types/lobby';
+import type { GameState } from '@/lib/lobby-state-machine';
 
 interface ProfileData {
   user: User | null;
@@ -25,7 +26,7 @@ interface LobbyContextValue {
   // Game state
   players: Player[];
   isConnected: boolean;
-  gameState: 'WAITING' | 'STARTING' | 'PLAYING' | 'ROUND_RESULTS' | 'FINISHED';
+  gameState: GameState;
   currentRound: RoundData | null;
   timeRemaining: number;
   chatMessages: ChatMessage[];

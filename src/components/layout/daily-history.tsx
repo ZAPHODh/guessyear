@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { getDailyHistory } from './actions'
+import { getDailyHistory } from '../../app/[locale]/(user)/profile/actions'
 import {
   Table,
   TableBody,

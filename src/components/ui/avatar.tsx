@@ -1,63 +1,53 @@
-import { twMerge } from "tailwind-merge"
+"use client"
 
-interface AvatarProps {
-  src?: string | null
-  initials?: string
-  alt?: string
-  className?: string
-  isSquare?: boolean
-  size?: "xs" | "sm" | "md" | "lg" | "xl"
-}
+import * as React from "react"
+import * as AvatarPrimitive from "@radix-ui/react-avatar"
 
-const Avatar = ({
-  src = null,
-  isSquare = false,
-  size = "md",
-  initials,
-  alt = "",
+import { cn } from "@/lib/utils"
+
+function Avatar({
   className,
   ...props
-}: AvatarProps & React.ComponentPropsWithoutRef<"span">) => {
+}: React.ComponentProps<typeof AvatarPrimitive.Root>) {
   return (
-    <span
+    <AvatarPrimitive.Root
       data-slot="avatar"
+      className={cn(
+        "relative flex size-8 shrink-0 overflow-hidden rounded-full",
+        className
+      )}
       {...props}
-      className={twMerge(
-        "-outline-offset-1 inline-grid shrink-0 align-middle outline-1 outline-fg/(--ring-opacity) [--avatar-radius:20%] [--ring-opacity:20%] *:col-start-1 *:row-start-1",
-        size === "xs" && "size-5 *:size-5",
-        size === "sm" && "size-6 *:size-6",
-        size === "md" && "size-8 *:size-8",
-        size === "lg" && "size-10 *:size-10",
-        size === "xl" && "size-12 *:size-12",
-        isSquare
-          ? "rounded-(--avatar-radius) *:rounded-(--avatar-radius)"
-          : "rounded-full *:rounded-full",
-        className,
-      )}
-    >
-      {initials && (
-        <svg
-          className="size-full select-none fill-current p-[5%] font-md text-[48px] uppercase"
-          viewBox="0 0 100 100"
-          aria-hidden={alt ? undefined : "true"}
-        >
-          {alt && <title>{alt}</title>}
-          <text
-            x="50%"
-            y="50%"
-            alignmentBaseline="middle"
-            dominantBaseline="middle"
-            textAnchor="middle"
-            dy=".125em"
-          >
-            {initials}
-          </text>
-        </svg>
-      )}
-      {src && <img className="size-full object-cover object-center" src={src} alt={alt} />}
-    </span>
+    />
   )
 }
 
-export type { AvatarProps }
-export { Avatar }
+function AvatarImage({
+  className,
+  ...props
+}: React.ComponentProps<typeof AvatarPrimitive.Image>) {
+  return (
+    <AvatarPrimitive.Image
+      data-slot="avatar-image"
+      className={cn("aspect-square size-full", className)}
+      {...props}
+    />
+  )
+}
+
+function AvatarFallback({
+  className,
+  ...props
+}: React.ComponentProps<typeof AvatarPrimitive.Fallback>) {
+  return (
+    <AvatarPrimitive.Fallback
+      data-slot="avatar-fallback"
+      className={cn(
+        "bg-muted flex size-full items-center justify-center rounded-full",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+export { Avatar, AvatarImage, AvatarFallback }

@@ -28,7 +28,7 @@ export default function HowToPlayModal() {
                         </h2>
                     </DialogTitle>
                 </DialogHeader>
-                
+
                 <div className="max-h-[70vh] overflow-y-auto pr-4">
                     <div className="space-y-6">
                         <HowToPlayContent />

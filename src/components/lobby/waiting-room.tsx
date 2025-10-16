@@ -11,12 +11,13 @@ import { ShareDrawer } from '../shared/share-drawer';
 import { ConnectionIndicator } from './connection-indicator';
 import { Users, Clock } from 'lucide-react';
 import type { Lobby, LobbyActions, Player, ChatMessage } from '@/lib/types/lobby';
+import type { GameState } from '@/lib/lobby-state-machine';
 
 interface WaitingRoomProps {
   lobby: Lobby;
   players: Player[];
   currentPlayer: Player | undefined;
-  gameState: string;
+  gameState: GameState;
   countdown: number | null;
   isHost: boolean;
   onReady: () => void;
@@ -63,7 +64,7 @@ export function WaitingRoom({
             </Status>
             <ConnectionIndicator />
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-col md:flex-row items-center gap-2">
             {isHost && (
               <GameSettingsDrawer
                 lobby={lobby}

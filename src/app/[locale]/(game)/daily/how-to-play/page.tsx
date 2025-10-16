@@ -11,13 +11,13 @@ export default async function HowToPlayPage() {
     <div className="container max-w-2xl mx-auto px-4 py-8">
       <div className="mb-6">
         <Link href="/daily">
-          <Button variant="ghost" size="sm">
+          <Button variant={'ghost'} size="sm">
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to game
           </Button>
         </Link>
       </div>
-      
+
       <div className="space-y-6">
         <div className="text-center">
           <h1 className="text-3xl font-bold mb-2">{t("title")}</h1>

@@ -2,7 +2,7 @@
 
 import { useScopedI18n } from '@/locales/client';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { X } from 'lucide-react';
@@ -129,9 +129,6 @@ export function PlayerSpots({
                   </div>
                   <div className="flex-1 flex flex-col items-center justify-center space-y-1 sm:space-y-2 min-h-0">
                     <Avatar className="h-8 w-8 sm:h-10 sm:w-10 flex-shrink-0">
-                      <AvatarFallback className="text-xs sm:text-sm">
-                        {player.username.charAt(0).toUpperCase()}
-                      </AvatarFallback>
                     </Avatar>
 
                     <div className="text-center min-w-0 w-full">
@@ -154,7 +151,7 @@ export function PlayerSpots({
                   {player.id === currentPlayer?.id && onToggleReady && gameState === 'WAITING' && (
                     <Button
                       onClick={onToggleReady}
-                      variant={optimisticReady !== undefined ? (optimisticReady ? "default" : "outline") : (player.isReady ? "default" : "outline")}
+                      variant={optimisticReady !== undefined ? (optimisticReady ? 'default' : "outline") : (player.isReady ? 'default' : "outline")}
                       size="sm"
                       className="w-full text-xs h-6 sm:h-8 flex-shrink-0 mt-auto"
                     >

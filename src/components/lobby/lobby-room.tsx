@@ -7,7 +7,7 @@ import { useMultiplayerLobby } from '@/hooks/use-multiplayer-lobby';
 import { useOptimisticState } from '@/hooks/use-optimistic-state';
 import { useScopedI18n } from '@/locales/client';
 import { AnonymousProfileDialog } from './anonymous-profile-dialog';
-import { buildStateProps, getGameStateComponent } from '@/lib/lobby-state-machine';
+import { buildStateProps, getGameStateComponent, type GameState } from '@/lib/lobby-state-machine';
 import { validateGuess } from '@/lib/validations/guess';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
@@ -224,7 +224,7 @@ function GameStateContent({ contextValue }: GameStateContentProps) {
   const StateComponent = getGameStateComponent(gameState);
   const props = buildStateProps(gameState, baseProps, stateSpecificProps);
 
-  return <StateComponent {...props} />;
+  return <StateComponent {...(props as any)} />;
 }
 
 

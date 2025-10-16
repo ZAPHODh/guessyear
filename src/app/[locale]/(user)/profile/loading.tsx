@@ -5,7 +5,6 @@ import { Separator } from '@/components/ui/separator'
 export default function ProfileLoading() {
   return (
     <div className="container mx-auto p-6 max-w-7xl">
-      {/* Profile Header Skeleton */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 mb-8">
         <Skeleton className="h-24 w-24 rounded-full" />
         <div className="flex-1 space-y-3">
@@ -15,7 +14,6 @@ export default function ProfileLoading() {
         </div>
       </div>
 
-      {/* Stats Cards Skeleton */}
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 mb-8">
         {[1, 2, 3, 4].map((i) => (
           <Card key={i}>

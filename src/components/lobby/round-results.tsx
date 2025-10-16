@@ -3,6 +3,7 @@
 import { ResultsView } from './results-view';
 import { LobbyChat } from './lobby-chat';
 import type { Player, ChatMessage, Guess, LobbyActions } from '@/lib/types/lobby';
+import type { GameState } from '@/lib/lobby-state-machine';
 
 interface RoundResultsProps {
   lastRoundResults: {
@@ -16,7 +17,7 @@ interface RoundResultsProps {
   onSendMessage: (message: string, type?: 'CHAT' | 'QUICK_PHRASE') => void;
   username: string;
   nextRoundCountdown?: number | null;
-  gameState: string;
+  gameState: GameState;
   isHost: boolean;
   actions: LobbyActions;
 }

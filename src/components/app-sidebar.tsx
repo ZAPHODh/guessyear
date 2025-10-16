@@ -12,7 +12,7 @@ import {
   IconSettingsFill,
   IconShieldFill,
 } from "@intentui/icons"
-import { Avatar } from "@/components/ui/avatar"
+import { Avatar } from "@/components/ui/sidebar-avatar"
 import { Link } from "@/components/ui/link"
 import {
   Menu,
@@ -22,7 +22,7 @@ import {
   MenuSection,
   MenuSeparator,
   MenuTrigger,
-} from "@/components/ui/menu"
+} from "@/components/ui/sidebar-menu"
 import {
   Sidebar,
   SidebarContent,
@@ -36,10 +36,10 @@ import {
 } from "@/components/ui/sidebar"
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
-  user?: {
+  user: {
     name?: string | null
     email?: string | null
-  }
+  } | null
 }
 
 export default function AppSidebar({ user, ...props }: AppSidebarProps) {

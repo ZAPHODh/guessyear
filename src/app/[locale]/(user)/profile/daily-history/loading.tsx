@@ -10,7 +10,6 @@ export default function DailyHistoryLoading() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {/* Table skeleton */}
             <div className="space-y-3">
               {[1, 2, 3, 4, 5].map((i) => (
                 <div key={i} className="flex gap-4">

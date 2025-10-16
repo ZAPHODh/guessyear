@@ -130,29 +130,29 @@ export default async function ContactPage() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                🌐 {scopedT("social.title")}
+                {scopedT("social.title")}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex flex-wrap gap-4">
                 <Button variant="outline" size="sm" asChild>
                   <Link href={config.links.twitter} target="_blank" rel="noopener noreferrer">
-                    🐦 Twitter
+                    Twitter
                   </Link>
                 </Button>
                 <Button variant="outline" size="sm" asChild>
                   <Link href={config.links.facebook} target="_blank" rel="noopener noreferrer">
-                    👥 Facebook
+                    Facebook
                   </Link>
                 </Button>
                 <Button variant="outline" size="sm" asChild>
                   <Link href={config.links.instagram} target="_blank" rel="noopener noreferrer">
-                    📸 Instagram
+                    Instagram
                   </Link>
                 </Button>
                 <Button variant="outline" size="sm" asChild>
                   <Link href={config.links.github} target="_blank" rel="noopener noreferrer">
-                    💻 GitHub
+                    GitHub
                   </Link>
                 </Button>
               </div>

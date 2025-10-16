@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { getLobbyHistory } from './actions'
 import {
   Table,
   TableBody,
@@ -16,6 +15,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Loader2, ChevronLeft, ChevronRight } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
+import { getLobbyHistory } from '@/app/[locale]/(user)/profile/actions'
 
 type LobbyGame = {
   id: string

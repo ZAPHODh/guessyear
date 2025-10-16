@@ -10,18 +10,16 @@ export const metadata: Metadata = {
 }
 
 export default async function ProfilePage() {
-  const { user: sessionUser } = await getCurrentSession()
+  const { user } = await getCurrentSession()
 
-  if (!sessionUser) {
+  if (!user) {
     redirect('/login')
   }
 
-  const [profileResult, statsResult] = await Promise.all([
-    getUserProfile(),
-    getUserStats(),
-  ])
+  const statsResult = await getUserStats()
 
-  if ('error' in profileResult || 'error' in statsResult) {
+
+  if ('error' in statsResult) {
     return (
       <div className="container mx-auto p-6">
         <div className="text-center text-red-500">
@@ -34,7 +32,7 @@ export default async function ProfilePage() {
   return (
     <>
       <ProfileClient
-        user={profileResult.user}
+        user={user}
         stats={statsResult.stats}
       />
       <div className="container mx-auto px-6 pb-6 max-w-7xl">

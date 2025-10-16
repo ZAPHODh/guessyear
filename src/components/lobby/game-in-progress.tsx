@@ -3,6 +3,7 @@
 import { GameView } from './game-view';
 import { LobbyChat } from './lobby-chat';
 import type { RoundData, Player, ChatMessage, Guess, LobbyActions } from '@/lib/types/lobby';
+import type { GameState } from '@/lib/lobby-state-machine';
 
 interface GameInProgressProps {
   currentRound: RoundData | null;
@@ -18,7 +19,7 @@ interface GameInProgressProps {
   chatMessages: ChatMessage[];
   onSendMessage: (message: string, type?: 'CHAT' | 'QUICK_PHRASE') => void;
   username: string;
-  gameState: string;
+  gameState: GameState;
   isHost: boolean;
   actions: LobbyActions;
   lastRoundResults?: {

@@ -29,7 +29,7 @@ import {
   DropdownSeparator,
   dropdownItemStyles,
   dropdownSectionStyles,
-} from "./sidebar-dropdown"
+} from "./dropdown"
 import { PopoverContent, type PopoverContentProps } from "./sidebar-popover"
 
 const Menu = (props: MenuTriggerPrimitiveProps) => <MenuTriggerPrimitive {...props} />

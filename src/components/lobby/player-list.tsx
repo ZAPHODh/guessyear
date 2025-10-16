@@ -3,7 +3,7 @@
 import { useScopedI18n } from '@/locales/client';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar } from '@/components/ui/avatar';
 import { Crown, Check, Clock, Zap, X } from 'lucide-react';
 import type { Player } from '@/lib/types/lobby';
 
@@ -60,9 +60,6 @@ export function PlayerList({
 
               <div className="relative flex-shrink-0">
                 <Avatar className={compact ? "h-7 w-7 lg:h-8 lg:w-8" : "h-9 w-9 lg:h-10 lg:w-10"}>
-                  <AvatarFallback className={compact ? "text-sm" : "text-base lg:text-lg"}>
-                    {player.avatar || player.username.charAt(0).toUpperCase()}
-                  </AvatarFallback>
                 </Avatar>
 
                 {player.isReady && !showScores && (

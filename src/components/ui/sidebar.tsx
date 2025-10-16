@@ -23,10 +23,10 @@ import {
   Button as Trigger,
 } from "react-aria-components"
 import { twJoin, twMerge } from "tailwind-merge"
-import { SheetContent } from "@/components/ui/sheet"
+import { SheetContent } from "@/components/ui/sidebar-sheet"
 import { useMediaQuery } from "@/hooks/use-media-query"
 import { cx } from "@/lib/primitive"
-import { Button } from "./button"
+import { Button } from "./sidebar-button"
 import { Link } from "./link"
 import { Tooltip, TooltipContent } from "./tooltip"
 
@@ -229,9 +229,9 @@ const Sidebar = ({
           "relative h-svh bg-transparent transition-[width] duration-200 ease-linear",
           intent === "default" && "group-data-[collapsible=dock]:w-(--sidebar-width-dock)",
           intent === "float" &&
-            "group-data-[collapsible=dock]:w-[calc(var(--sidebar-width-dock)+(--spacing(4)))]",
+          "group-data-[collapsible=dock]:w-[calc(var(--sidebar-width-dock)+(--spacing(4)))]",
           intent === "inset" &&
-            "group-data-[collapsible=dock]:w-[calc(var(--sidebar-width-dock)+--spacing(2))]",
+          "group-data-[collapsible=dock]:w-[calc(var(--sidebar-width-dock)+--spacing(2))]",
         ])}
       />
       <div
@@ -242,13 +242,13 @@ const Sidebar = ({
           "transition-[left,right,width] duration-200 ease-linear",
           "md:flex",
           side === "left" &&
-            "left-0 group-data-[collapsible=hidden]:left-[calc(var(--sidebar-width)*-1)]",
+          "left-0 group-data-[collapsible=hidden]:left-[calc(var(--sidebar-width)*-1)]",
           side === "right" &&
-            "right-0 group-data-[collapsible=hidden]:right-[calc(var(--sidebar-width)*-1)]",
+          "right-0 group-data-[collapsible=hidden]:right-[calc(var(--sidebar-width)*-1)]",
           intent === "float" &&
-            "bg-bg p-2 group-data-[collapsible=dock]:w-[calc(--spacing(4)+2px)]",
+          "bg-bg p-2 group-data-[collapsible=dock]:w-[calc(--spacing(4)+2px)]",
           intent === "inset" &&
-            "bg-sidebar group-data-[collapsible=dock]:w-[calc(var(--sidebar-width-dock)+--spacing(2)+2px)] dark:bg-bg",
+          "bg-sidebar group-data-[collapsible=dock]:w-[calc(var(--sidebar-width-dock)+--spacing(2)+2px)] dark:bg-bg",
           intent === "default" && [
             "group-data-[collapsible=dock]:w-(--sidebar-width-dock)",
             "group-data-[side=left]:border-sidebar-border group-data-[side=right]:border-sidebar-border group-data-[side=left]:border-r group-data-[side=right]:border-l",
@@ -368,13 +368,13 @@ const SidebarSection = ({ className, ...props }: SidebarSectionProps) => {
 interface SidebarItemProps extends Omit<React.ComponentProps<typeof Link>, "children"> {
   isCurrent?: boolean
   children?:
-    | React.ReactNode
-    | ((
-        values: LinkRenderProps & {
-          defaultChildren: React.ReactNode
-          isCollapsed: boolean
-        },
-      ) => React.ReactNode)
+  | React.ReactNode
+  | ((
+    values: LinkRenderProps & {
+      defaultChildren: React.ReactNode
+      isCollapsed: boolean
+    },
+  ) => React.ReactNode)
   badge?: string | number | undefined
   tooltip?: string | React.ComponentProps<typeof TooltipContent>
 }
@@ -411,10 +411,10 @@ const SidebarItem = ({
             "has-[a]:p-0",
             "[--sidebar-current-bg:var(--color-sidebar-primary)] [--sidebar-current-fg:var(--color-sidebar-primary-fg)]",
             isCurrent &&
-              "bg-(--sidebar-current-bg)/90 font-medium text-(--sidebar-current-fg) hover:bg-(--sidebar-current-bg) hover:text-(--sidebar-current-fg) **:data-[slot=icon]:text-(--sidebar-current-fg) hover:**:data-[slot=icon]:text-(--sidebar-current-fg) [&_.text-muted-fg]:text-sidebar-primary-fg/80",
+            "bg-(--sidebar-current-bg)/90 font-medium text-(--sidebar-current-fg) hover:bg-(--sidebar-current-bg) hover:text-(--sidebar-current-fg) **:data-[slot=icon]:text-(--sidebar-current-fg) hover:**:data-[slot=icon]:text-(--sidebar-current-fg) [&_.text-muted-fg]:text-sidebar-primary-fg/80",
             isFocusVisible && "inset-ring inset-ring-sidebar-ring outline-hidden",
             (isPressed || isHovered) &&
-              "bg-sidebar-accent text-sidebar-accent-fg **:data-[slot=icon]:text-text-sidebar-accent-fg",
+            "bg-sidebar-accent text-sidebar-accent-fg **:data-[slot=icon]:text-text-sidebar-accent-fg",
             isDisabled && "opacity-50",
             className,
           ]),
@@ -558,7 +558,7 @@ const SidebarDisclosureTrigger = ({ className, ref, ...props }: SidebarDisclosur
 
               isFocusVisible && "inset-ring inset-ring-ring/70",
               (isPressed || isHovered) &&
-                "bg-sidebar-accent text-sidebar-accent-fg **:data-[slot=chevron]:text-sidebar-accent-fg **:data-[slot=icon]:text-sidebar-accent-fg **:last:data-[slot=icon]:text-sidebar-accent-fg",
+              "bg-sidebar-accent text-sidebar-accent-fg **:data-[slot=chevron]:text-sidebar-accent-fg **:data-[slot=icon]:text-sidebar-accent-fg **:last:data-[slot=icon]:text-sidebar-accent-fg",
               isDisabled && "opacity-50",
               className,
             ),

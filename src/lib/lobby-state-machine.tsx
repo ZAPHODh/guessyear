@@ -6,14 +6,13 @@ import type { Lobby, Player, ChatMessage, Guess, LobbyActions, RoundData } from 
 
 type GameState = 'WAITING' | 'STARTING' | 'PLAYING' | 'ROUND_RESULTS' | 'FINISHED';
 
-// Helper type to get component props
 type ComponentPropsType<T extends ComponentType<any>> = T extends ComponentType<infer P> ? P : never;
 
 interface BaseGameStateProps {
   lobby: Lobby;
   players: Player[];
   currentPlayer: Player | undefined;
-  gameState: string;
+  gameState: GameState;
   isHost: boolean;
   chatMessages: ChatMessage[];
   onSendMessage: (message: string, type?: 'CHAT' | 'QUICK_PHRASE') => void;
@@ -63,76 +62,90 @@ export const GAME_STATE_COMPONENTS = {
 
 type GameStateComponentMap = typeof GAME_STATE_COMPONENTS;
 
-// Type mapping for state to props using ComponentProps
+
 type StatePropsMap = {
-  WAITING: ComponentProps<typeof WaitingRoom>;
-  STARTING: ComponentProps<typeof WaitingRoom>;
-  PLAYING: ComponentProps<typeof GameInProgress>;
-  ROUND_RESULTS: ComponentProps<typeof RoundResults>;
-  FINISHED: ComponentProps<typeof WaitingRoom>;
+  [K in keyof GameStateComponentMap]: ComponentProps<GameStateComponentMap[K]>
 };
 
-// State-specific props builder - returns union type
+
+type StatePropsUnion = StatePropsMap[keyof StatePropsMap];
+
+
+type PropsBuilder<K extends GameState> = (
+  baseProps: BaseGameStateProps,
+  additionalProps: Record<string, any>
+) => StatePropsMap[K];
+
+const STATE_PROPS_BUILDERS: {
+  [K in GameState]: PropsBuilder<K>
+} = {
+  WAITING: (baseProps, additionalProps) => ({
+    ...baseProps,
+    countdown: additionalProps.countdown,
+    onReady: additionalProps.onReady,
+    optimisticReady: additionalProps.optimisticReady,
+    gameFinished: false
+  }),
+
+  STARTING: (baseProps, additionalProps) => ({
+    ...baseProps,
+    countdown: additionalProps.countdown,
+    onReady: additionalProps.onReady,
+    optimisticReady: additionalProps.optimisticReady,
+    gameFinished: false
+  }),
+
+  PLAYING: (baseProps, additionalProps) => ({
+    ...baseProps,
+    currentRound: additionalProps.currentRound,
+    timeRemaining: additionalProps.timeRemaining,
+    guess: additionalProps.guess,
+    onGuessChange: additionalProps.onGuessChange,
+    onSubmitGuess: additionalProps.onSubmitGuess,
+    hasSubmittedGuess: additionalProps.hasSubmittedGuess,
+    lobbyTimer: additionalProps.lobbyTimer,
+    lastRoundResults: additionalProps.lastRoundResults
+  }),
+
+  ROUND_RESULTS: (baseProps, additionalProps) => ({
+    ...baseProps,
+    lastRoundResults: additionalProps.lastRoundResults,
+    onSendReaction: additionalProps.onSendReaction,
+    nextRoundCountdown: additionalProps.nextRoundCountdown
+  }),
+
+  FINISHED: (baseProps, additionalProps) => ({
+    ...baseProps,
+    countdown: additionalProps.countdown,
+    onReady: additionalProps.onReady,
+    optimisticReady: additionalProps.optimisticReady,
+    gameFinished: true
+  })
+} as const;
+
 export function buildStateProps(
   state: GameState,
   baseProps: BaseGameStateProps,
   additionalProps: Record<string, any>
-): WaitingStateProps | PlayingStateProps | ResultsStateProps {
-  switch (state) {
-    case 'WAITING':
-    case 'STARTING':
-      return {
-        ...baseProps,
-        countdown: additionalProps.countdown,
-        onReady: additionalProps.onReady,
-        optimisticReady: additionalProps.optimisticReady,
-        gameFinished: false
-      };
-
-    case 'PLAYING':
-      return {
-        ...baseProps,
-        currentRound: additionalProps.currentRound,
-        timeRemaining: additionalProps.timeRemaining,
-        guess: additionalProps.guess,
-        onGuessChange: additionalProps.onGuessChange,
-        onSubmitGuess: additionalProps.onSubmitGuess,
-        hasSubmittedGuess: additionalProps.hasSubmittedGuess,
-        lobbyTimer: additionalProps.lobbyTimer,
-        lastRoundResults: additionalProps.lastRoundResults
-      };
-
-    case 'ROUND_RESULTS':
-      return {
-        ...baseProps,
-        lastRoundResults: additionalProps.lastRoundResults,
-        onSendReaction: additionalProps.onSendReaction,
-        nextRoundCountdown: additionalProps.nextRoundCountdown
-      };
-
-    case 'FINISHED':
-      return {
-        ...baseProps,
-        countdown: additionalProps.countdown,
-        onReady: additionalProps.onReady,
-        optimisticReady: additionalProps.optimisticReady,
-        gameFinished: true
-      };
-
-    default:
-      throw new Error(`Unknown game state: ${state}`);
+): StatePropsUnion {
+  const builder = STATE_PROPS_BUILDERS[state];
+  if (!builder) {
+    throw new Error(`Unknown game state: ${state}`);
   }
+  return builder(baseProps, additionalProps);
 }
 
-export function getGameStateComponent(
-  state: GameState
-): ComponentType<any> {
+export function getGameStateComponent<K extends GameState>(
+  state: K
+): GameStateComponentMap[K] {
   return GAME_STATE_COMPONENTS[state];
 }
 
-// Export types for use in other files
 export type {
   GameState,
+  GameStateComponentMap,
+  StatePropsMap,
+  StatePropsUnion,
   BaseGameStateProps,
   WaitingStateProps,
   PlayingStateProps,

@@ -3,7 +3,7 @@
 import { IconDashboard, IconLogout, IconSettings, IconShieldFill } from "@intentui/icons"
 import { useScopedI18n } from "@/locales/client"
 import { logout } from "@/app/[locale]/actions"
-import { Avatar } from "@/components/ui/avatar"
+import { Avatar } from "@/components/ui/sidebar-avatar"
 import { Breadcrumbs } from "@/components/ui/breadcrumbs"
 import {
   Menu,
@@ -14,14 +14,14 @@ import {
   MenuSection,
   MenuSeparator,
   MenuTrigger,
-} from "@/components/ui/menu"
+} from "@/components/ui/sidebar-menu"
 import { SidebarNav, SidebarTrigger } from "@/components/ui/sidebar"
 
 interface AppSidebarNavProps {
-  user?: {
+  user: {
     name?: string | null
     email?: string | null
-  }
+  } | null
   breadcrumbs?: Array<{
     label: string
     href?: string
@@ -51,10 +51,10 @@ export default function AppSidebarNav({ user, breadcrumbs }: AppSidebarNavProps)
 }
 
 interface UserMenuProps {
-  user?: {
+  user: {
     name?: string | null
     email?: string | null
-  }
+  } | null
   tShared: any
 }
 
@@ -71,7 +71,7 @@ function UserMenu({ user, tShared }: UserMenuProps) {
           initials={user?.name?.charAt(0).toUpperCase() || "A"}
         />
       </MenuTrigger>
-      <MenuContent popover={{ placement: "bottom end" }} className="min-w-64">
+      <MenuContent placement="bottom end" className="min-w-64">
         <MenuSection>
           <MenuHeader separator>
             <span className="block">{user?.name || "Admin"}</span>

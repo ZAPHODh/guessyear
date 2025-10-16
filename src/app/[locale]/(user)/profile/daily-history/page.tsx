@@ -1,84 +1,33 @@
-'use client'
-
-import { useEffect, useState } from 'react'
 import { getDailyHistory } from '../actions'
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
-import { Badge } from '@/components/ui/badge'
+import { DailyHistoryTable } from '@/components/layout/daily-history-table'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Loader2, ChevronLeft, ChevronRight, Calendar, Trophy } from 'lucide-react'
-import { formatDistanceToNow } from 'date-fns'
+import { Calendar } from 'lucide-react'
 
-type DailyGame = {
-  id: string
-  attempts: number
-  completed: boolean
-  won: boolean
-  winAttempt: number | null
-  date: Date
-  createdAt: Date
-  image: {
-    id: string
-    date: Date
-    year: number
-    description: string | null
-  }
+interface PageProps {
+  searchParams: Promise<{ page?: string }>
 }
 
-export default function DailyHistoryPage() {
-  const [games, setGames] = useState<DailyGame[]>([])
-  const [loading, setLoading] = useState(true)
-  const [page, setPage] = useState(1)
-  const [totalPages, setTotalPages] = useState(1)
+export default async function DailyHistoryPage({ searchParams }: PageProps) {
+  const params = await searchParams
+  const page = Number(params.page) || 1
+  const pageSize = 10
 
-  useEffect(() => {
-    loadGames()
-  }, [page])
+  const result = await getDailyHistory(page, pageSize)
 
-  const loadGames = async () => {
-    setLoading(true)
-    const result = await getDailyHistory(page, 10)
-
-    if ('error' in result) {
-      console.error(result.error)
-      setLoading(false)
-      return
-    }
-
-    setGames(result.games as DailyGame[])
-    setTotalPages(result.pagination.totalPages)
-    setLoading(false)
-  }
-
-  const getResultBadge = (won: boolean, completed: boolean) => {
-    if (won) {
-      return <Badge className="bg-green-500"><Trophy className="h-3 w-3 mr-1" />Won</Badge>
-    } else if (completed) {
-      return <Badge variant="secondary">Completed</Badge>
-    } else {
-      return <Badge variant="outline">In Progress</Badge>
-    }
-  }
-
-  if (loading) {
+  if ('error' in result) {
     return (
       <div className="container mx-auto p-6 max-w-7xl">
         <Card>
-          <CardContent className="flex items-center justify-center h-64">
-            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+          <CardContent className="flex flex-col items-center justify-center h-64 text-center">
+            <p className="text-muted-foreground mb-2">Error loading history</p>
+            <p className="text-sm text-muted-foreground">{result.error}</p>
           </CardContent>
         </Card>
       </div>
     )
   }
+
+  const { games, pagination } = result
 
   if (games.length === 0) {
     return (
@@ -106,76 +55,12 @@ export default function DailyHistoryPage() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableCaption>Your recent daily challenges</TableCaption>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Date</TableHead>
-                <TableHead>Image</TableHead>
-                <TableHead>Year</TableHead>
-                <TableHead>Attempts</TableHead>
-                <TableHead>Win Attempt</TableHead>
-                <TableHead>Result</TableHead>
-                <TableHead>Played</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {games.map((game) => (
-                <TableRow key={game.id}>
-                  <TableCell className="font-medium">
-                    {new Date(game.image.date).toLocaleDateString()}
-                  </TableCell>
-                  <TableCell className="max-w-[200px] truncate">
-                    {game.image.description || 'No description'}
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant="outline">{game.image.year}</Badge>
-                  </TableCell>
-                  <TableCell>
-                    <span className="font-semibold">{game.attempts}</span>
-                  </TableCell>
-                  <TableCell>
-                    {game.winAttempt ? (
-                      <span className="font-semibold text-green-600">{game.winAttempt}</span>
-                    ) : (
-                      <span className="text-muted-foreground">-</span>
-                    )}
-                  </TableCell>
-                  <TableCell>{getResultBadge(game.won, game.completed)}</TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {formatDistanceToNow(new Date(game.createdAt), { addSuffix: true })}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <div className="flex items-center justify-center gap-2 mt-4">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
-                disabled={page === 1}
-              >
-                <ChevronLeft className="h-4 w-4" />
-                Previous
-              </Button>
-              <span className="text-sm text-muted-foreground">
-                Page {page} of {totalPages}
-              </span>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                disabled={page === totalPages}
-              >
-                Next
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-            </div>
-          )}
+          <DailyHistoryTable
+            data={games as any}
+            pageIndex={page - 1}
+            pageSize={pageSize}
+            totalPages={pagination.totalPages}
+          />
         </CardContent>
       </Card>
     </div>

@@ -20,9 +20,9 @@ export default async function LobbyPage() {
   const lobbiesResult = await getLobbies({});
   const lobbies = Array.isArray(lobbiesResult?.data?.lobbies)
     ? lobbiesResult.data.lobbies.map(lobby => ({
-        ...lobby,
-        createdAt: lobby.createdAt.toISOString()
-      }))
+      ...lobby,
+      createdAt: lobby.createdAt.toISOString()
+    }))
     : [];
 
   return (
@@ -44,7 +44,7 @@ export default async function LobbyPage() {
           </Button>
         </Link>
 
-        <Button variant="outline" size="lg">
+        <Button variant='outline' size="lg">
           {t('quickMatch')}
         </Button>
       </div>
