@@ -11,6 +11,8 @@ import type { RoundData, Guess, Player } from '@/lib/types/lobby';
 import { validateSocketData, socketSchemas } from '@/lib/socket-validation';
 import { telemetry } from '@/lib/telemetry';
 import { rateLimiter } from '@/lib/rate-limiter';
+import { RoundEndToast } from '@/components/lobby/round-end-toast';
+import { celebrateWinner, celebratePerfectGuess } from '@/lib/confetti';
 
 interface UseMultiplayerLobbyProps {
   lobbyId: string;
@@ -36,6 +38,7 @@ export function useMultiplayerLobby({
     guesses: Guess[];
   } | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [hasNewResults, setHasNewResults] = useState(false);
 
   const hasJoinedRef = useRef(false);
 
@@ -205,13 +208,47 @@ export function useMultiplayerLobby({
       guesses: Guess[];
       leaderboard: Player[];
       nextRoundCountdown?: number;
+      roundNumber?: number;
     }) {
-      actionsRef.current.updateGameState('ROUND_RESULTS');
+      // Update data
       actionsRef.current.updateLeaderboard(results.leaderboard);
       setLastRoundResults({
         correctYear: results.correctYear,
         guesses: results.guesses
       });
+      setHasNewResults(true);
+
+      // Find player's guess
+      const yourGuess = results.guesses.find(g => g.player === username);
+      const bestGuess = results.guesses.sort((a, b) => a.accuracy - b.accuracy)[0];
+
+      // Celebrate based on performance
+      if (yourGuess) {
+        const playerRank = results.leaderboard.findIndex(p => p.username === username) + 1;
+
+        // Perfect guess celebration
+        if (yourGuess.accuracy === 0) {
+          celebratePerfectGuess();
+        }
+        // Rank-based celebration
+        else if (playerRank <= 3) {
+          celebrateWinner(playerRank);
+        }
+      }
+
+      // Show toast with results
+      toast(
+        <RoundEndToast
+          correctYear={results.correctYear}
+          yourGuess={yourGuess}
+          bestGuess={bestGuess}
+          roundNumber={results.roundNumber || currentRound?.roundNumber || 1}
+        />,
+        { duration: 5000 }
+      );
+
+      // Keep in PLAYING state (don't go to ROUND_RESULTS)
+      // Next round will start automatically
 
       if (results.nextRoundCountdown) {
         timerActionsRef.current.startNextRoundCountdown(results.nextRoundCountdown);
@@ -351,6 +388,10 @@ export function useMultiplayerLobby({
     };
   }, [lobbyId, enabled]); // Only re-run if lobby changes
 
+  const clearNewResults = useCallback(() => {
+    setHasNewResults(false);
+  }, []);
+
   if (!enabled) {
     return {
       lobby: null,
@@ -366,6 +407,8 @@ export function useMultiplayerLobby({
       hasSubmittedGuess: false,
       lastRoundResults: null,
       chatMessages: [],
+      hasNewResults: false,
+      clearNewResults: () => {},
       actions: {
         connect: () => { },
         disconnect: () => { },
@@ -396,6 +439,8 @@ export function useMultiplayerLobby({
     hasSubmittedGuess,
     lastRoundResults,
     chatMessages: chat.messages,
+    hasNewResults,
+    clearNewResults,
     actions: {
       connect: joinLobby,
       disconnect: leaveLobby,

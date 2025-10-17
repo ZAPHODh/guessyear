@@ -1,10 +1,9 @@
 import { ComponentType, ComponentProps } from 'react';
 import { WaitingRoom } from '@/components/lobby/waiting-room';
 import { GameInProgress } from '@/components/lobby/game-in-progress';
-import { RoundResults } from '@/components/lobby/round-results';
 import type { Lobby, Player, ChatMessage, Guess, LobbyActions, RoundData } from '@/lib/types/lobby';
 
-type GameState = 'WAITING' | 'STARTING' | 'PLAYING' | 'ROUND_RESULTS' | 'FINISHED';
+type GameState = 'WAITING' | 'STARTING' | 'PLAYING' | 'FINISHED';
 
 type ComponentPropsType<T extends ComponentType<any>> = T extends ComponentType<infer P> ? P : never;
 
@@ -43,20 +42,10 @@ interface PlayingStateProps extends BaseGameStateProps {
   } | null;
 }
 
-interface ResultsStateProps extends BaseGameStateProps {
-  lastRoundResults: {
-    correctYear: number;
-    guesses: Guess[];
-  } | null;
-  onSendReaction: (emoji: string, targetType: string, targetId?: string, roundId?: string) => void;
-  nextRoundCountdown?: number | null;
-}
-
 export const GAME_STATE_COMPONENTS = {
   WAITING: WaitingRoom,
   STARTING: WaitingRoom,
   PLAYING: GameInProgress,
-  ROUND_RESULTS: RoundResults,
   FINISHED: WaitingRoom
 } as const;
 
@@ -107,13 +96,6 @@ const STATE_PROPS_BUILDERS: {
     lastRoundResults: additionalProps.lastRoundResults
   }),
 
-  ROUND_RESULTS: (baseProps, additionalProps) => ({
-    ...baseProps,
-    lastRoundResults: additionalProps.lastRoundResults,
-    onSendReaction: additionalProps.onSendReaction,
-    nextRoundCountdown: additionalProps.nextRoundCountdown
-  }),
-
   FINISHED: (baseProps, additionalProps) => ({
     ...baseProps,
     countdown: additionalProps.countdown,
@@ -148,6 +130,5 @@ export type {
   StatePropsUnion,
   BaseGameStateProps,
   WaitingStateProps,
-  PlayingStateProps,
-  ResultsStateProps
+  PlayingStateProps
 };

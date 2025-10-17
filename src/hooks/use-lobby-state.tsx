@@ -2,11 +2,12 @@
 
 import { useState, useCallback } from 'react';
 import type { Player } from '@/lib/types/lobby';
+import type { GameState } from '@/lib/lobby-state-machine';
 
 interface LobbyState {
   lobby: any;
   players: Player[];
-  gameState: 'WAITING' | 'STARTING' | 'PLAYING' | 'ROUND_RESULTS' | 'FINISHED';
+  gameState: GameState;
   leaderboard: Player[];
 }
 
