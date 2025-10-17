@@ -131,7 +131,7 @@ export function PlayerSpots({
                     <Avatar className="h-8 w-8 sm:h-10 sm:w-10 flex-shrink-0">
                     </Avatar>
 
-                    <div className="text-center min-w-0 w-full">
+                    <div className="text-center min-w-0 w-full space-y-0.5">
                       <p className="font-medium text-xs sm:text-sm truncate px-1">
                         {player.username}
                       </p>
@@ -153,7 +153,7 @@ export function PlayerSpots({
                       onClick={onToggleReady}
                       variant={optimisticReady !== undefined ? (optimisticReady ? 'default' : "outline") : (player.isReady ? 'default' : "outline")}
                       size="sm"
-                      className="w-full text-xs h-6 sm:h-8 flex-shrink-0 mt-auto"
+                      className="w-full text-xs h-6 sm:h-8 flex-shrink-0 mt-2"
                     >
                       {optimisticReady !== undefined ? (optimisticReady ? t('players.ready') : t('players.readyQuestion')) : (player.isReady ? t('players.ready') : t('players.readyQuestion'))}
                     </Button>
