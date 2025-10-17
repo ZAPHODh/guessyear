@@ -1,5 +1,9 @@
 import { redirect, notFound } from 'next/navigation';
-import { LobbyRoom } from '@/components/lobby/lobby-room';
+import { LobbyRoomProvider } from '@/components/lobby/lobby-room-provider';
+import { LobbyHeaderContainer } from '@/components/lobby/lobby-header-container';
+import { LobbyStateRenderer } from '@/components/lobby/lobby-state-renderer';
+import { LobbyChatContainer } from '@/components/lobby/lobby-chat-container';
+import { CountdownBadgeContainer } from '@/components/lobby/countdown-badge-container';
 import { LobbyErrorBoundary } from '@/components/lobby/lobby-error-boundary';
 import { getCurrentSession } from '@/lib/server/auth/session';
 import { prisma } from '@/lib/server/db';
@@ -34,7 +38,6 @@ export default async function LobbyPage({ params }: LobbyPageProps) {
   }
 
   if (!lobby.isOpen && !lobby.inviteCode) {
-    // Private lobby without invite code - only host and existing players can access
     const hasAccess = user && (
       lobby.hostUserId === user.id ||
       lobby.players.some(p => p.userId === user.id)
@@ -48,7 +51,16 @@ export default async function LobbyPage({ params }: LobbyPageProps) {
   return (
     <div className="min-h-screen bg-background">
       <LobbyErrorBoundary>
-        <LobbyRoom lobby={lobby} user={user} sessionId={sessionId} />
+        <LobbyRoomProvider lobby={lobby} user={user} sessionId={sessionId}>
+          <div className="flex flex-col min-h-screen">
+            <LobbyHeaderContainer />
+            <div className="flex-1 grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-4 p-4">
+              <LobbyStateRenderer />
+              <LobbyChatContainer />
+            </div>
+            <CountdownBadgeContainer />
+          </div>
+        </LobbyRoomProvider>
       </LobbyErrorBoundary>
     </div>
   );

@@ -18,12 +18,9 @@ interface ProfileData {
 }
 
 interface LobbyContextValue {
-  // Lobby data
   lobby: Lobby;
   user: User | null;
   sessionId: string | null;
-
-  // Game state
   players: Player[];
   isConnected: boolean;
   gameState: GameState;
@@ -39,17 +36,13 @@ interface LobbyContextValue {
   countdown: number | null;
   nextRoundCountdown: number | null;
   error: string | null;
-
-  // Derived state
+  hasNewResults: boolean;
   isHost: boolean;
   currentPlayer: Player | undefined;
   username: string;
-
-  // Profile state
   profile: ProfileData;
-
-  // Actions
   actions: LobbyActions;
+  clearNewResults: () => void;
 }
 
 const LobbyContext = createContext<LobbyContextValue | null>(null);

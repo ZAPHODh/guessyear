@@ -7,6 +7,8 @@ import { useMultiplayerLobby } from '@/hooks/use-multiplayer-lobby';
 import { useOptimisticState } from '@/hooks/use-optimistic-state';
 import { useScopedI18n } from '@/locales/client';
 import { AnonymousProfileDialog } from './anonymous-profile-dialog';
+import { LobbyHeader } from './lobby-header';
+import { CountdownBadge } from './countdown-badge';
 import { buildStateProps, getGameStateComponent, type GameState } from '@/lib/lobby-state-machine';
 import { validateGuess } from '@/lib/validations/guess';
 import { toast } from 'sonner';
@@ -38,7 +40,18 @@ export function LobbyRoom({ lobby, user: initialUser, sessionId }: LobbyRoomProp
     enabled: isProfileSet
   });
 
-  const { players, error } = multiplayerState;
+  const {
+    players,
+    error,
+    hasNewResults,
+    clearNewResults,
+    nextRoundCountdown,
+    lastRoundResults,
+    gameState,
+    isConnected,
+    actions,
+    leaderboard
+  } = multiplayerState;
 
   const isHost = !!(user && lobby.hostUserId === user.id);
   const currentPlayer = players.find(p =>
@@ -67,30 +80,53 @@ export function LobbyRoom({ lobby, user: initialUser, sessionId }: LobbyRoomProp
 
   return (
     <LobbyProvider value={contextValue}>
-      <div
-        className="container mx-auto px-2 py-2 sm:px-3 sm:py-3 lg:px-4 lg:py-6 max-w-7xl"
-        style={{ minHeight: `min(${MIN_HEIGHT_MOBILE}, ${MIN_HEIGHT_DESKTOP})` }}
-      >
-        {profile.showProfileDialog ? (
-          <>
-            <div className="flex flex-col items-center justify-center min-h-[50vh] space-y-4">
-              <div className="text-center">
-                <h2 className="text-2xl font-semibold mb-2">{t('room.setProfile')}</h2>
-                <p className="text-muted-foreground">
-                  {user ? t('room.setProfileLoggedIn') : t('room.setProfileAnonymous')}
-                </p>
-              </div>
-            </div>
-
-            <AnonymousProfileDialog
-              open={profile.showProfileDialog}
-              onSave={profile.handleSaveProfile}
-              defaultName={username}
-            />
-          </>
-        ) : (
-          <GameStateContent contextValue={contextValue} />
+      <div className="min-h-screen flex flex-col">
+        {!profile.showProfileDialog && (
+          <LobbyHeader
+            lobby={lobby}
+            players={players}
+            currentPlayer={currentPlayer}
+            isHost={isHost}
+            isConnected={isConnected}
+            actions={actions}
+            lastRoundResults={lastRoundResults}
+            hasNewResults={hasNewResults}
+            onClearNewResults={clearNewResults}
+          />
         )}
+
+        <div
+          className="container mx-auto px-2 py-2 sm:px-3 sm:py-3 lg:px-4 lg:py-6 max-w-7xl flex-1"
+          style={{ minHeight: profile.showProfileDialog ? `min(${MIN_HEIGHT_MOBILE}, ${MIN_HEIGHT_DESKTOP})` : undefined }}
+        >
+          {profile.showProfileDialog ? (
+            <>
+              <div className="flex flex-col items-center justify-center min-h-[50vh] space-y-4">
+                <div className="text-center">
+                  <h2 className="text-2xl font-semibold mb-2">{t('room.setProfile')}</h2>
+                  <p className="text-muted-foreground">
+                    {user ? t('room.setProfileLoggedIn') : t('room.setProfileAnonymous')}
+                  </p>
+                </div>
+              </div>
+
+              <AnonymousProfileDialog
+                open={profile.showProfileDialog}
+                onSave={profile.handleSaveProfile}
+                defaultName={username}
+              />
+            </>
+          ) : (
+            <GameStateContent contextValue={contextValue} />
+          )}
+        </div>
+
+        {!profile.showProfileDialog &&
+          nextRoundCountdown &&
+          nextRoundCountdown > 0 &&
+          gameState === 'PLAYING' && (
+            <CountdownBadge countdown={nextRoundCountdown} />
+          )}
       </div>
     </LobbyProvider>
   );
