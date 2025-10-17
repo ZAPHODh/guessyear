@@ -24,15 +24,16 @@ export function ConnectionIndicator({ isConnected, showLabel = false }: Connecti
         {showLabel && (
           <StatusLabel className="text-xs">
             {isConnected ? t('room.connected') : t('room.disconnected')}
+            {enableConnectionQuality && ping !== null && (
+              <span className="text-xs text-muted-foreground">
+                {ping}ms
+              </span>
+            )}
           </StatusLabel>
         )}
       </Status>
 
-      {enableConnectionQuality && ping !== null && (
-        <span className="text-xs text-muted-foreground">
-          {ping}ms
-        </span>
-      )}
+
     </div>
   );
 }

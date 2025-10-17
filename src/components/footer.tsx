@@ -13,7 +13,7 @@ export default function FooterSection() {
     const scopedT = useScopedI18n("footer")
     const locale = useCurrentLocale()
 
-    if (pathname.includes('/admin')) {
+    if (pathname.includes('/admin') || pathname.includes('/lobby') || pathname.includes('/daily')) {
         return null
     }
 
