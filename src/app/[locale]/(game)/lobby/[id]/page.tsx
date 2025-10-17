@@ -7,6 +7,7 @@ import { CountdownBadgeContainer } from '@/components/lobby/countdown-badge-cont
 import { LobbyErrorBoundary } from '@/components/lobby/lobby-error-boundary';
 import { getCurrentSession } from '@/lib/server/auth/session';
 import { prisma } from '@/lib/server/db';
+import { Separator } from '@/components/ui/separator';
 
 interface LobbyPageProps {
   params: Promise<{
@@ -55,6 +56,7 @@ export default async function LobbyPage({ params }: LobbyPageProps) {
           <div className="flex flex-col min-h-screen">
             <LobbyHeaderContainer />
             <div className="flex-1 grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-4 p-4">
+              <Separator orientation='horizontal' />
               <LobbyStateRenderer />
               <LobbyChatContainer />
             </div>
