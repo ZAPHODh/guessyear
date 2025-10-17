@@ -48,11 +48,8 @@ export function ScoresDrawer({
     <Drawer open={open} onOpenChange={handleOpenChange}>
       <DrawerTrigger asChild>
         <Button variant="outline" size="sm" className="gap-2 relative">
-          <Trophy className="h-4 w-4 text-yellow-500" />
+          <Trophy className="h-4 w-4" />
           <span className="hidden sm:inline">Scores</span>
-          <Badge variant="secondary" className="text-xs px-1.5">
-            {players.length}
-          </Badge>
           {hasNewResults && (
             <span className="absolute -top-1 -right-1 flex h-3 w-3">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
@@ -71,7 +68,6 @@ export function ScoresDrawer({
           </DrawerHeader>
 
           <div className="px-4 pb-8 max-h-[70vh] overflow-y-auto space-y-6">
-            {/* Top 3 Podium */}
             {top3.length > 0 && (
               <div className="space-y-3">
                 <h3 className="text-sm font-semibold text-muted-foreground flex items-center gap-2">
@@ -123,7 +119,6 @@ export function ScoresDrawer({
               </div>
             )}
 
-            {/* Rest of Players */}
             {rest.length > 0 && (
               <div className="space-y-3">
                 <h3 className="text-sm font-semibold text-muted-foreground flex items-center gap-2">
@@ -174,7 +169,6 @@ export function ScoresDrawer({
               </div>
             )}
 
-            {/* Last Round Results */}
             {lastRoundResults && lastRoundResults.guesses.length > 0 && (
               <Accordion type="single" collapsible className="w-full">
                 <AccordionItem value="last-round" className="border rounded-lg px-3">

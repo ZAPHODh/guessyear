@@ -2,31 +2,19 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useScopedI18n } from '@/locales/client';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Send, Smile, ArrowDown, Trophy } from 'lucide-react';
-import { toast } from 'sonner';
-import { format } from 'date-fns';
+import { Send, Smile, ArrowDown } from 'lucide-react';
 import { useDebouncedCallback } from '@/hooks/use-debounced-callback';
-import type { ChatMessage, Guess, Player } from '@/lib/types/lobby';
+import type { ChatMessage } from '@/lib/types/lobby';
 
 interface LobbyChatProps {
   messages: ChatMessage[];
   onSendMessage: (message: string, type?: 'CHAT' | 'QUICK_PHRASE') => void;
   currentUsername: string;
   compact?: boolean;
-  lastRoundResults?: {
-    correctYear: number;
-    guesses: Guess[];
-  } | null;
-  players?: Player[];
-  currentPlayer?: Player;
-  showPlayerScores?: boolean;
 }
 
 const EMOJIS = [
@@ -35,7 +23,7 @@ const EMOJIS = [
   '🤷‍♂️', '🤦‍♂️', '😤', '🥳', '🤯', '😴', '🙄', '🤨'
 ];
 
-export function LobbyChat({ messages, onSendMessage, currentUsername, compact = false, lastRoundResults, players = [], currentPlayer, showPlayerScores = false }: LobbyChatProps) {
+export function LobbyChat({ messages, onSendMessage, currentUsername, compact = false }: LobbyChatProps) {
   const t = useScopedI18n('lobby');
   const [message, setMessage] = useState('');
   const [showEmojiPopover, setShowEmojiPopover] = useState(false);
@@ -152,18 +140,6 @@ export function LobbyChat({ messages, onSendMessage, currentUsername, compact = 
     setShowEmojiPopover(false);
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSendMessage();
-    }
-  };
-
-  const formatTime = (dateString: string) => {
-    const date = new Date(dateString);
-    return format(date, 'HH:mm');
-  };
-
   return (
     <div className={`${compact ? 'h-[400px]' : 'h-[500px]'} flex flex-col bg-background border rounded-lg overflow-hidden relative`}>
       <div className="pb-2 px-3 pt-2 border-b bg-muted/30">
@@ -173,114 +149,6 @@ export function LobbyChat({ messages, onSendMessage, currentUsername, compact = 
       </div>
 
       <div className="flex-1 flex flex-col relative overflow-hidden">
-        <div className="absolute top-0 left-0 right-0 z-20 bg-background/95 border-b backdrop-blur-sm">
-          <Accordion type="single" collapsible defaultValue={showPlayerScores && players.length > 0 ? "player-scores" : undefined}>
-            <AccordionItem value="guesses" className="border-none">
-              <AccordionTrigger className="px-3 py-2 hover:no-underline text-xs font-semibold">
-                <div className="flex items-center gap-2">
-                  <Trophy className="h-3.5 w-3.5 text-yellow-500" />
-                  <span>{t('chat.lastRoundResultsTitle')}</span>
-                  {lastRoundResults && lastRoundResults.guesses && lastRoundResults.guesses.length > 0 && (
-                    <Badge variant="secondary" className="ml-auto text-[10px] px-1.5 py-0">
-                      {lastRoundResults.guesses.length}
-                    </Badge>
-                  )}
-                </div>
-              </AccordionTrigger>
-              <AccordionContent className="px-3 pb-2 max-h-[200px] overflow-y-auto">
-                {lastRoundResults && lastRoundResults.guesses && lastRoundResults.guesses.length > 0 ? (
-                  <div className="space-y-1.5">
-                    <div className="text-xs text-muted-foreground mb-2">
-                      Correct year: <span className="font-bold text-foreground">{lastRoundResults.correctYear}</span>
-                    </div>
-                    {lastRoundResults.guesses
-                      .sort((a, b) => b.points - a.points)
-                      .map((guess, index) => (
-                        <div
-                          key={`${guess.player}-${index}`}
-                          className="flex items-center justify-between text-xs py-1.5 px-2 rounded bg-muted/40"
-                        >
-                          <div className="flex items-center gap-2 flex-1 min-w-0">
-                            <span className="font-medium truncate">{guess.player}</span>
-                            <Badge variant="outline" className="text-[10px] px-1 py-0">
-                              {guess.year}
-                            </Badge>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <span className="text-[10px] text-muted-foreground">
-                              {Math.abs(guess.year - lastRoundResults.correctYear)} off
-                            </span>
-                            <span className="font-bold text-primary">
-                              +{guess.points}
-                            </span>
-                          </div>
-                        </div>
-                      ))}
-                  </div>
-                ) : (
-                  <div className="text-xs text-muted-foreground text-center py-3">
-                    <p className="mb-1">{t('chat.noResultsYet')}</p>
-                    <p className="text-[10px]">{t('chat.noResultsDescription')}</p>
-                  </div>
-                )}
-              </AccordionContent>
-            </AccordionItem>
-
-            {showPlayerScores && players.length > 0 && (
-              <AccordionItem value="player-scores" className="border-none">
-                <AccordionTrigger className="px-3 py-2 hover:no-underline text-xs font-semibold">
-                  <div className="flex items-center gap-2">
-                    <Trophy className="h-4 w-4 text-yellow-500" />
-                    <span className="text-yellow-700 dark:text-yellow-400">
-                      {t('players.title')}
-                    </span>
-                    <Badge variant="default" className="ml-auto text-[10px] px-1.5 py-0 bg-yellow-500">
-                      {players.length}
-                    </Badge>
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent className="px-3 pb-3 max-h-[200px] overflow-y-auto">
-                  <div className="space-y-2">
-                    {players.map((player, index) => (
-                      <div
-                        key={player.id}
-                        className={`flex items-center justify-between text-xs py-2 px-2.5 rounded ${
-                          index === 0
-                            ? 'bg-yellow-500/20 border border-yellow-500/30'
-                            : player.id === currentPlayer?.id
-                            ? 'bg-primary/10 border border-primary/30'
-                            : 'bg-muted/40'
-                        }`}
-                      >
-                        <div className="flex items-center gap-2 flex-1 min-w-0">
-                          <span className={`font-bold ${index === 0 ? 'text-yellow-700 dark:text-yellow-400' : 'text-muted-foreground'}`}>
-                            #{index + 1}
-                          </span>
-                          <span className={`font-medium truncate ${index === 0 ? 'font-bold' : ''}`}>
-                            {player.username}
-                            {index === 0 && ' 👑'}
-                            {player.id === currentPlayer?.id && ' (você)'}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          {player.streak > 1 && (
-                            <Badge variant="outline" className="text-[10px] px-1 py-0">
-                              {player.streak}x streak
-                            </Badge>
-                          )}
-                          <span className={`font-bold ${index === 0 ? 'text-yellow-600 dark:text-yellow-500 text-sm' : 'text-primary'}`}>
-                            {player.score} pts
-                          </span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-            )}
-          </Accordion>
-        </div>
-
         <ScrollArea className="flex-1 min-h-0" ref={scrollAreaRef}>
           <div className="px-2 py-2 space-y-2">
             {uniqueMessages.length === 0 ? (

@@ -42,21 +42,68 @@ export function LobbyHeader({
 
   return (
     <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b">
-      <div className="container mx-auto px-2 sm:px-3 lg:px-4 py-2 sm:py-3">
-        <div className="space-y-2 sm:space-y-3">
-          {/* Row 1: Connection + Actions */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 sm:gap-3">
+      <div className="container mx-auto px-3 sm:px-4 py-2.5 sm:py-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center justify-between sm:justify-start gap-3 flex-1 min-w-0">
+            <div className="flex items-center gap-2">
               <Status status={isConnected ? 'online' : 'offline'}>
                 <StatusIndicator />
-                <StatusLabel className="hidden sm:inline">
+                <StatusLabel className="hidden lg:inline text-xs">
                   {isConnected ? t('room.connected') : t('room.disconnected')}
                 </StatusLabel>
               </Status>
               <ConnectionIndicator />
             </div>
 
-            <div className="flex items-center gap-1.5 sm:gap-2">
+            <div className="flex flex-col items-center flex-1 min-w-0 sm:hidden">
+              <h1 className="text-base font-bold truncate max-w-full">
+                {lobby.name}
+              </h1>
+              <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
+                <div className="flex items-center gap-1">
+                  <Users className="h-3 w-3" />
+                  <span>{players.length}/{lobby.maxPlayers}</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Clock className="h-3 w-3" />
+                  <span>{lobby.roundTimer}s</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="hidden sm:flex flex-col min-w-0">
+              <h1 className="text-lg sm:text-xl font-bold truncate">
+                {lobby.name}
+              </h1>
+              {lobby.description && (
+                <p className="text-xs text-muted-foreground truncate">
+                  {lobby.description}
+                </p>
+              )}
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between sm:justify-end gap-2 sm:gap-2.5">
+            <div className="hidden sm:flex items-center gap-2 text-xs text-muted-foreground">
+              <div className="flex items-center gap-1.5">
+                <Users className="h-3.5 w-3.5" />
+                <span>{players.length}/{lobby.maxPlayers}</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <Clock className="h-3.5 w-3.5" />
+                <span>{lobby.roundTimer}s</span>
+              </div>
+              <Badge variant="secondary" className="text-xs px-2 py-0.5 capitalize">
+                {t(`lobby.gameMode.${lobby.gameMode.toLowerCase()}` as any)}
+              </Badge>
+              {lobby.hintsEnabled && (
+                <Badge variant="outline" className="text-xs px-2 py-0.5">
+                  {t('lobby.hintsEnabled')}
+                </Badge>
+              )}
+            </div>
+
+            <div className="flex items-center gap-1.5">
               <ScoresDrawer
                 players={players}
                 currentPlayer={currentPlayer}
@@ -75,43 +122,11 @@ export function LobbyHeader({
                 description={t('room.invite.description')}
                 shareText={t('room.invite.shareText', { lobbyName: lobby.name })}
                 url={inviteUrl}
-                buttonText={t('room.inviteButton')}
+                buttonText=""
                 buttonVariant="outline"
                 buttonSize="sm"
               />
             </div>
-          </div>
-
-          {/* Row 2: Lobby Info */}
-          <div className="text-center space-y-1">
-            <h1 className="text-lg sm:text-xl lg:text-2xl font-bold truncate px-2">
-              {lobby.name}
-            </h1>
-            {lobby.description && (
-              <p className="text-xs sm:text-sm text-muted-foreground truncate px-2">
-                {lobby.description}
-              </p>
-            )}
-          </div>
-
-          {/* Row 3: Game Stats */}
-          <div className="flex justify-center gap-2 sm:gap-3 lg:gap-4 text-xs text-muted-foreground flex-wrap">
-            <div className="flex items-center gap-1.5">
-              <Users className="h-3.5 w-3.5" />
-              <span>{t('lobby.playersCount', { current: players.length, max: lobby.maxPlayers })}</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <Clock className="h-3.5 w-3.5" />
-              <span>{t('lobby.roundTimer', { seconds: lobby.roundTimer })}</span>
-            </div>
-            <Badge variant="secondary" className="text-xs px-1.5 py-0.5 capitalize">
-              {t(`lobby.gameMode.${lobby.gameMode.toLowerCase()}` as any)}
-            </Badge>
-            {lobby.hintsEnabled && (
-              <Badge variant="outline" className="text-xs px-1.5 py-0.5">
-                {t('lobby.hintsEnabled')}
-              </Badge>
-            )}
           </div>
         </div>
       </div>
