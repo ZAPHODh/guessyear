@@ -128,22 +128,20 @@ export function PlayerSpots({
                     </div>
                   </div>
                   <div className="flex-1 flex flex-col items-center justify-center space-y-1 sm:space-y-2 min-h-0">
-                    <Avatar className="h-8 w-8 sm:h-10 sm:w-10 lg:h-12 lg:w-12 flex-shrink-0">
+                    <Avatar className="h-8 w-8 sm:h-10 sm:w-10 flex-shrink-0">
                     </Avatar>
 
-                    <div className="text-center min-w-0 w-full">
+                    <div className="text-center min-w-0 w-full space-y-0.5">
                       <p className="font-medium text-xs sm:text-sm truncate px-1">
                         {player.username}
                       </p>
 
-                      {showScores && (
-                        <p className="text-xs text-muted-foreground mt-0.5">
+                      {showScores ? (
+                        <p className="text-xs text-muted-foreground">
                           {t('players.points', { points: player.score })}
                         </p>
-                      )}
-
-                      {!showScores && !(player.id === currentPlayer?.id && onToggleReady && gameState === 'WAITING') && (
-                        <p className="text-xs text-muted-foreground mt-0.5">
+                      ) : (
+                        <p className="text-xs text-muted-foreground">
                           {player.isReady ? t('players.ready') : t('players.waiting')}
                         </p>
                       )}

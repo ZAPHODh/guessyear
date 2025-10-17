@@ -56,7 +56,6 @@ export default async function LobbyPage({ params }: LobbyPageProps) {
           <div className="flex flex-col min-h-screen">
             <LobbyHeaderContainer />
             <div className="flex-1 grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-4 p-4">
-              <Separator orientation='horizontal' />
               <LobbyStateRenderer />
               <LobbyChatContainer />
             </div>
