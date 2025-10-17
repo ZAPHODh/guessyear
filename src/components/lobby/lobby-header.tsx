@@ -2,12 +2,11 @@
 
 import { useScopedI18n } from '@/locales/client';
 import { Badge } from '@/components/ui/badge';
-import { Status, StatusIndicator, StatusLabel } from '@/components/ui/kibo-ui/status';
+import { Users, Clock } from 'lucide-react';
 import { GameSettingsDrawer } from './game-settings-drawer';
 import { ShareDrawer } from '../shared/share-drawer';
 import { ConnectionIndicator } from './connection-indicator';
 import { ScoresDrawer } from './scores-drawer';
-import { Users, Clock } from 'lucide-react';
 import type { Lobby, LobbyActions, Player } from '@/lib/types/lobby';
 import type { Guess } from '@/lib/types/lobby';
 
@@ -45,15 +44,7 @@ export function LobbyHeader({
       <div className="container mx-auto px-3 sm:px-4 py-2.5 sm:py-3">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center justify-between sm:justify-start gap-3 flex-1 min-w-0">
-            <div className="flex items-center gap-2">
-              <Status status={isConnected ? 'online' : 'offline'}>
-                <StatusIndicator />
-                <StatusLabel className="hidden lg:inline text-xs">
-                  {isConnected ? t('room.connected') : t('room.disconnected')}
-                </StatusLabel>
-              </Status>
-              <ConnectionIndicator />
-            </div>
+            <ConnectionIndicator isConnected={isConnected} showLabel />
 
             <div className="flex flex-col items-center flex-1 min-w-0 sm:hidden">
               <h1 className="text-base font-bold truncate max-w-full">

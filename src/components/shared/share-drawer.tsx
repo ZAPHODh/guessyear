@@ -91,7 +91,7 @@ export function ShareDrawer({
       variant={buttonVariant}
       size={buttonSize}
     >
-      <Share2 className="h-4 w-4 mr-2" />
+      <Share2 className="" />
       {buttonText}
     </Button>
   )

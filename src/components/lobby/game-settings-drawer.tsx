@@ -44,9 +44,8 @@ export function GameSettingsDrawer({ lobby, onUpdateSettings }: GameSettingsDraw
   return (
     <Drawer open={open} onOpenChange={setOpen}>
       <DrawerTrigger asChild>
-        <Button variant="outline" size="sm" className="gap-2">
+        <Button variant="outline" size="icon">
           <Settings className="h-4 w-4" />
-          {t('room.settings')}
         </Button>
       </DrawerTrigger>
       <DrawerContent>

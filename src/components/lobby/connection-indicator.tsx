@@ -1,36 +1,38 @@
 "use client";
 
-import { Badge } from '@/components/ui/badge';
-import { Wifi, WifiOff } from 'lucide-react';
+import { Status, StatusIndicator, StatusLabel } from '@/components/ui/kibo-ui/status';
 import { useConnectionQuality } from '@/hooks/use-connection-quality';
 import { useFeatureFlag } from '@/lib/feature-flags';
+import { useScopedI18n } from '@/locales/client';
 
-export function ConnectionIndicator() {
+interface ConnectionIndicatorProps {
+  isConnected: boolean;
+  showLabel?: boolean;
+}
+
+export function ConnectionIndicator({ isConnected, showLabel = false }: ConnectionIndicatorProps) {
+  const t = useScopedI18n('lobby');
   const enableConnectionQuality = useFeatureFlag('enableConnectionQuality');
-  const { ping, quality } = useConnectionQuality();
+  const { ping } = useConnectionQuality();
 
-  if (!enableConnectionQuality) {
-    return null;
-  }
-
-  const qualityConfig = {
-    excellent: { color: 'bg-green-500', label: 'Excellent' },
-    good: { color: 'bg-yellow-500', label: 'Good' },
-    poor: { color: 'bg-red-500', label: 'Poor' },
-    disconnected: { color: 'bg-gray-500', label: 'Disconnected' }
-  };
-
-  const config = qualityConfig[quality];
+  const status = isConnected ? 'online' : 'offline';
 
   return (
-    <Badge variant="outline" className="gap-2">
-      {quality === 'disconnected' ? (
-        <WifiOff className="h-3 w-3" />
-      ) : (
-        <Wifi className="h-3 w-3" />
+    <div className="flex items-center gap-2">
+      <Status status={status}>
+        <StatusIndicator />
+        {showLabel && (
+          <StatusLabel className="text-xs">
+            {isConnected ? t('room.connected') : t('room.disconnected')}
+          </StatusLabel>
+        )}
+      </Status>
+
+      {enableConnectionQuality && ping !== null && (
+        <span className="text-xs text-muted-foreground">
+          {ping}ms
+        </span>
       )}
-      <span className={`h-2 w-2 rounded-full ${config.color}`} />
-      {ping !== null && <span className="text-xs">{ping}ms</span>}
-    </Badge>
+    </div>
   );
 }
