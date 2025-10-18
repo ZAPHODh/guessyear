@@ -50,7 +50,7 @@ export default async function LobbyPage({ params }: LobbyPageProps) {
   }
 
   return (
-    <div className="container mx-auto md:px-4 py-8 max-w-6xl">
+    <div className="container mx-auto py-8 max-w-6xl">
       <LobbyErrorBoundary>
         <LobbyRoomProvider lobby={lobby} user={user} sessionId={sessionId}>
           <div className="flex flex-col min-h-screen">
