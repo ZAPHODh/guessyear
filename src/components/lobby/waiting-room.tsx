@@ -38,7 +38,7 @@ export function WaitingRoom({
   const t = useScopedI18n('lobby');
 
   return (
-    <div className="space-y-3 sm:space-y-4 lg:space-y-6">
+    <div className="sm:space-y-4 lg:space-y-6">
       <div className="text-center space-y-2 sm:space-y-3 lg:space-y-4">
         <div>
           <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-1 sm:mb-2">{lobby.name}</h1>
